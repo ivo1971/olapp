@@ -1,5 +1,5 @@
-import {Component } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Component }  from '@angular/core';
+import {Observable}  from 'rxjs/Observable';
 import {Subject}     from 'rxjs/Subject';
 
 import { WebsocketService } from '../../services/websocket/websocket.service';
@@ -11,12 +11,14 @@ import { WebsocketService } from '../../services/websocket/websocket.service';
 export class HelloIonicPage {
     private m_WebsocketDataIn : Observable<any>;
     private m_WebsocketDatas  : any[] = [];
-    public constructor(private m_WebsocketService : WebsocketService) {
-        m_WebsocketService.connect("ws://echo.websocket.org/");
+    private m_Type            : string;
+    private m_Message         : string;
 
-        m_WebsocketService.getObservable().subscribe(
+    public constructor(private m_WebsocketService : WebsocketService) {
+        this.m_WebsocketService.connect("ws://echo.websocket.org/");
+
+        this.m_WebsocketService.getObservable().subscribe(
             result => {
-                console.log("Got result: " + result);
                 this.m_WebsocketDatas.push(result);
             }, 
             error => {
@@ -37,8 +39,22 @@ export class HelloIonicPage {
             type: "type",
             message: "message 3"
         };
-        m_WebsocketService.send(data1);
-        m_WebsocketService.send(data2);
-        m_WebsocketService.send(data3);
+        this.m_WebsocketService.send(data1);
+        this.m_WebsocketService.send(data2);
+        this.m_WebsocketService.send(data3);
+    }
+
+    public sendMessage() {
+        var data = {
+            type: this.m_Type,
+            message: this.m_Message
+        };
+        this.m_WebsocketService.send(data);
+        this.clearMessage();
+    }
+
+    public clearMessage() {
+        this.m_Type    = "";
+        this.m_Message = "";
     }
 }
