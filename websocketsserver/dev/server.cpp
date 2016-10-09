@@ -23,11 +23,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include "seasocks/PrintfLogger.h"
-#include "seasocks/Server.h"
-#include "seasocks/StringUtil.h"
-#include "seasocks/WebSocket.h"
-
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -35,14 +31,21 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-
-
 #include <thread>
+
+#include "seasocks/PrintfLogger.h"
+#include "seasocks/Server.h"
+#include "seasocks/StringUtil.h"
+#include "seasocks/WebSocket.h"
+
+
+#include "json.hpp"
 
 /* Simple server that echo any text or binary WebSocket messages back. */
 
-using namespace seasocks;
 using namespace std;
+using namespace nlohmann;
+using namespace seasocks;
 
 bool g_Stop = false;
 
@@ -72,6 +75,10 @@ public:
   virtual void onData(WebSocket* /* pConnection */, const char* pData) override {
     //pConnection->send(data); // text
     m_Logger->info("Echo handler onData text [%s].\n", pData);
+
+    auto const jsonData = json::parse(pData);
+    m_Logger->info("Echo handler onData type [%s] - message [%s].\n", jsonData["type"].get<string>().c_str(), jsonData["message"].get<string>().c_str());
+
     for(auto pConnection : m_Connections) {
       pConnection->send(pData);
     }
@@ -84,8 +91,16 @@ public:
 
   void TakeSomeInitiative(void) {
     m_Logger->info("Echo handler taking some initiative.\n");
+
+    //compose message
+    const chrono::time_point<chrono::system_clock> point = chrono::system_clock::now();
+    const json msg = {
+      {"type", "  serer"},
+      {"message", chrono::system_clock::to_time_t(point)}
+    };
+
     for(auto pConnection : m_Connections) {
-      pConnection->send("{\"type\":\"server\",\"message\":\"server initiative\"}");
+      pConnection->send(msg.dump());
     }
   }
 
