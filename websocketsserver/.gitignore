@@ -3,6 +3,7 @@
 
 #intermediate files in the development directory
 dev/*.o
+dev/*.d
 dev/server
 
 #build of seasockets
