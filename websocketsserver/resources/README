@@ -1,0 +1,8 @@
+1. unzip seasockets zip file in this directory
+2. cd seasocks-master
+3. mkdir build
+4. cd build
+5. cmake ..
+6. make
+7. cd src/main/c/
+8. mv libseasocks.so libseasocks.org.so
