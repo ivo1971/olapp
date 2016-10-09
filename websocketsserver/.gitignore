@@ -1,0 +1,9 @@
+#intermediate files from the editor
+*~
+
+#intermediate files in the development directory
+dev/*.o
+dev/server
+
+#build of seasockets
+resources/seasocks-master
