@@ -1,3 +1,5 @@
+source: https://github.com/mattgodbolt/seasocks/wiki/Seasocks-quick-tutorial
+
 1. unzip seasockets zip file in this directory
 2. cd seasocks-master
 3. mkdir build
