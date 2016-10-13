@@ -1,7 +1,7 @@
-import {Injectable } from '@angular/core';
-import {Observable}  from 'rxjs/Observable';
-//import {Observer}    from 'rxjs/Observer';
-import {Subject}     from 'rxjs/Subject';
+import {Injectable }     from '@angular/core';
+import {Observable}      from 'rxjs/Observable';
+import {Subject}         from 'rxjs/Subject';
+import {TimerObservable} from "rxjs/Observable/TimerObservable";
 
 @Injectable()
 export class WebsocketService {
@@ -23,6 +23,23 @@ export class WebsocketService {
             throw new Error("WebsocketService invalid url [" + wsUri + "provided");
         }
         this.m_WsUri = wsUri;
+        this.connectAttempt();
+    }
+
+    public send(data) : void {
+        console.log("WebsocketService send: " + JSON.stringify(data));
+        this.m_SendQueue.push(data);
+        this.fireQueue();
+    };
+
+    public getObservable() : Observable<any[]> {
+        return this.m_DataIn.asObservable();
+    }
+
+    /**********************************************
+     * Private methods
+     */
+    private connectAttempt() : void {
         console.log("WebsocketService connect to [" + this.m_WsUri + "]");
         this.m_Websocket = new WebSocket(this.m_WsUri);
         this.m_Websocket.onopen = (evt : Event) => { 
@@ -39,19 +56,6 @@ export class WebsocketService {
         };
     }
 
-    public send(data) : void {
-        console.log("WebsocketService send: " + JSON.stringify(data));
-        this.m_SendQueue.push(data);
-        this.fireQueue();
-    };
-
-    public getObservable() : Observable<any[]> {
-        return this.m_DataIn.asObservable();
-    }
-
-    /**********************************************
-     * Private methods
-     */
     private onOpen(evt) : void {
         console.log("WebsocketService CONNECTED to [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = true;
@@ -61,6 +65,11 @@ export class WebsocketService {
     private onClose(evt) : void {
         console.log("WebsocketService DISCONNECTED from [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = false;
+        let timer = TimerObservable.create(2000,1000);
+        let timerSubscription = timer.subscribe(t => {
+            timerSubscription.unsubscribe();
+            this.connectAttempt();
+        });
     }
 
     private onMessage(evt) : void {
@@ -71,6 +80,7 @@ export class WebsocketService {
 
     private onError(evt) : void {
         console.log("WebsocketService ERROR: " + evt.data);
+        console.log(evt);
         this.m_WebsocketOpen = false;
         //TODO: reconnect?
     }
