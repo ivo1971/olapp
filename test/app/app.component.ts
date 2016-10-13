@@ -4,9 +4,10 @@ import {Observable}        from 'rxjs/Observable';
 import {WebsocketService } from './websocket.service';
 
 @Component({
-  selector: 'test-app',
-  providers: [WebsocketService],
-  templateUrl: './app/app.component.html'
+  moduleId   : module.id,
+  selector   : 'test-app',
+  providers  : [WebsocketService],
+  templateUrl: 'app.component.html'
 })
 export class AppComponent { 
     private m_WebsocketDataIn : Observable<any>;
