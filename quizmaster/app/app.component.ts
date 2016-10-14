@@ -1,8 +1,14 @@
-import { Component } from '@angular/core';
+import {Component}               from '@angular/core';
+
+import {WebsocketMessageService} from './services/websocket.message.service';
 
 @Component({
-  selector: 'quizmaster',
-  template: '<h1>Quizmaster</h1>'
+  moduleId   : module.id,
+  selector   : 'quizmaster',
+  templateUrl: 'app.component.html'
 })
 export class AppComponent { 
+    public constructor(private websocketService : WebsocketMessageService) {
+        this.websocketService.connect("ws://192.168.0.69:8000/quizMaster");
+    };
 }
