@@ -1,4 +1,6 @@
-import {Component } from '@angular/core';
+import {Component}   from '@angular/core';
+
+import {UserService} from './../../services/user.service';
 
 @Component({
   moduleId   : module.id,
@@ -6,4 +8,13 @@ import {Component } from '@angular/core';
   templateUrl: 'login.component.html'
 })
 export class LoginComponent {
+  public constructor(private userService: UserService) { 
+    this.userName = userService.getUser().name;
+  }
+
+  public setName() {
+    this.userService.setName(this.userName);
+  }
+
+  private userName : string;
 }
