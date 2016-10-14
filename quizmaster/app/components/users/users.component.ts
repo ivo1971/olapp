@@ -16,13 +16,21 @@ export class UsersComponent implements OnInit {
     public constructor(private websocketService: WebsocketMessageService) { 
     }
     public ngOnInit() {
+        let _this = this;
         this.websocketService.getObservable().subscribe(
-            result => {
-                console.log(result);
-                //this.users = result.data;
-            }, 
-            error => {
-                console.log("Error result");
+            function(result: any) {
+                console.log("Next");                
+                //TODO: check MI before using data
+                _this.users.length = 0;
+                for (var i = 0; i < result.data.length; i++) {
+                    _this.users.push(result.data[i]);
+                }
+            },
+            function(err: any) {
+                console.log("Error result");                
+            },
+            function() {
+                console.log("Completed");
             }
         );
         this.websocketDataIn = this.websocketService.getObservable();
