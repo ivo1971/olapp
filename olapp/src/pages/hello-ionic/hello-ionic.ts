@@ -1,6 +1,6 @@
 import {Component }  from '@angular/core';
 import {Observable}  from 'rxjs/Observable';
-import {Subject}     from 'rxjs/Subject';
+//import {Subject}     from 'rxjs/Subject';
 
 import { WebsocketService } from '../../services/websocket/websocket.service';
 
@@ -15,7 +15,8 @@ export class HelloIonicPage {
     private m_Message         : string;
 
     public constructor(private m_WebsocketService : WebsocketService) {
-        this.m_WebsocketService.connect("ws://echo.websocket.org/");
+        //this.m_WebsocketService.connect("ws://echo.websocket.org/");
+        this.m_WebsocketService.connect("ws://192.168.0.64:8000/echo");
 
         this.m_WebsocketService.getObservable().subscribe(
             result => {
