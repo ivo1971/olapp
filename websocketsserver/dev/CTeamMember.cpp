@@ -14,6 +14,11 @@ CTeamMember::CTeamMember(const std::string& name)
 {
 }
 
+CTeamMember::CTeamMember(const CTeamMember& ref)
+  : m_Name(ref.m_Name)
+{
+}
+
 CTeamMember::~CTeamMember(void) throw()
 {
 }
@@ -21,4 +26,9 @@ CTeamMember::~CTeamMember(void) throw()
 const std::string& CTeamMember::GetName(void) const
 {
   return m_Name;
+}
+
+void CTeamMember::Update(const CTeamMember& ref)
+{
+  m_Name = ref.m_Name;
 }

@@ -29,21 +29,26 @@
 #include "seasocks/PrintfLogger.h"
 #include "seasocks/Server.h"
 
+#include "CTeamManager.h"
 #include "CWsEchoHandler.h"
 #include "CWsQuizHandler.h"
+#include "CWsQuizMasterHandler.h"
 #include "EchoThread.h"
 
 using namespace std;
 using namespace seasocks;
 
 int main(int /*argc*/, const char* /*argv*/[]) {
-  shared_ptr<Logger>         spLogger       (new PrintfLogger(Logger::DEBUG));
-  shared_ptr<Server>         spServer       (new Server(spLogger));
-  shared_ptr<CWsEchoHandler> spWsEchoHandler(new CWsEchoHandler(spLogger));
-  shared_ptr<CWsQuizHandler> spWsQuizHandler(new CWsQuizHandler(spLogger));
+  shared_ptr<Logger>               spLogger             (new PrintfLogger(Logger::DEBUG));
+  shared_ptr<CTeamManager>         spTeamManager        (new CTeamManager());
+  shared_ptr<Server>               spServer             (new Server(spLogger));
+  shared_ptr<CWsEchoHandler>       spWsEchoHandler      (new CWsEchoHandler(spLogger));
+  shared_ptr<CWsQuizHandler>       spWsQuizHandler      (new CWsQuizHandler(spLogger, spTeamManager));
+  shared_ptr<CWsQuizMasterHandler> spWsQuizMasterHandler(new CWsQuizMasterHandler(spLogger, spTeamManager));
   
-  spServer->addWebSocketHandler("/echo", spWsEchoHandler);
-  spServer->addWebSocketHandler("/quiz", spWsQuizHandler);
+  spServer->addWebSocketHandler("/echo",       spWsEchoHandler      );
+  spServer->addWebSocketHandler("/quiz",       spWsQuizHandler      );
+  spServer->addWebSocketHandler("/quizMaster", spWsQuizMasterHandler);
 
   EchoThreadStart(spServer, spLogger, spWsEchoHandler);
   spServer->serve("/dev/null", 8000);

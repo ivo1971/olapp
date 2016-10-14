@@ -1,5 +1,5 @@
-#ifndef __WSQUIZHANDLER__H__
-#define __WSQUIZHANDLER__H__
+#ifndef __WSQUIZMASTERHANDLER__H__
+#define __WSQUIZMASTERHANDLER__H__
 
 #include <memory>
 
@@ -9,14 +9,14 @@
 
 #include "CTeamManager.h"
 
-class CWsQuizHandler: public seasocks::WebSocket::Handler {
+class CWsQuizMasterHandler: public seasocks::WebSocket::Handler {
  public:
-                                     CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager);
-                                     ~CWsQuizHandler(void) throw();
+                                     CWsQuizMasterHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager);
+                                     ~CWsQuizMasterHandler(void) throw();
 
  private:
-                                     CWsQuizHandler(const CWsQuizHandler& ref);
-  CWsQuizHandler                     operator=(const CWsQuizHandler& ref) const;
+                                     CWsQuizMasterHandler(const CWsQuizMasterHandler& ref);
+  CWsQuizMasterHandler               operator=(const CWsQuizMasterHandler& ref) const;
 
  private:
   virtual void                       onConnect   (seasocks::WebSocket* pConnection) override;
@@ -25,11 +25,11 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
   virtual void                       onDisconnect(seasocks::WebSocket* pConnection) override;
 
  private:
-  void                               HandleMiId(const nlohmann::json& jsonData);
+  void                               HandleMiGetUsers(seasocks::WebSocket* pConnection) const;
 
  private:
   std::shared_ptr<seasocks::Logger>  m_spLogger;
   std::shared_ptr<CTeamManager>      m_spTeamManager;
 };
 
-#endif //#ifndef __WSQUIZHANDLER__H__
+#endif //#ifndef __WSQUIZMASTERHANDLER__H__
