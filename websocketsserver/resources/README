@@ -1,3 +1,5 @@
+seasocks
+========
 source: https://github.com/mattgodbolt/seasocks/wiki/Seasocks-quick-tutorial
 
 1. unzip seasockets zip file in this directory
@@ -8,3 +10,9 @@ source: https://github.com/mattgodbolt/seasocks/wiki/Seasocks-quick-tutorial
 6. make
 7. cd src/main/c/
 8. mv libseasocks.so libseasocks.org.so
+
+boost
+=====
+Download boost 1.62.0 from the boost website (too large to store in github).
+Untar it (no need to build).
+In case a more recent version of boost is used: update the include path in the makefile.
