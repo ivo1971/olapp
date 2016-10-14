@@ -1,12 +1,11 @@
-import {Component }        from '@angular/core';
-import {Observable}        from 'rxjs/Observable';
+import {Component }           from '@angular/core';
+import {Observable}           from 'rxjs/Observable';
 
-import {WebsocketService } from './../../services/websocket.service';
+import {WebsocketUserService } from './../../services/websocket.user.service';
 
 @Component({
   moduleId   : module.id,
   selector   : 'test-app',
-  providers  : [WebsocketService],
   templateUrl: 'echo.component.html'
 })
 export class EchoComponent { 
@@ -15,9 +14,10 @@ export class EchoComponent {
     private m_Type            : string;
     private m_Message         : string;
 
-    public constructor(private m_WebsocketService : WebsocketService) {
+    public constructor(private m_WebsocketService : WebsocketUserService) {
         //this.m_WebsocketService.connect("ws://echo.websocket.org/");
-        this.m_WebsocketService.connect("ws://192.168.0.69:8000/echo");
+        //this.m_WebsocketService.connect("ws://192.168.0.69:8000/echo");
+        this.m_WebsocketService.connect("ws://192.168.0.69:8000/quiz");
 
         this.m_WebsocketService.getObservable().subscribe(
             result => {
