@@ -15,7 +15,7 @@ CFLAGS        :=
 CPPFLAGS      := -std=c++11 -pthread
 DEPFLAGS      := -MMD -MP -o $@
 
-INCLUDE_PATHS := -I../resources/seasocks-master/src/main/c -I../resources/json/
+INCLUDE_PATHS := -I../resources/seasocks-master/src/main/c -I../resources/json/ -I../resources/boost_1_62_0
 LIBRARY_PATHS := -L../resources/seasocks-master/build/src/main/c
 LIBRARIES     := -lseasocks
 

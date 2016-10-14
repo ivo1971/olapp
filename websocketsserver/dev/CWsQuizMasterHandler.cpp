@@ -8,17 +8,21 @@ using namespace seasocks;
 CWsQuizMasterHandler::CWsQuizMasterHandler(shared_ptr<Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager) 
   : m_spLogger(spLogger)
   , m_spTeamManager(spTeamManager)
+  , m_Connections()
+  , m_TeamManagerConnection(m_spTeamManager->Connect(boost::bind(&CWsQuizMasterHandler::TeamMemberAdded, this)))
 {
-  m_spLogger->debug("CWsQuizMasterHandler handler constructed.");
+  m_spLogger->info("CWsQuizMasterHandler handler constructed.");
 }
 
 CWsQuizMasterHandler::~CWsQuizMasterHandler(void) throw()
 {
+  m_TeamManagerConnection.disconnect();
 }
 
 void CWsQuizMasterHandler::onConnect(WebSocket* pConnection)
 {
-  m_spLogger->debug("CWsQuizMasterHandler onConnect.");
+  m_spLogger->info("CWsQuizMasterHandler onConnect.");
+  m_Connections.insert(pConnection);
   try {
     HandleMiGetUsers(pConnection);
   } catch(std::exception& ex) {
@@ -28,14 +32,22 @@ void CWsQuizMasterHandler::onConnect(WebSocket* pConnection)
   }      
 }
 
+void CWsQuizMasterHandler::TeamMemberAdded(void) const
+{
+  m_spLogger->info("CWsQuizMasterHandler TeamMemberAdded.");
+  for(auto pConnection : m_Connections) {
+    HandleMiGetUsers(pConnection);
+  }
+}
+
 void CWsQuizMasterHandler::onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length)
 {
-  m_spLogger->debug("CWsQuizMasterHandler onData binary.");
+  m_spLogger->info("CWsQuizMasterHandler onData binary.");
 }
 
 void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
 {
-  m_spLogger->debug("CWsQuizMasterHandler onData string.");
+  m_spLogger->info("CWsQuizMasterHandler onData string.");
   try {
     const json        jsonData = json::parse(pData);
     const std::string mi       = GetElementString(jsonData, "mi");
@@ -53,7 +65,8 @@ void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
 
 void CWsQuizMasterHandler::onDisconnect(WebSocket* pConnection) 
 {
-  m_spLogger->debug("Echo handler onDisconnect.");
+  m_spLogger->info("Echo handler onDisconnect.");
+  m_Connections.erase(pConnection);
 }
 
 void CWsQuizMasterHandler::HandleMiGetUsers(WebSocket* pConnection) const

@@ -54,6 +54,7 @@ void CWsQuizHandler::HandleMiId(const json::const_iterator citJsonData)
 {
   const std::string id   = GetElementString(citJsonData, "id"  );
   const std::string name = GetElementString(citJsonData, "name");
-  m_spLogger->info("CWsQuizHandler HandleMiId for id [%s] name [%s].", id.c_str(), name.c_str());
+  m_spLogger->info("CWsQuizHandler HandleMiId in for id [%s] name [%s].", id.c_str(), name.c_str());
   m_spTeamManager->AddTeamMember(id, CTeamMember(name));
+  m_spLogger->info("CWsQuizHandler HandleMiId out for id [%s] name [%s].", id.c_str(), name.c_str());
 }

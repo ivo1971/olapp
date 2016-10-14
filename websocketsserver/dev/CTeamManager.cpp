@@ -26,4 +26,10 @@ void CTeamManager::AddTeamMember(const std::string id, const CTeamMember& teamMe
     //update member
     it->second.Update(teamMember);
   }
+  m_Signal();
+}
+
+boost::signals2::connection CTeamManager::Connect(const Signal_t::slot_type& subscriber)
+{
+  return m_Signal.connect(subscriber);
 }
