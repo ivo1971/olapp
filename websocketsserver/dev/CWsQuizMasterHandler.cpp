@@ -1,4 +1,5 @@
 #include "CWsQuizMasterHandler.h"
+#include "JsonHelpers.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -30,11 +31,11 @@ void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
   m_spLogger->debug("CWsQuizMasterHandler onData string.");
   try {
     const json        jsonData = json::parse(pData);
-    const std::string mi       = jsonData["mi"].get<string>();
+    const std::string mi       = GetElementString(jsonData, "mi");
     if(mi.compare("getUsers")) {
       HandleMiGetUsers(pConnection);
     } else {
-      m_spLogger->error("CWsQuizMasterHandler onData string unhandled type [%s].", jsonData["mi"].get<string>().c_str());
+      m_spLogger->error("CWsQuizMasterHandler onData string unhandled type [%s].", mi.c_str());
     }
   } catch(std::exception& ex) {
     m_spLogger->error("CWsQuizHandler onData string exception: %s.", ex.what());

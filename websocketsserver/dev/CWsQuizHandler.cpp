@@ -1,4 +1,5 @@
 #include "CWsQuizHandler.h"
+#include "JsonHelpers.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -29,18 +30,19 @@ void CWsQuizHandler::onData(WebSocket* /* pConnection */, const char* pData)
 {
   m_spLogger->info("CWsQuizHandler onData string: [%s].", pData);
   try {
-    const json        jsonData = json::parse(pData);
-    const std::string mi       = jsonData["mi"].get<string>();
-    if(mi.compare("id")) {
-      HandleMiId(jsonData["data"]);
+    const json           jsonData = json::parse(pData);
+    const std::string    mi       = GetElementString(jsonData, "mi");
+    if(0 == mi.compare("id")) {
+      m_spLogger->info("CWsQuizHandler onData call HandleMiId.");
+      HandleMiId(GetElement(jsonData, "data"));
     } else {
-      m_spLogger->error("CWsQuizHandler onData string unhandled type [%s].", jsonData["mi"].get<string>().c_str());
+      m_spLogger->error("CWsQuizHandler onData string unhandled type [%s].", mi.c_str());
     }
   } catch(std::exception& ex) {
     m_spLogger->error("CWsQuizHandler onData string exception: %s.", ex.what());
   } catch(...) {
     m_spLogger->error("CWsQuizHandler onData string exception: %s.", "unknown");
-  }      
+  } 
 }
 
 void CWsQuizHandler::onDisconnect(WebSocket* pConnection) 
@@ -48,8 +50,10 @@ void CWsQuizHandler::onDisconnect(WebSocket* pConnection)
   m_spLogger->info("CWsQuizHandler onDisconnect.");
 }
 
-void CWsQuizHandler::HandleMiId(const json& jsonData)
+void CWsQuizHandler::HandleMiId(const json::const_iterator citJsonData)
 {
-  m_spLogger->debug("CWsQuizHandler HandleMiId for id [%s] name [%s].", jsonData["id"].get<string>().c_str(), jsonData["user"].get<string>().c_str());
-  m_spTeamManager->AddTeamMember(jsonData["id"].get<string>(), CTeamMember(jsonData["user"].get<string>()));
+  const std::string id   = GetElementString(citJsonData, "id"  );
+  const std::string name = GetElementString(citJsonData, "name");
+  m_spLogger->info("CWsQuizHandler HandleMiId for id [%s] name [%s].", id.c_str(), name.c_str());
+  m_spTeamManager->AddTeamMember(id, CTeamMember(name));
 }
