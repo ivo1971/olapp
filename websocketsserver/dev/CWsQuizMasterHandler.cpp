@@ -1,0 +1,64 @@
+#include "CWsQuizMasterHandler.h"
+
+using namespace std;
+using namespace nlohmann;
+using namespace seasocks;
+
+CWsQuizMasterHandler::CWsQuizMasterHandler(shared_ptr<Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager) 
+  : m_spLogger(spLogger)
+  , m_spTeamManager(spTeamManager)
+{
+  m_spLogger->debug("CWsQuizMasterHandler handler constructed.");
+}
+
+CWsQuizMasterHandler::~CWsQuizMasterHandler(void) throw()
+{
+}
+
+void CWsQuizMasterHandler::onConnect(WebSocket* pConnection)
+{
+  m_spLogger->debug("CWsQuizMasterHandler onConnect.");
+}
+
+void CWsQuizMasterHandler::onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length)
+{
+  m_spLogger->debug("CWsQuizMasterHandler onData binary.");
+}
+
+void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
+{
+  m_spLogger->debug("CWsQuizMasterHandler onData string.");
+  try {
+    const json        jsonData = json::parse(pData);
+    const std::string mi       = jsonData["mi"].get<string>();
+    if(mi.compare("getUsers")) {
+      HandleMiGetUsers(pConnection);
+    } else {
+      m_spLogger->error("CWsQuizMasterHandler onData string unhandled type [%s].", jsonData["mi"].get<string>().c_str());
+    }
+  } catch(std::exception& ex) {
+    m_spLogger->error("CWsQuizHandler onData string exception: %s.", ex.what());
+  } catch(...) {
+    m_spLogger->error("CWsQuizHandler onData string exception: %s.", "unknown");
+  }      
+}
+
+void CWsQuizMasterHandler::onDisconnect(WebSocket* pConnection) 
+{
+  m_spLogger->debug("Echo handler onDisconnect.");
+}
+
+void CWsQuizMasterHandler::HandleMiGetUsers(WebSocket* pConnection) const
+{
+  m_spLogger->debug("CWsQuizMasterHandler HandleMiGetUsers.");
+  const MapCTeamMember& mapTeamMember = m_spTeamManager->GetTeamMembers();
+  json jsonData;
+  jsonData["mi"]   = "users";
+  for(MapCTeamMemberCIt cit = mapTeamMember.begin() ; mapTeamMember.end() != cit ; ++cit) {
+    json jsonDataUser = {
+      {"name", cit->second.GetName()}
+    };
+    jsonData.push_back(jsonDataUser);
+  }
+  pConnection->send(jsonData.dump());
+}
