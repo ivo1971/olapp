@@ -25,7 +25,7 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
   virtual void                       onDisconnect(seasocks::WebSocket* pConnection) override;
 
  private:
-  void                               HandleMiId(const nlohmann::json& jsonData);
+  void                               HandleMiId(const nlohmann::json::const_iterator citJsonData);
 
  private:
   std::shared_ptr<seasocks::Logger>  m_spLogger;

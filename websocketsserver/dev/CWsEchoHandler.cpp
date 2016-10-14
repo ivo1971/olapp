@@ -36,10 +36,6 @@ void CWsEchoHandler::onData(WebSocket* /* pConnection */, const char* pData)
 {
   //pConnection->send(data); // text
   m_Logger->info("CWsEchoHandler onData text [%s].", pData);
-
-  auto const jsonData = json::parse(pData);
-  m_Logger->info("CWsEchoHandler onData type [%s] - message [%s].", jsonData["type"].get<string>().c_str(), jsonData["message"].get<string>().c_str());
-
   for(auto pConnection : m_Connections) {
     pConnection->send(pData);
   }
