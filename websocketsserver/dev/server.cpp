@@ -50,9 +50,9 @@ int main(int /*argc*/, const char* /*argv*/[]) {
   spServer->addWebSocketHandler("/quiz",       spWsQuizHandler      );
   spServer->addWebSocketHandler("/quizMaster", spWsQuizMasterHandler);
 
-  EchoThreadStart(spServer, spLogger, spWsEchoHandler);
+  //EchoThreadStart(spServer, spLogger, spWsEchoHandler);
   spServer->serve("/dev/null", 8000);
-  EchoThreadStop();
+  //EchoThreadStop();
 
   return 0;
 }
