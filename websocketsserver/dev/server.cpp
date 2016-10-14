@@ -23,146 +23,31 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <chrono>
-#include <cstring>
-#include <iostream>
 #include <memory>
-#include <set>
-#include <sstream>
 #include <string>
-#include <unistd.h>
-#include <thread>
 
 #include "seasocks/PrintfLogger.h"
 #include "seasocks/Server.h"
-#include "seasocks/StringUtil.h"
-#include "seasocks/WebSocket.h"
 
-
-#include "json.hpp"
-
-/* Simple server that echo any text or binary WebSocket messages back. */
+#include "CWsEchoHandler.h"
+#include "CWsQuizHandler.h"
+#include "EchoThread.h"
 
 using namespace std;
-using namespace nlohmann;
 using namespace seasocks;
 
-bool g_Stop = false;
-
-class CEchoHandler: public WebSocket::Handler {
-public:
-  CEchoHandler(shared_ptr<Logger> logger) 
-    : m_Logger(logger)
-    , m_Connections()
-  {
-    m_Logger->info("Echo handler constructed.\n");
-  }
-
-public:
-  virtual void onConnect(WebSocket* pConnection) override {
-    m_Logger->info("Echo handler onConnect.\n");
-    m_Connections.insert(pConnection);
-  }
-
-  virtual void onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length) override {
-    //pConnection->send(data, length); // binary
-    m_Logger->info("Echo handler onData binary.\n");
-    for(auto pConnection : m_Connections) {
-      pConnection->send(pData, length);
-    }
-  }
-
-  virtual void onData(WebSocket* /* pConnection */, const char* pData) override {
-    //pConnection->send(data); // text
-    m_Logger->info("Echo handler onData text [%s].\n", pData);
-
-    auto const jsonData = json::parse(pData);
-    m_Logger->info("Echo handler onData type [%s] - message [%s].\n", jsonData["type"].get<string>().c_str(), jsonData["message"].get<string>().c_str());
-
-    for(auto pConnection : m_Connections) {
-      pConnection->send(pData);
-    }
-  }
-
-  virtual void onDisconnect(WebSocket* pConnection) override {
-    m_Logger->info("Echo handler onDisconnect.\n");
-    m_Connections.erase(pConnection);
-  }
-
-  void TakeSomeInitiative(void) {
-    m_Logger->info("Echo handler taking some initiative.\n");
-
-    //compose message
-    const chrono::time_point<chrono::system_clock> point = chrono::system_clock::now();
-    const json msg = {
-      {"type", "  serer"},
-      {"message", chrono::system_clock::to_time_t(point)}
-    };
-
-    for(auto pConnection : m_Connections) {
-      pConnection->send(msg.dump());
-    }
-  }
-
-private:
-  shared_ptr<Logger> m_Logger;
-  set<WebSocket*>    m_Connections;
-};
-
-class RunnableFromServerThread : public Server::Runnable {
-public:
-  RunnableFromServerThread(shared_ptr<CEchoHandler> spEchoHandler)
-    : m_spEchoHandler(spEchoHandler)
-  {
-  }
-
-  virtual ~RunnableFromServerThread() 
-  {
-  }
-
-  void run()
-  {
-    cout << "RunnableFromServerThread run" << std::endl;
-    m_spEchoHandler->TakeSomeInitiative();
-  }
-
-private:
-  shared_ptr<CEchoHandler> m_spEchoHandler;
-};
-
-void ExecuteFromServerThread(void)
-{
-  cout << "Execute from server thread" << std::endl;
-}
-
-void CallFromThread(Server* const pServer, shared_ptr<CEchoHandler> spEchoHandler) 
-{
-  shared_ptr<RunnableFromServerThread> spRunnableFromServerThread(new RunnableFromServerThread(spEchoHandler));
-  cout << "Thread in" << std::endl;
-  while(!g_Stop) {
-    cout << "Hello, World in" << std::endl;
-    pServer->execute(ExecuteFromServerThread);
-    pServer->execute(spRunnableFromServerThread);
-    cout << "Hello, World out" << std::endl;
-    usleep(7 * 1000 * 1000);
-  }
-  cout << "Thread out" << std::endl;
-}
-
 int main(int /*argc*/, const char* /*argv*/[]) {
-  shared_ptr<Logger> logger(new PrintfLogger(Logger::DEBUG));
-  Server server(logger);
+  shared_ptr<Logger>         spLogger       (new PrintfLogger(Logger::DEBUG));
+  shared_ptr<Server>         spServer       (new Server(spLogger));
+  shared_ptr<CWsEchoHandler> spWsEchoHandler(new CWsEchoHandler(spLogger));
+  shared_ptr<CWsQuizHandler> spWsQuizHandler(new CWsQuizHandler(spLogger));
   
-  std::shared_ptr<CEchoHandler> echoHandler(new CEchoHandler(logger));
-  server.addWebSocketHandler("/echo", echoHandler);
+  spServer->addWebSocketHandler("/echo", spWsEchoHandler);
+  spServer->addWebSocketHandler("/quiz", spWsQuizHandler);
 
-  g_Stop = false;
-  thread t1(CallFromThread, &server, echoHandler);
-
-  server.serve("/dev/null", 8000);
-
-  g_Stop = true;
-  t1.join();
+  EchoThreadStart(spServer, spLogger, spWsEchoHandler);
+  spServer->serve("/dev/null", 8000);
+  EchoThreadStop();
 
   return 0;
 }
