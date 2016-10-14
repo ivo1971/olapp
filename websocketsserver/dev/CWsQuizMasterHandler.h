@@ -31,11 +31,17 @@ class CWsQuizMasterHandler: public seasocks::WebSocket::Handler {
 
  //message handlers called from onData (depending on the message type)
  private:
-  void                               HandleMiGetUsers(seasocks::WebSocket* pConnection) const;
+
+ //functions that will broadcast a message to all connections
+ private:
+
+ //functions that will send a message to the provided connection
+ private:
+  void                               SendSockUsers(seasocks::WebSocket* pConnection) const;
 
   //signal handlers
  private:
-  void                               TeamMemberAdded(void) const;
+  void                               TeamMembersChanged(void) const;
 
  //members
  private:

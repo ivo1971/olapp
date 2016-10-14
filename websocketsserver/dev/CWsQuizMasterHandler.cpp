@@ -9,7 +9,7 @@ CWsQuizMasterHandler::CWsQuizMasterHandler(shared_ptr<Logger> spLogger, std::sha
   : m_spLogger(spLogger)
   , m_spTeamManager(spTeamManager)
   , m_Connections()
-  , m_TeamManagerConnection(m_spTeamManager->Connect(boost::bind(&CWsQuizMasterHandler::TeamMemberAdded, this)))
+  , m_TeamManagerConnection(m_spTeamManager->ConnectTeamMembersChanged(boost::bind(&CWsQuizMasterHandler::TeamMembersChanged, this)))
 {
   m_spLogger->info("CWsQuizMasterHandler handler constructed.");
 }
@@ -24,20 +24,12 @@ void CWsQuizMasterHandler::onConnect(WebSocket* pConnection)
   m_spLogger->info("CWsQuizMasterHandler onConnect.");
   m_Connections.insert(pConnection);
   try {
-    HandleMiGetUsers(pConnection);
+    SendSockUsers(pConnection);
   } catch(std::exception& ex) {
     m_spLogger->error("CWsQuizHandler onConnect string exception: %s.", ex.what());
   } catch(...) {
     m_spLogger->error("CWsQuizHandler onConnect string exception: %s.", "unknown");
   }      
-}
-
-void CWsQuizMasterHandler::TeamMemberAdded(void) const
-{
-  m_spLogger->info("CWsQuizMasterHandler TeamMemberAdded.");
-  for(auto pConnection : m_Connections) {
-    HandleMiGetUsers(pConnection);
-  }
 }
 
 void CWsQuizMasterHandler::onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length)
@@ -52,7 +44,7 @@ void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
     const json        jsonData = json::parse(pData);
     const std::string mi       = GetElementString(jsonData, "mi");
     if(0 == mi.compare("getUsers")) {
-      HandleMiGetUsers(pConnection);
+      SendSockUsers(pConnection);
     } else {
       m_spLogger->error("CWsQuizMasterHandler onData string unhandled type [%s].", mi.c_str());
     }
@@ -69,19 +61,28 @@ void CWsQuizMasterHandler::onDisconnect(WebSocket* pConnection)
   m_Connections.erase(pConnection);
 }
 
-void CWsQuizMasterHandler::HandleMiGetUsers(WebSocket* pConnection) const
+void CWsQuizMasterHandler::SendSockUsers(WebSocket* pConnection) const
 {
-  m_spLogger->info("CWsQuizMasterHandler HandleMiGetUsers.");
+  m_spLogger->info("CWsQuizMasterHandler SendSockUsers.");
   const MapCTeamMember& mapTeamMember = m_spTeamManager->GetTeamMembers();
   json jsonData;
   jsonData["mi"]   = "users";
   for(MapCTeamMemberCIt cit = mapTeamMember.begin() ; mapTeamMember.end() != cit ; ++cit) {
-    m_spLogger->info("CWsQuizMasterHandler HandleMiGetUsers user [%s].", cit->second.GetName().c_str());
+    m_spLogger->info("CWsQuizMasterHandler SendSockUsers user [%s].", cit->second.GetName().c_str());
     json jsonDataUser = {
-      {"name", cit->second.GetName()}
+      {"name",      cit->second.GetName()                 },
+      {"connected", cit->second.GetConnected() ? "1" : "0"}
     };
     jsonData["data"].push_back(jsonDataUser);
   }
-  m_spLogger->info("CWsQuizMasterHandler HandleMiGetUsers [%s].", jsonData.dump().c_str());
+  m_spLogger->info("CWsQuizMasterHandler SendSockUsers [%s].", jsonData.dump().c_str());
   pConnection->send(jsonData.dump());
+}
+
+void CWsQuizMasterHandler::TeamMembersChanged(void) const
+{
+  m_spLogger->info("CWsQuizMasterHandler TeamMemberAdded.");
+  for(auto pConnection : m_Connections) {
+    SendSockUsers(pConnection);
+  }
 }

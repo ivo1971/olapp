@@ -9,13 +9,15 @@
 
 #include "CTeamMember.h"
 
-CTeamMember::CTeamMember(const std::string& name)
+CTeamMember::CTeamMember(const std::string& name, const bool connected /* = true */)
   : m_Name(name)
+  , m_Connected(connected) 
 {
 }
 
 CTeamMember::CTeamMember(const CTeamMember& ref)
   : m_Name(ref.m_Name)
+  , m_Connected(ref.m_Connected) 
 {
 }
 
@@ -28,7 +30,18 @@ const std::string& CTeamMember::GetName(void) const
   return m_Name;
 }
 
+bool CTeamMember::GetConnected(void) const
+{
+  return m_Connected;
+}
+
 void CTeamMember::Update(const CTeamMember& ref)
 {
-  m_Name = ref.m_Name;
+  m_Name      = ref.m_Name;
+  m_Connected = ref.m_Connected;
+}
+
+void CTeamMember::SetConnected(const bool connected)
+{
+  m_Connected = connected;
 }

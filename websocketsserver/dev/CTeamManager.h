@@ -14,11 +14,12 @@ class CTeamManager {
 
  public:
    const MapCTeamMember&                  GetTeamMembers(void) const;
-   void	                                  AddTeamMember(const std::string id, const CTeamMember& teamMember);
+   void	                                  TeamMemberAdd(const std::string id, const CTeamMember& teamMember);
+   void                                   TeamMemberDisconnected(const std::string id);
 
  public:
   typedef boost::signals2::signal<void()> Signal_t;
-  boost::signals2::connection             Connect(const Signal_t::slot_type& subscriber);
+  boost::signals2::connection             ConnectTeamMembersChanged(const Signal_t::slot_type& subscriber);
   
  private:
                                           CTeamManager(const CTeamManager& ref);
@@ -26,7 +27,7 @@ class CTeamManager {
 
  private:
   MapCTeamMember                          m_MapTeamMembers;
-  Signal_t                                m_Signal;
+  Signal_t                                m_SignalTeamMembersChanged;
 };
 
 #endif //#ifndef __CTEAMMANAGER__H__

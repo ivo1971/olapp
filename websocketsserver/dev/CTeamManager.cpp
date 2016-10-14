@@ -4,6 +4,7 @@ using namespace::std;
 
 CTeamManager::CTeamManager(void)
   : m_MapTeamMembers()
+  , m_SignalTeamMembersChanged()
 {
 }
 
@@ -16,7 +17,7 @@ const MapCTeamMember& CTeamManager::GetTeamMembers(void) const
   return m_MapTeamMembers;
 }
 
-void CTeamManager::AddTeamMember(const std::string id, const CTeamMember& teamMember)
+void CTeamManager::TeamMemberAdd(const std::string id, const CTeamMember& teamMember)
 {
   MapCTeamMemberIt it = m_MapTeamMembers.find(id);
   if(m_MapTeamMembers.end() == it) {
@@ -26,10 +27,22 @@ void CTeamManager::AddTeamMember(const std::string id, const CTeamMember& teamMe
     //update member
     it->second.Update(teamMember);
   }
-  m_Signal();
+  m_SignalTeamMembersChanged();
 }
 
-boost::signals2::connection CTeamManager::Connect(const Signal_t::slot_type& subscriber)
+void CTeamManager::TeamMemberDisconnected(const std::string id)
 {
-  return m_Signal.connect(subscriber);
+  MapCTeamMemberIt it = m_MapTeamMembers.find(id);
+  if(m_MapTeamMembers.end() == it) {
+    //unknown member: ignore
+  } else {
+    //update member
+    it->second.SetConnected(false);
+  }
+  m_SignalTeamMembersChanged();
+}
+
+boost::signals2::connection CTeamManager::ConnectTeamMembersChanged(const Signal_t::slot_type& subscriber)
+{
+  return m_SignalTeamMembersChanged.connect(subscriber);
 }
