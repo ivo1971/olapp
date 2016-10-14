@@ -1,2 +1,13 @@
-<h2>login component</h2>
-Please login.
+<h2>User</h2>
+Please provide a username.
+
+<table>
+    <tr>
+        <td>username:</td>
+        <td><input placeholder="name"    [(ngModel)]="userName" /></td>
+    </tr>
+    <tr colspan="2">
+        <td></td>
+        <td><button (click)="setName()">Set name</button></td>
+    </tr>
+</table>

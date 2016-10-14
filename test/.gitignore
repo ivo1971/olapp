@@ -6,6 +6,7 @@
 *~
 *.map
 *.js
+*.log
 
 node_modules/
 typings/
