@@ -1,14 +1,14 @@
-import {BrowserModule}     from '@angular/platform-browser';
-import {FormsModule}       from '@angular/forms';
-import {NgModule}          from '@angular/core';
-import {RouterModule}      from '@angular/router';
+import {BrowserModule}         from '@angular/platform-browser';
+import {FormsModule}           from '@angular/forms';
+import {NgModule}              from '@angular/core';
+import {RouterModule}          from '@angular/router';
 
-import {UserService }      from './services/user.service';
-import {WebsocketService } from './services/websocket.service';
+import {UserService}           from './services/user.service';
+import {WebsocketUserService}  from './services/websocket.user.service';
 
-import {AppComponent}      from "./app.component";
-import {EchoComponent}     from "./routes/echo/echo.component";
-import {LoginComponent}    from "./routes/login/login.component";
+import {AppComponent}          from "./app.component";
+import {EchoComponent}         from "./routes/echo/echo.component";
+import {LoginComponent}        from "./routes/login/login.component";
 
 @NgModule({
   imports:      [ 
@@ -37,7 +37,7 @@ import {LoginComponent}    from "./routes/login/login.component";
   ],
   providers: [
     UserService,
-    WebsocketService,
+    WebsocketUserService,
   ],
   bootstrap:    [ 
     AppComponent 

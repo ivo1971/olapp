@@ -37,6 +37,14 @@ export class WebsocketService {
     }
 
     /**********************************************
+     * Protected methods
+     */
+    protected prepareFront(data) : void {
+        console.log("WebsocketService prepareFront: " + JSON.stringify(data));
+        this.m_SendQueue.unshift(data);
+    }
+    
+    /**********************************************
      * Private methods
      */
     private connectAttempt() : void {
@@ -56,7 +64,7 @@ export class WebsocketService {
         };
     }
 
-    private onOpen(evt) : void {
+    protected onOpen(evt) : void {
         console.log("WebsocketService CONNECTED to [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = true;
         this.fireQueue();
