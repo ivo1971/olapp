@@ -1,5 +1,7 @@
-users component
-
-<li *ngFor="let user of users">
-    {{user.name}}: {{user.connected}}
-</li>
+<div *ngFor="let user of users">
+    <div class="alert" [class.alert-success]="0 != user.connected" [class.alert-danger]="1 != user.connected">    
+        {{user.name}} 
+        <span *ngIf="0 != user.connected" class="glyphicon glyphicon-cloud"  aria-hidden="true"></span>
+        <span *ngIf="0 == user.connected" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    </div>
+</div>
