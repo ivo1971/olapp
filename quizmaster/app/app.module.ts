@@ -5,6 +5,7 @@ import {AppComponent}            from './app.component';
 import {WebsocketMessageService} from './services/websocket.message.service';
 
 import {UsersComponent}          from "./components/users/users.component";
+import {StatusBarComponent}      from "./components/status-bar/status-bar.component";
 
 @NgModule({
   imports:      [ 
@@ -12,7 +13,8 @@ import {UsersComponent}          from "./components/users/users.component";
   ],
   declarations: [ 
     AppComponent, 
-    UsersComponent
+    UsersComponent,
+    StatusBarComponent
   ],
   bootstrap:    [ 
     AppComponent 
