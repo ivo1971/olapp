@@ -1,6 +1,8 @@
-import {Injectable }     from '@angular/core';
+import {Injectable}       from '@angular/core';
+import {Observable}       from 'rxjs/Observable';
+import {BehaviorSubject}  from 'rxjs/BehaviorSubject';
 
-import {User }           from '../classes/user.class';
+import {User}             from '../classes/user.class';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,10 @@ export class UserService {
         console.log("UserService: set name to [" + this.user.name + "]");
     };
 
+    public getObservableUser() : Observable<User> {
+        return this.observableUser;
+    }
+
     /**********************************************
      * Private methods
      */
@@ -31,5 +37,7 @@ export class UserService {
     /**********************************************
      * Private members
      */
-    private user             : User             = new User();
+    private user           : User                  = new User();
+    private subjectUser    : BehaviorSubject<User> = new BehaviorSubject<User>(this.user);
+    private observableUser : Observable<User>      = this.subjectUser.asObservable();
 }
