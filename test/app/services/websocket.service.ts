@@ -1,7 +1,8 @@
-import {Injectable }     from '@angular/core';
-import {Observable}      from 'rxjs/Observable';
-import {Subject}         from 'rxjs/Subject';
-import {TimerObservable} from "rxjs/Observable/TimerObservable";
+import {Injectable }      from '@angular/core';
+import {Observable}       from 'rxjs/Observable';
+import {BehaviorSubject}  from 'rxjs/BehaviorSubject';
+import {Subject}          from 'rxjs/Subject';
+import {TimerObservable}  from "rxjs/Observable/TimerObservable";
 
 @Injectable()
 export class WebsocketService {
@@ -36,6 +37,10 @@ export class WebsocketService {
         return this.m_DataIn.asObservable();
     }
 
+    public getObservableConnected() : Observable<boolean> {
+        return this.m_ObservableConnected;
+    }
+
     /**********************************************
      * Protected methods
      */
@@ -67,12 +72,14 @@ export class WebsocketService {
     protected onOpen(evt) : void {
         console.log("WebsocketService CONNECTED to [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = true;
+        this.m_SubjectConnected.next(true);
         this.fireQueue();
     }
 
     private onClose(evt) : void {
         console.log("WebsocketService DISCONNECTED from [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = false;
+        this.m_SubjectConnected.next(false);
         let timer = TimerObservable.create(2000,1000);
         let timerSubscription = timer.subscribe(t => {
             timerSubscription.unsubscribe();
@@ -108,9 +115,11 @@ export class WebsocketService {
     /**********************************************
      * Private members
      */
-    private m_WsUri         : string         ;
-    private m_Websocket     : any            ;
-    private m_WebsocketOpen : boolean        = false;
-    private m_SendQueue     : any[]          = [];
-    private m_DataIn        : Subject<any>   = new Subject<any>();
+    private m_WsUri               : string                   ;
+    private m_Websocket           : any                      ;
+    private m_WebsocketOpen       : boolean                  = false;
+    private m_SendQueue           : any[]                    = [];
+    private m_DataIn              : Subject<any>             = new Subject<any>();
+    private m_SubjectConnected    : BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    private m_ObservableConnected : Observable<boolean>      = this.m_SubjectConnected.asObservable();
 }

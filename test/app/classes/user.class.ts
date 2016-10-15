@@ -1,3 +1,6 @@
+//avoid compilation issues because Fingerprint library has no typings
+declare var Fingerprint2: any
+
 export class User {
     public id: string;
     public name: string;
@@ -7,7 +10,12 @@ export class User {
             this.id   = localStorage.getItem("userId"  );
             this.name = localStorage.getItem("userName");
         }
-        if ((typeof(this.id) == "undefined") || (0 == this.id.length) || ("null" == this.id)) {
+        if (
+               (typeof(this.id) == "undefined") 
+            || (null == this.id) 
+            || (0 == this.id.length) 
+            || ("null" == this.id)
+            ) {
             let _this = this;
             new Fingerprint2().get(function(result, components){
                 _this.id = result;

@@ -31,5 +31,5 @@ export class UserService {
     /**********************************************
      * Private members
      */
-    private user          : User         = new User();
+    private user             : User             = new User();
 }

@@ -12,3 +12,11 @@ h2, h3 {
 body {
   margin: 2em;
 }
+
+.error {
+    color: red;
+}
+
+.ok {
+    color: green;
+}
