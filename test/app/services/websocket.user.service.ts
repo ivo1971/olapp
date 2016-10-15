@@ -1,11 +1,11 @@
-import {Injectable}       from '@angular/core';
+import {Injectable}              from '@angular/core';
 
-import {User}             from './../classes/user.class';
-import {UserService}      from './user.service';
-import {WebsocketService} from './websocket.service';
+import {User}                    from './../classes/user.class';
+import {UserService}             from './user.service';
+import {WebsocketMessageService} from './websocket.message.service';
 
 @Injectable()
-export class WebsocketUserService extends WebsocketService {
+export class WebsocketUserService extends WebsocketMessageService {
     /**********************************************
      * Public construction/destruction
      */
