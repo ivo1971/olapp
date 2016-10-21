@@ -1,5 +1,14 @@
-Connected {{user}}:
-<span *ngIf="connected"  class="glyphicon glyphicon-cloud  ok"    aria-hidden="true"></span>
-<span *ngIf="!connected" class="glyphicon glyphicon-remove error" aria-hidden="true"></span>
-
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4 text-left">
+        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>{{userName}}
+    </div>
+    <div class="col-sm-4 text-center">
+    </div>
+    <div class="col-sm-4 text-right">
+        <span *ngIf="connected"  class="glyphicon glyphicon-cloud  ok"    aria-hidden="true"></span>
+        <span *ngIf="!connected" class="glyphicon glyphicon-remove error" aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
 <hr />

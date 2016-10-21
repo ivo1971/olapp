@@ -19,7 +19,6 @@ export class AppComponent {
         user.subscribe(
           value => {
             this.userNameValid = (0 !== value.name.length);
-            console.log(value.name + " ==> [" + this.userNameValid + "]");
           });
     }
 }
