@@ -1,11 +1,22 @@
-<h1>Quizmaster</h1>
-
 <status-bar></status-bar>
-
-<button (click)="routeTo('simple-button')">Route to simple-button</button>
-<button (click)="routeTo('welcome')">Route to welcome</button>
-
+<h1>Quizmaster</h1>
+<hr />
 <div>
-    <h2>Users</h2>
-    <users></users>
+    <table width="100%">
+        <tr>
+            <td width="45%">
+                <h2>Users</h2>
+                <users></users>
+            </td>
+            <td width="10%">
+            </td>
+            <td width="45%">
+                <h2>Mode</h2>
+                <mode-selector></mode-selector>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <router-outlet></router-outlet>
 </div>

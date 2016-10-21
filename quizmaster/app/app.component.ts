@@ -11,11 +11,4 @@ export class AppComponent {
     public constructor(private websocketService : WebsocketMessageService) {
         this.websocketService.connect("ws://192.168.0.69:8000/quizMaster");
     };
-
-    public routeTo(to: string) : void {
-        let route = {
-            to: to,
-        }
-        this.websocketService.sendMsg("route", route);
-    }
 }
