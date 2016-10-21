@@ -9,8 +9,9 @@ import {UserService}           from './services/user.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 import {EchoComponent}         from "./routes/echo/echo.component";
-import {LoginComponent}        from "./routes/login/login.component";
+import {WelcomeComponent}      from "./routes/welcome/welcome.component";
 
+import {LoginComponent}        from "./components/login/login.component";
 import {StatusBarComponent}    from "./components/status-bar/status-bar.component";
 
 @NgModule({
@@ -19,7 +20,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     FormsModule,
     RouterModule.forRoot([
       {
-        path: 'login',
+        path: 'welcome',
         component: LoginComponent
       },
       {
@@ -28,7 +29,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
       },
       {
         path: '',
-        redirectTo: '/login',
+        redirectTo: '/welcome',
         pathMatch: 'full'
       },
     ])
@@ -38,8 +39,12 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     UserService,
   ],
   declarations: [ 
+    //application
     AppComponent,
+    //routes
     EchoComponent,
+    WelcomeComponent,
+    //components
     LoginComponent,
     StatusBarComponent
   ],

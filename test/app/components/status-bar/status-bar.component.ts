@@ -1,7 +1,7 @@
-import {Component }           from '@angular/core';
-import {Observable}           from 'rxjs/Observable';
+import {Component}             from '@angular/core';
+import {Observable}            from 'rxjs/Observable';
 
-import {User}                 from './../../classes/user.class';
+import {User}                  from './../../classes/user.class';
 
 import {WebsocketUserService } from './../../services/websocket.user.service';
 import {UserService }          from './../../services/user.service';
@@ -13,7 +13,7 @@ import {UserService }          from './../../services/user.service';
 })
 export class StatusBarComponent { 
     private connected : boolean = true;
-    private user      : string  = "";
+    private userName  : string  = "";
 
     public constructor(
       private websocketUserService : WebsocketUserService,
@@ -27,7 +27,7 @@ export class StatusBarComponent {
         let user : Observable<User> = userService.getObservableUser();
         user.subscribe(
           value => {
-            this.user = value.name;
+            this.userName = value.name;
           });
     }
 }
