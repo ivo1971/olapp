@@ -41,6 +41,12 @@ export class AppComponent implements OnInit {
             var toArray = [to];
             console.log("Route request to [" + to + "]");
             this.router.navigate(toArray);
+
+            //todo: move to the routes
+            let mode = {
+              mode: to
+            }
+            this.websocketService.sendMsg("mode", mode);
           });
     }
 

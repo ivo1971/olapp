@@ -3,5 +3,7 @@
         {{user.name}} 
         <span *ngIf="0 != user.connected" class="glyphicon glyphicon-cloud"  aria-hidden="true"></span>
         <span *ngIf="0 == user.connected" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        :
+        {{user.mode}}
     </div>
 </div>
