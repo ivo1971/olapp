@@ -9,6 +9,7 @@ import {UserService}           from './services/user.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 import {EchoComponent}         from "./routes/echo/echo.component";
+import {SimpleButtonComponent} from "./routes/simple-button/simple-button.component";
 import {WelcomeComponent}      from "./routes/welcome/welcome.component";
 
 import {LoginComponent}        from "./components/login/login.component";
@@ -20,12 +21,16 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     FormsModule,
     RouterModule.forRoot([
       {
-        path: 'welcome',
-        component: WelcomeComponent
-      },
-      {
         path: 'echo',
         component: EchoComponent
+      },
+      {
+        path: 'simple-button',
+        component: SimpleButtonComponent
+      },
+      {
+        path: 'welcome',
+        component: WelcomeComponent
       },
       {
         path: '',
@@ -43,6 +48,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     AppComponent,
     //routes
     EchoComponent,
+    SimpleButtonComponent,
     WelcomeComponent,
     //components
     LoginComponent,

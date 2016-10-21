@@ -1,6 +1,12 @@
-import {Injectable}       from '@angular/core';
+import {Injectable}            from '@angular/core';
+import {Observable}            from 'rxjs/Observable';
+import {Subject}               from 'rxjs/Subject';
 
-import {WebsocketService} from './websocket.service';
+import {WebsocketService}      from './websocket.service';
+
+interface SubjectMap {
+    [mi: string]: Subject<any>;
+}
 
 @Injectable()
 export class WebsocketMessageService extends WebsocketService {
@@ -9,6 +15,30 @@ export class WebsocketMessageService extends WebsocketService {
      */
     constructor() {
         super();
+        this.getObservable().subscribe(
+            msg => {
+                let mi: string = msg["mi"];
+                if(undefined === mi) {
+                    //reject
+                    return;
+                }
+                let miSubject : Subject<any> = this.subjectMap[mi];
+                if(undefined === miSubject) {
+                    //no subscribers for this MI
+                    return;
+                }
+                let data: string = msg["data"];
+                if(undefined === data) {
+                    //reject
+                    return;
+                }
+                miSubject.next(data);
+            }, 
+            error => {
+                console.log("Error result in WebsocketMessageService");
+            }
+        );
+        
     }    
 
     /**********************************************
@@ -23,6 +53,13 @@ export class WebsocketMessageService extends WebsocketService {
         this.send(msg);
     };
 
+    public register(mi: string) : Observable<any> {
+        if(undefined == this.subjectMap[mi]) {
+            this.subjectMap[mi] = new Subject<any>();
+        }
+        return this.subjectMap[mi].asObservable();
+    }
+
     /**********************************************
      * Private methods
      */
@@ -30,4 +67,5 @@ export class WebsocketMessageService extends WebsocketService {
     /**********************************************
      * Private members
      */
+    private subjectMap : SubjectMap = {};
 }

@@ -12,7 +12,9 @@ import {User}                 from './../../classes/user.class';
 export class WelcomeComponent { 
     private userName : string = "";
 
-    public constructor(private userService: UserService) { 
+    public constructor(
+        private userService : UserService
+        ) { 
         let user : Observable<User> = userService.getObservableUser();
         user.subscribe(
           value => {
