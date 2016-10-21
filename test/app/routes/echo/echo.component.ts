@@ -15,10 +15,6 @@ export class EchoComponent {
     private m_Message         : string;
 
     public constructor(private m_WebsocketService : WebsocketUserService) {
-        //this.m_WebsocketService.connect("ws://echo.websocket.org/");
-        //this.m_WebsocketService.connect("ws://192.168.0.69:8000/echo");
-        this.m_WebsocketService.connect("ws://192.168.0.69:8000/quiz");
-
         this.m_WebsocketService.getObservable().subscribe(
             result => {
                 this.m_WebsocketDatas.push(result);
