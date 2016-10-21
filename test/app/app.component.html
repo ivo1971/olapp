@@ -1,4 +1,6 @@
 <h1>Test OLApp</h1>
 
 <status-bar></status-bar>
-<router-outlet></router-outlet>
+
+<login         *ngIf="!userNameValid"></login>
+<router-outlet [hidden]="userNameValid"></router-outlet>

@@ -21,7 +21,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     RouterModule.forRoot([
       {
         path: 'welcome',
-        component: LoginComponent
+        component: WelcomeComponent
       },
       {
         path: 'echo',

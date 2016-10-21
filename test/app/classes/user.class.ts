@@ -22,6 +22,13 @@ export class User {
                 _this.store();
             });
         }
+        if (
+               (typeof(this.name) == "undefined") 
+            || (null == this.name) 
+            || ("null" == this.name)
+            ) {
+            this.name = "";
+        }
     }
 
     public store() : void {

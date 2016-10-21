@@ -24,6 +24,7 @@ export class UserService {
         this.user.name = name;
         this.user.store();
         console.log("UserService: set name to [" + this.user.name + "]");
+        this.subjectUser.next(this.user);
     };
 
     public getObservableUser() : Observable<User> {
