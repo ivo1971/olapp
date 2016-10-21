@@ -5,6 +5,7 @@ using namespace::std;
 CTeamManager::CTeamManager(void)
   : m_MapTeamMembers()
   , m_SignalTeamMembersChanged()
+  , m_SignalForwardToAllUsers()
 {
 }
 
@@ -42,7 +43,17 @@ void CTeamManager::TeamMemberDisconnected(const std::string id)
   m_SignalTeamMembersChanged();
 }
 
+void CTeamManager::ForwardToAllUsers(const std::string mi, const nlohmann::json::const_iterator citJsData)
+{
+  m_SignalForwardToAllUsers(mi, citJsData);
+}
+
 boost::signals2::connection CTeamManager::ConnectTeamMembersChanged(const Signal_t::slot_type& subscriber)
 {
   return m_SignalTeamMembersChanged.connect(subscriber);
+}
+
+boost::signals2::connection CTeamManager::ConnectForwardToAllUsers(const SignalForwardToAllUsers::slot_type& subscriber)
+{
+  return m_SignalForwardToAllUsers.connect(subscriber);
 }

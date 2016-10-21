@@ -45,6 +45,8 @@ void CWsQuizMasterHandler::onData(WebSocket* pConnection, const char* pData)
     const std::string mi       = GetElementString(jsonData, "mi");
     if(0 == mi.compare("getUsers")) {
       SendSockUsers(pConnection);
+    } else if(0 == mi.compare("route")) {
+      ForwardToAllUsers(mi, GetElement(jsonData, "data"));
     } else {
       m_spLogger->error("CWsQuizMasterHandler onData string unhandled type [%s].", mi.c_str());
     }
@@ -75,8 +77,14 @@ void CWsQuizMasterHandler::SendSockUsers(WebSocket* pConnection) const
     };
     jsonData["data"].push_back(jsonDataUser);
   }
-  m_spLogger->info("CWsQuizMasterHandler SendSockUsers [%s].", jsonData.dump().c_str());
-  pConnection->send(jsonData.dump());
+  const std::string jsonDataDump = jsonData.dump();
+  m_spLogger->info("CWsQuizMasterHandler SendSockUsers [%s].", jsonDataDump.c_str());
+  pConnection->send(jsonDataDump);
+}
+
+void CWsQuizMasterHandler::ForwardToAllUsers(const std::string mi, const json::const_iterator citJsonData)
+{
+  m_spTeamManager->ForwardToAllUsers(mi, citJsonData);
 }
 
 void CWsQuizMasterHandler::TeamMembersChanged(void) const
