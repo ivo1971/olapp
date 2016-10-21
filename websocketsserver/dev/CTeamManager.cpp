@@ -36,10 +36,24 @@ void CTeamManager::TeamMemberDisconnected(const std::string id)
   MapCTeamMemberIt it = m_MapTeamMembers.find(id);
   if(m_MapTeamMembers.end() == it) {
     //unknown member: ignore
-  } else {
-    //update member
-    it->second.SetConnected(false);
+    return;
   }
+
+  //update member
+  it->second.SetConnected(false);
+  m_SignalTeamMembersChanged();
+}
+
+void CTeamManager::SetMode(const std::string id, const std::string mode)
+{
+  MapCTeamMemberIt it = m_MapTeamMembers.find(id);
+  if(m_MapTeamMembers.end() == it) {
+    //unknown member: ignore
+    return;
+  }
+
+  //update member
+  it->second.SetMode(mode);
   m_SignalTeamMembersChanged();
 }
 

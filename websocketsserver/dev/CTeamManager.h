@@ -17,6 +17,7 @@ class CTeamManager {
    const MapCTeamMember&                  GetTeamMembers(void) const;
    void	                                  TeamMemberAdd(const std::string id, const CTeamMember& teamMember);
    void                                   TeamMemberDisconnected(const std::string id);
+   void                                   SetMode(const std::string id, const std::string mode);
    void                                   ForwardToAllUsers(const std::string mi, const nlohmann::json::const_iterator citJsData);
 
 

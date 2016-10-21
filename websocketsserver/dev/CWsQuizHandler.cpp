@@ -8,6 +8,7 @@ using namespace seasocks;
 CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager) 
   : m_spLogger(spLogger)
   , m_spTeamManager(spTeamManager)
+  , m_spModeBase()
   , m_MapSocketId()
   , m_TeamManagerConnectionForwardToAllUsers(m_spTeamManager->ConnectForwardToAllUsers(boost::bind(&CWsQuizHandler::ForwardToAllUsers, this, _1, _2)))
 {
@@ -17,6 +18,11 @@ CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger, std::shared_ptr<CTea
 CWsQuizHandler::~CWsQuizHandler(void) throw()
 {
   m_TeamManagerConnectionForwardToAllUsers.disconnect();
+}
+
+void CWsQuizHandler::SetModeHandler(std::shared_ptr<CModeBase> spModeBase)
+{
+  m_spModeBase = spModeBase;
 }
 
 void CWsQuizHandler::onConnect(WebSocket* pConnection)
@@ -55,6 +61,11 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
     if(0 == mi.compare("id")) {
       m_spLogger->info("CWsQuizHandler onData call HandleMiId.");
       HandleMiId(pConnection, GetElement(jsonData, "data"));
+    } else if(0 == mi.compare("mode")) {
+      m_spLogger->info("CWsQuizHandler onData call HandleMiMode.");
+      HandleMiMode(pConnection, GetElement(jsonData, "data"));
+    } else if(m_spModeBase) {
+      m_spModeBase->OnData(mi, GetElement(jsonData, "data"));
     } else {
       m_spLogger->error("CWsQuizHandler onData string unhandled type [%s].", mi.c_str());
     }
@@ -78,6 +89,24 @@ void CWsQuizHandler::HandleMiId(WebSocket* pConnection, const json::const_iterat
 
   //internal bookkeeping
   m_MapSocketId.insert(PairSocketId(pConnection, id));
+}
+
+void CWsQuizHandler::HandleMiMode(WebSocket* pConnection, const json::const_iterator citJsonData)
+{
+  //get socket
+  MapSocketIdCIt cit = m_MapSocketId.find(pConnection);
+  if(m_MapSocketId.end() == cit) {
+    return;
+  }
+  const std::string& id = cit->second.c_str();
+
+  //get info
+  const std::string mode = GetElementString(citJsonData, "mode");
+
+  //update team manager
+  m_spLogger->info("CWsQuizHandler HandleMiId in for id [%s] mode [%s].", id.c_str(), mode.c_str());
+  m_spTeamManager->SetMode(id, mode);
+  m_spLogger->info("CWsQuizHandler HandleMiId out for id [%s] mode [%s].", id.c_str(), mode.c_str());
 }
 
 void CWsQuizHandler::ForwardToAllUsers(const std::string mi, const json::const_iterator citJsData)

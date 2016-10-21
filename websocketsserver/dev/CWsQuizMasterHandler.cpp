@@ -73,7 +73,8 @@ void CWsQuizMasterHandler::SendSockUsers(WebSocket* pConnection) const
     m_spLogger->info("CWsQuizMasterHandler SendSockUsers user [%s].", cit->second.GetName().c_str());
     json jsonDataUser = {
       {"name",      cit->second.GetName()                 },
-      {"connected", cit->second.GetConnected() ? "1" : "0"}
+      {"connected", cit->second.GetConnected() ? "1" : "0"},
+      {"mode",      cit->second.GetMode()                 }
     };
     jsonData["data"].push_back(jsonDataUser);
   }

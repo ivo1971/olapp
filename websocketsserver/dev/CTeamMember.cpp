@@ -12,12 +12,14 @@
 CTeamMember::CTeamMember(const std::string& name, const bool connected /* = true */)
   : m_Name(name)
   , m_Connected(connected) 
+  , m_Mode("unknown")
 {
 }
 
 CTeamMember::CTeamMember(const CTeamMember& ref)
   : m_Name(ref.m_Name)
   , m_Connected(ref.m_Connected) 
+  , m_Mode(ref.m_Mode)
 {
 }
 
@@ -35,6 +37,11 @@ bool CTeamMember::GetConnected(void) const
   return m_Connected;
 }
 
+const std::string& CTeamMember::GetMode(void) const
+{
+  return m_Mode;
+}
+
 void CTeamMember::Update(const CTeamMember& ref)
 {
   m_Name      = ref.m_Name;
@@ -44,4 +51,9 @@ void CTeamMember::Update(const CTeamMember& ref)
 void CTeamMember::SetConnected(const bool connected)
 {
   m_Connected = connected;
+}
+
+void CTeamMember::SetMode(const std::string& mode)
+{
+  m_Mode = mode;
 }

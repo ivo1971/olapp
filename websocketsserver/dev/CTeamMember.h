@@ -13,14 +13,17 @@ class CTeamMember {
  public:
   const std::string& GetName(void) const;
   bool               GetConnected(void) const;
+  const std::string& GetMode(void) const;
   void               Update(const CTeamMember& ref);
   void               SetConnected(const bool connected);
+  void               SetMode(const std::string& mode);
 
  private:
   CTeamMember&       operator=(const CTeamMember& ref);
 
  private:
   std::string        m_Name;
+  std::string        m_Mode;
   bool               m_Connected;
 };
 
