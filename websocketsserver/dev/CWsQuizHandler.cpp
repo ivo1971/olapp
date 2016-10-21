@@ -8,13 +8,15 @@ using namespace seasocks;
 CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager) 
   : m_spLogger(spLogger)
   , m_spTeamManager(spTeamManager)
-  , m_MapSocketIt()
+  , m_MapSocketId()
+  , m_TeamManagerConnectionForwardToAllUsers(m_spTeamManager->ConnectForwardToAllUsers(boost::bind(&CWsQuizHandler::ForwardToAllUsers, this, _1, _2)))
 {
   m_spLogger->info("CWsQuizHandler handler constructed.");
 }
 
 CWsQuizHandler::~CWsQuizHandler(void) throw()
 {
+  m_TeamManagerConnectionForwardToAllUsers.disconnect();
 }
 
 void CWsQuizHandler::onConnect(WebSocket* pConnection)
@@ -27,15 +29,15 @@ void CWsQuizHandler::onDisconnect(WebSocket* pConnection)
   m_spLogger->info("CWsQuizHandler onDisconnect.");
 
   //internal bookkeeping
-  MapSocketIdCIt cit = m_MapSocketIt.find(pConnection);
-  if(m_MapSocketIt.end() != cit) {
+  MapSocketIdCIt cit = m_MapSocketId.find(pConnection);
+  if(m_MapSocketId.end() != cit) {
     m_spLogger->info("CWsQuizHandler onDisconnect found in map [%s].", cit->second.c_str());
 
     //inform team manager of this user's connection status change
     m_spTeamManager->TeamMemberDisconnected(cit->second);
 
     //delete socket from the map
-    m_MapSocketIt.erase(cit);
+    m_MapSocketId.erase(cit);
   }
 }
 
@@ -75,5 +77,17 @@ void CWsQuizHandler::HandleMiId(WebSocket* pConnection, const json::const_iterat
   m_spLogger->info("CWsQuizHandler HandleMiId out for id [%s] name [%s].", id.c_str(), name.c_str());
 
   //internal bookkeeping
-  m_MapSocketIt.insert(PairSocketId(pConnection, id));
+  m_MapSocketId.insert(PairSocketId(pConnection, id));
+}
+
+void CWsQuizHandler::ForwardToAllUsers(const std::string mi, const json::const_iterator citJsData)
+{
+  json jsonData;
+  jsonData["mi"]   = mi;
+  jsonData["data"] = *citJsData;
+  const std::string jsonDataDump = jsonData.dump();
+  m_spLogger->info("CWsQuizHandler ForwardToAllUsers [%u]: [%s].", m_MapSocketId.size(), jsonDataDump.c_str());
+  for(auto socketId : m_MapSocketId) {
+    socketId.first->send(jsonDataDump);
+  }
 }

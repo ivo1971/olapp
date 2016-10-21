@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 
+#include "boost/signals2.hpp"
 #include "json.hpp"
 #include "seasocks/PrintfLogger.h"
 #include "seasocks/WebSocket.h"
@@ -26,18 +27,20 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
   typedef MapSocketId::const_iterator                  MapSocketIdCIt;
 
  private:
-  virtual void                                         onConnect   (seasocks::WebSocket* pConnection) override;
-  virtual void                                         onDisconnect(seasocks::WebSocket* pConnection) override;
-  virtual void                                         onData      (seasocks::WebSocket* pConnection, const uint8_t* pData, size_t length) override;
-  virtual void                                         onData      (seasocks::WebSocket* pConnection, const char* pData) override;
+  virtual void                                         onConnect        (seasocks::WebSocket* pConnection) override;
+  virtual void                                         onDisconnect     (seasocks::WebSocket* pConnection) override;
+  virtual void                                         onData           (seasocks::WebSocket* pConnection, const uint8_t* pData, size_t length) override;
+  virtual void                                         onData           (seasocks::WebSocket* pConnection, const char* pData) override;
 
  private:
-  void                                                 HandleMiId  (seasocks::WebSocket* pConnection, const nlohmann::json::const_iterator citJsonData);
+  void                                                 HandleMiId       (seasocks::WebSocket* pConnection, const nlohmann::json::const_iterator citJsonData);
+  void                                                 ForwardToAllUsers(const std::string mi, const nlohmann::json::const_iterator citJsData);
 
  private:
   std::shared_ptr<seasocks::Logger>                    m_spLogger;
   std::shared_ptr<CTeamManager>                        m_spTeamManager;
-  MapSocketId                                          m_MapSocketIt;
+  MapSocketId                                          m_MapSocketId;
+  boost::signals2::connection                          m_TeamManagerConnectionForwardToAllUsers;
 };
 
 #endif //#ifndef __WSQUIZHANDLER__H__

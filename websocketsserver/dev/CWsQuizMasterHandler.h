@@ -38,6 +38,7 @@ class CWsQuizMasterHandler: public seasocks::WebSocket::Handler {
  //functions that will send a message to the provided connection
  private:
   void                               SendSockUsers(seasocks::WebSocket* pConnection) const;
+  void                               ForwardToAllUsers(const std::string mi, const nlohmann::json::const_iterator citJsData);
 
   //signal handlers
  private:
