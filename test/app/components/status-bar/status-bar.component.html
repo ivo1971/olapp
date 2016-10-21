@@ -1,15 +1,13 @@
-<div class="container">
-  <div class="row">
-    <div class="col-sm-4 text-left">
-        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
-    </div>
-    <div class="col-sm-4 text-center">
-    </div>
-    <div class="col-sm-4 text-right">
-        <span                    class="glyphicon glyphicon-cloud error"  aria-hidden="true"></span>
-        <span *ngIf="connected"  class="glyphicon glyphicon-signal ok"    aria-hidden="true"></span>
-        <span *ngIf="!connected" class="glyphicon glyphicon-signal error" aria-hidden="true"></span>
-    </div>
-  </div>
-</div>
+<table width="100%">
+  <tr>
+    <td>
+      <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
+    </td>
+    <td class="text-right">
+      <span                    class="glyphicon glyphicon-cloud error"  aria-hidden="true"></span>
+      <span *ngIf="connected"  class="glyphicon glyphicon-signal ok"    aria-hidden="true"></span>
+      <span *ngIf="!connected" class="glyphicon glyphicon-signal error" aria-hidden="true"></span>
+    </td>
+  </tr>
+</table>  
 <hr />
