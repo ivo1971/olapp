@@ -18,6 +18,7 @@ import {WelcomeComponent}      from "./routes/welcome/welcome.component";
 
 //Own components: components
 import {LoginComponent}        from "./components/login/login.component";
+import {MenuComponent}         from "./components/menu/menu.component";
 import {StatusBarComponent}    from "./components/status-bar/status-bar.component";
 
 //Module definition
@@ -61,6 +62,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     WelcomeComponent,
     //components
     LoginComponent,
+    MenuComponent,
     StatusBarComponent
   ],
   //Module you need to bootstrap

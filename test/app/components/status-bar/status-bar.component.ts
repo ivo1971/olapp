@@ -9,11 +9,15 @@ import {UserService }          from './../../services/user.service';
 @Component({
   moduleId   : module.id,
   selector   : 'status-bar',
+  styleUrls  : [
+      'status-bar.component.css',
+  ],
   templateUrl: 'status-bar.component.html'
 })
 export class StatusBarComponent { 
-    private connected : boolean = true;
-    private userName  : string  = "";
+    private menuClosed : boolean = true;
+    private connected  : boolean = true;
+    private userName   : string  = "";
 
     public constructor(
       private websocketUserService : WebsocketUserService,
@@ -29,5 +33,10 @@ export class StatusBarComponent {
           value => {
             this.userName = value.name;
           });
+    }
+
+    public toggleSideBar() : void {
+      console.log("toggleSideBar parent");
+      this.menuClosed = !this.menuClosed;
     }
 }
