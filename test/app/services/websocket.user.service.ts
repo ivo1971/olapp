@@ -1,4 +1,5 @@
 import {Injectable}              from '@angular/core';
+import {Observable}              from 'rxjs/Observable';
 
 import {User}                    from './../classes/user.class';
 import {UserService}             from './user.service';
@@ -11,6 +12,14 @@ export class WebsocketUserService extends WebsocketMessageService {
      */
     constructor(private userService : UserService) {
         super();
+
+        let user : Observable<User> = this.userService.getObservableUser();
+        user.subscribe(
+          value => {
+              this.user = value;
+              this.sendId();
+          }
+        );
     }    
 
     /**********************************************
@@ -18,23 +27,36 @@ export class WebsocketUserService extends WebsocketMessageService {
      */
 
     /**********************************************
-     * Private methods
+     * Protected methods
      */
     protected onOpen(evt) : void {
         console.log("WebsocketUserService CONNECTED");
-        let user : User = this.userService.getUser();
+        this.sendId();
+        super.onOpen(evt);
+    }
+
+    /**********************************************
+     * Private methods
+     */
+    private sendId() : void {
+        if(0 == this.user.name.length) {
+            //no valid user
+            //do not sent id
+            return;
+        }
+
         let data = {
             mi: "id",
             data: {
-                id: user.id,
-                name: user.name
+                id: this.user.id,
+                name: this.user.name
             }
         };
         this.prepareFront(data);
-        super.onOpen(evt);
     }
 
     /**********************************************
      * Private members
      */
+    private user : User = new User();
 }
