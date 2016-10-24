@@ -6,6 +6,8 @@ import {Router}                from '@angular/router';
 import {User}                  from './classes/user.class';
 
 import {UserService}           from './services/user.service';
+
+
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 @Component({
@@ -30,6 +32,7 @@ export class AppComponent implements OnInit {
         user.subscribe(
           value => {
             this.userNameValid = (0 !== value.name.length);
+            //connect to the server
             this.websocketConnect();
           }
         );
@@ -59,6 +62,7 @@ export class AppComponent implements OnInit {
       //connect as soon as all information is available
       if((this.userNameValid) && (0 != this.websocketAddress.length)) {
         this.websocketService.connect(this.websocketAddress);
+        this.websocketConnected = true;
       }
     }
 }

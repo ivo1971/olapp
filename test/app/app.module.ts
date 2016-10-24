@@ -1,5 +1,7 @@
 //Built-in modules
 import {BrowserModule}         from '@angular/platform-browser';
+import {CanActivate}           from '@angular/router';
+import {CanDeactivate}         from '@angular/router';
 import {FormsModule}           from '@angular/forms';
 import {NgModule}              from '@angular/core';
 import {RouterModule}          from '@angular/router';
@@ -8,16 +10,19 @@ import {RouterModule}          from '@angular/router';
 import {UserService}           from './services/user.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
+//Own providers: guards
+import {UsernameSetGuard}      from './providers/guards/username-set.guard';
+
 //Own components: application
 import {AppComponent}          from "./app.component";
 
 //Own components: routes
 import {EchoComponent}         from "./routes/echo/echo.component";
+import {LoginComponent}        from "./routes/login/login.component";
 import {SimpleButtonComponent} from "./routes/simple-button/simple-button.component";
 import {WelcomeComponent}      from "./routes/welcome/welcome.component";
 
 //Own components: components
-import {LoginComponent}        from "./components/login/login.component";
 import {MenuComponent}         from "./components/menu/menu.component";
 import {StatusBarComponent}    from "./components/status-bar/status-bar.component";
 
@@ -28,29 +33,50 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     BrowserModule, 
     FormsModule,
     RouterModule.forRoot([
+      //no need to be logged in before
       {
-        path: 'echo',
-        component: EchoComponent
+        path: 'login',
+        component: LoginComponent,
+        canDeactivate: [
+            UsernameSetGuard  
+        ]
       },
+      //these routes require pre-login
+      //(hence the canActivate-guard)
       {
-        path: 'simple-button',
-        component: SimpleButtonComponent
-      },
-      {
-        path: 'welcome',
-        component: WelcomeComponent
+        path: 'quiz',
+        canActivate: [
+            UsernameSetGuard  
+        ],
+        children : [
+          {
+            path: 'echo',
+            component: EchoComponent
+          },
+          {
+            path: 'simple-button',
+            component: SimpleButtonComponent
+          },
+          {
+            path: 'welcome',
+            component: WelcomeComponent,
+          },
+        ]
       },
       {
         path: '',
-        redirectTo: '/welcome',
+        redirectTo: '/quiz/welcome',
         pathMatch: 'full'
       },
     ])
   ],
   //Inject your own services
   providers: [
+    //services
     WebsocketUserService,
     UserService,
+    //guards
+    UsernameSetGuard,
   ],
   //Inject your own components
   declarations: [ 
