@@ -1,7 +1,9 @@
+.menu-item {
+  cursor: pointer;
+}
+
 /* -------------------------------- 
-
 xfilter 
-
 -------------------------------- */
 .filter {
   position: absolute;
@@ -37,7 +39,7 @@ xfilter
   left: 0;
   height: 50px;
   width: 100%;
-  background-color: #00A29B;
+  background-color: #009BD2;
   z-index: 2;
 }
 .filter form {
@@ -55,7 +57,7 @@ xfilter
   text-transform: uppercase;
   font-size: 1.3rem;
   text-align: center;
-  background: #00796B;
+  background-color: #004BC2;
   opacity: 0;
   -webkit-transition: opacity 0.3s;
   -moz-transition: opacity 0.3s;
@@ -119,7 +121,7 @@ xfilter
     transition: color 0.3s;
   }
   .no-touch .filter-trigger:hover {
-    color: #00A29B;
+    color: #009BA2;
   }
   .filter-trigger.filter-is-visible, .filter-trigger.filter-is-visible:hover {
     color: #ffffff;
