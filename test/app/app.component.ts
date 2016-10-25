@@ -8,8 +8,6 @@ import {Subscription}          from 'rxjs/Subscription';
 import {User}                  from './classes/user.class';
 
 import {UserService}           from './services/user.service';
-
-
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 @Component({
@@ -48,12 +46,6 @@ export class AppComponent implements OnInit, OnDestroy {
             var toArray = [to];
             console.log("Route request to [" + to + "]");
             this.router.navigate(toArray);
-
-            //todo: move to the routes
-            let mode = {
-              mode: to
-            }
-            this.websocketService.sendMsg("mode", mode);
           });
     }
 

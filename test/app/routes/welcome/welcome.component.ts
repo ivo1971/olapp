@@ -1,28 +1,39 @@
 import {Component}            from '@angular/core';
 import {Observable}           from 'rxjs/Observable';
+import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 
-import {UserService}          from './../../services/user.service';
 import {User}                 from './../../classes/user.class';
+import {ComponentBase}        from './../../classes/component-base.class';
+
+import {UserService}          from './../../services/user.service';
+import {WebsocketUserService} from './../../services/websocket.user.service';
 
 @Component({
     moduleId   : module.id,
     selector   : 'welcome',
     templateUrl: 'welcome.component.html'
 })
-export class WelcomeComponent implements OnDestroy { 
+export class WelcomeComponent extends ComponentBase implements OnInit, OnDestroy { 
     private userName         : string = "";
     private userObservable   : Observable<User>;
     private userSubscription : Subscription;
+    
     public constructor(
-        private userService : UserService
+        private _websocketUserService : WebsocketUserService,
+        private userService           : UserService
         ) { 
-        this.userObservable   = userService.getObservableUser();
+        super(_websocketUserService);
+    }
+
+    public ngOnInit() : void {
+        this.userObservable   = this.userService.getObservableUser();
         this.userSubscription = this.userObservable.subscribe(
-          value => {
-            this.userName = value.name;
-          });
+            value => {
+                this.userName = value.name;
+            });
+        this.sendLocation("welcome");
     }
 
     public ngOnDestroy() : void {
