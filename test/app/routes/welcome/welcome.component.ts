@@ -1,5 +1,7 @@
 import {Component}            from '@angular/core';
 import {Observable}           from 'rxjs/Observable';
+import {OnDestroy}            from '@angular/core';
+import {Subscription}         from 'rxjs/Subscription';
 
 import {UserService}          from './../../services/user.service';
 import {User}                 from './../../classes/user.class';
@@ -9,16 +11,21 @@ import {User}                 from './../../classes/user.class';
     selector   : 'welcome',
     templateUrl: 'welcome.component.html'
 })
-export class WelcomeComponent { 
-    private userName : string = "";
-
+export class WelcomeComponent implements OnDestroy { 
+    private userName         : string = "";
+    private userObservable   : Observable<User>;
+    private userSubscription : Subscription;
     public constructor(
         private userService : UserService
         ) { 
-        let user : Observable<User> = userService.getObservableUser();
-        user.subscribe(
+        this.userObservable   = userService.getObservableUser();
+        this.userSubscription = this.userObservable.subscribe(
           value => {
             this.userName = value.name;
           });
+    }
+
+    public ngOnDestroy() : void {
+        this.userSubscription.unsubscribe();
     }
 }

@@ -1,5 +1,7 @@
 import {Component}             from '@angular/core';
 import {Observable}            from 'rxjs/Observable';
+import {OnDestroy}            from '@angular/core';
+import {Subscription}          from 'rxjs/Subscription';
 
 import {User}                  from './../../classes/user.class';
 
@@ -14,25 +16,35 @@ import {UserService }          from './../../services/user.service';
   ],
   templateUrl: 'status-bar.component.html'
 })
-export class StatusBarComponent { 
-    private menuClosed : boolean = true;
-    private connected  : boolean = true;
-    private userName   : string  = "";
+export class StatusBarComponent implements OnDestroy { 
+    private menuClosed            : boolean = true;
+    private connected             : boolean = true;
+    private userName              : string  = "";
+
+    private connectedObservable   : Observable<boolean>;
+    private connectedSubscription : Subscription;
+    private userObservable        : Observable<User>;
+    private userSubscription      : Subscription;
 
     public constructor(
       private websocketUserService : WebsocketUserService,
       private userService : UserService
       ) {
-        let connected : Observable<boolean> = websocketUserService.getObservableConnected();
-        connected.subscribe(
+        this.connectedObservable   = websocketUserService.getObservableConnected();
+        this.connectedSubscription = this.connectedObservable.subscribe(
           value => {
             this.connected = value;
           });
-        let user : Observable<User> = userService.getObservableUser();
-        user.subscribe(
+        this.userObservable = userService.getObservableUser();
+        this.userSubscription = this.userObservable.subscribe(
           value => {
             this.userName = value.name;
           });
+    }
+
+    public ngOnDestroy() : void {
+        this.userSubscription.unsubscribe();
+        this.connectedSubscription.unsubscribe();
     }
 
     public toggleSideBar() : void {

@@ -7,9 +7,10 @@ import {Router}                from '@angular/router';
 import {User}                  from './../../classes/user.class';
 
 import {UserService}           from './../../services/user.service';
+import {LoginComponent}        from './../../routes/login/login.component';
 
 @Injectable()
-export class UsernameSetGuard implements CanActivate, CanDeactivate {
+export class UsernameSetGuard implements CanActivate, CanDeactivate<LoginComponent> {
     private userNameValid      : boolean         = false;
 
     public constructor(
@@ -41,7 +42,7 @@ export class UsernameSetGuard implements CanActivate, CanDeactivate {
     //This can happen when the user enters 
     //the login page again via the hamburger
     //menu.
-    public canDeactivate() {
+    public canDeactivate(target: LoginComponent) {
         return this.userNameValid;
     }
 }

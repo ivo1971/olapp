@@ -1,7 +1,9 @@
 import {Component}             from '@angular/core';
 import {Observable}            from 'rxjs/Observable';
 import {OnInit}                from '@angular/core';
+import {OnDestroy}             from '@angular/core';
 import {Router}                from '@angular/router';
+import {Subscription}          from 'rxjs/Subscription';
 
 import {User}                  from './classes/user.class';
 
@@ -15,11 +17,13 @@ import {WebsocketUserService}  from './services/websocket.user.service';
     selector   : 'test-app',
     templateUrl: 'app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     private userNameValid      : boolean         = false;
+    private userObservable     : Observable<User>;
+    private userSubscription   : Subscription    ; 
     private websocketConnected : boolean         = false;
     private websocketAddress   : string          = "ws://192.168.0.69:8000/quiz";
-    
+       
     public constructor(
       private websocketService : WebsocketUserService,
       private userService      : UserService,
@@ -28,8 +32,8 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit() {
-        let user : Observable<User> = this.userService.getObservableUser();
-        user.subscribe(
+        this.userObservable   = this.userService.getObservableUser();
+        this.userSubscription = this.userObservable.subscribe(
           value => {
             this.userNameValid = (0 !== value.name.length);
             //connect to the server
@@ -51,6 +55,10 @@ export class AppComponent implements OnInit {
             }
             this.websocketService.sendMsg("mode", mode);
           });
+    }
+
+    public ngOnDestroy() {
+      this.userSubscription.unsubscribe();
     }
 
     private websocketConnect() : void {
