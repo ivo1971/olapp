@@ -36,7 +36,6 @@ export class StatusBarComponent {
     }
 
     public toggleSideBar() : void {
-      console.log("toggleSideBar parent");
       this.menuClosed = !this.menuClosed;
     }
 }

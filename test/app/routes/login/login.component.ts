@@ -1,4 +1,5 @@
 import {Component}             from '@angular/core';
+import {Location}              from '@angular/common';
 import {Router}                from '@angular/router';
 
 import {UserService}           from './../../services/user.service';
@@ -10,16 +11,23 @@ import {UserService}           from './../../services/user.service';
 })
 export class LoginComponent {
   public constructor(
+    private router      : Router,
+    private location    : Location,
     private userService : UserService,
-    private router      : Router
     ) { 
-    this.userName = userService.getUser().name;
+      this.userName   = userService.getUser().name;
+      this.showCancel = (0 != this.userName.length) && (this.router.navigated); 
   }
 
   public setName() {
-    this.userService.setName(this.userName);
-    this.router.navigate(['/quiz/welcome']);
+      this.userService.setName(this.userName);
+      this.router.navigate(['/quiz/welcome']);
   }
 
-  private userName : string;
+  public cancel() {
+      this.location.back();
+  }
+
+  private userName   : string;
+  private showCancel : boolean = false;
 }

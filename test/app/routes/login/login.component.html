@@ -10,4 +10,8 @@ Please provide a username.
         <td></td>
         <td><button (click)="setName()">Set name</button></td>
     </tr>
+    <tr colspan="2" *ngIf="showCancel">
+        <td></td>
+        <td><button (click)="cancel()">Cancel</button></td>
+    </tr>
 </table>
