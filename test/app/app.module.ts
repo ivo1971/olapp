@@ -1,30 +1,31 @@
 //Built-in modules
-import {BrowserModule}         from '@angular/platform-browser';
-import {CanActivate}           from '@angular/router';
-import {CanDeactivate}         from '@angular/router';
-import {FormsModule}           from '@angular/forms';
-import {NgModule}              from '@angular/core';
-import {RouterModule}          from '@angular/router';
+import {BrowserModule}             from '@angular/platform-browser';
+import {CanActivate}               from '@angular/router';
+import {CanDeactivate}             from '@angular/router';
+import {FormsModule}               from '@angular/forms';
+import {NgModule}                  from '@angular/core';
+import {RouterModule}              from '@angular/router';
 
 //Own services
-import {UserService}           from './services/user.service';
-import {WebsocketUserService}  from './services/websocket.user.service';
+import {UserService}               from './services/user.service';
+import {WebsocketUserService}      from './services/websocket.user.service';
 
 //Own providers: guards
-import {UsernameSetGuard}      from './providers/guards/username-set.guard';
+import {UsernameSetGuard}          from './providers/guards/username-set.guard';
 
 //Own components: application
-import {AppComponent}          from "./app.component";
+import {AppComponent}              from "./app.component";
 
 //Own components: routes
-import {EchoComponent}         from "./routes/echo/echo.component";
-import {LoginComponent}        from "./routes/login/login.component";
-import {SimpleButtonComponent} from "./routes/simple-button/simple-button.component";
-import {WelcomeComponent}      from "./routes/welcome/welcome.component";
+import {EchoComponent}             from "./routes/echo/echo.component";
+import {LoginComponent}            from "./routes/login/login.component";
+import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
+import {SimpleButtonComponentData} from "./routes/simple-button/simple-button-data.component";
+import {WelcomeComponent}          from "./routes/welcome/welcome.component";
 
 //Own components: components
-import {MenuComponent}         from "./components/menu/menu.component";
-import {StatusBarComponent}    from "./components/status-bar/status-bar.component";
+import {MenuComponent}             from "./components/menu/menu.component";
+import {StatusBarComponent}        from "./components/status-bar/status-bar.component";
 
 //Module definition
 @NgModule({
@@ -85,6 +86,7 @@ import {StatusBarComponent}    from "./components/status-bar/status-bar.componen
     //routes
     EchoComponent,
     SimpleButtonComponent,
+    SimpleButtonComponentData,
     WelcomeComponent,
     //components
     LoginComponent,
