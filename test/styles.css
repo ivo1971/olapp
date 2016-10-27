@@ -1,22 +1,22 @@
 /* Master Styles */
+body.app {
+  margin: 10px;
+  overflow:hidden; /* hide scroll-bar's */
+  height: 100%;
+}
+
 h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 250%;
 }
+
 h2, h3 {
   color: #444;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
-body {
-  margin: 2em;
-}
 
-.error {
-    color: red;
-}
-
-.ok {
-    color: green;
+.fill { 
+    min-height: 100%;
 }

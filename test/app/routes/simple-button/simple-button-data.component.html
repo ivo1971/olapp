@@ -1,4 +1,10 @@
-{{data.background}}
-<div *ngFor="let team of data.teams">
-    {{team.name}} - {{team.background}}
+<div class="simple-button alert-{{data.background}} fill">
+    <div class="text-center fill">
+        <img src="./app/images/push.gif"    (click)="onPush()" height="150" *ngIf="!data.pressed"/>
+        <img src="./app/images/push-in.gif"                    height="150" *ngIf="data.pressed" />
+    </div>
+    <div *ngFor="let team of data.teams" class="alert alert-{{team.background}}">
+        <b>{{team.name}}</b><br />
+        <span *ngFor="let member of team.members">{{member}} </span><br />
+    </div>
 </div>
