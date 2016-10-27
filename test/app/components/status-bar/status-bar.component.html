@@ -7,9 +7,9 @@
       <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
     </td>
     <td class="text-right" width="10%">
-      <span                    class="glyphicon glyphicon-cloud error"  aria-hidden="true"></span>
-      <span *ngIf="connected"  class="glyphicon glyphicon-signal ok"    aria-hidden="true"></span>
-      <span *ngIf="!connected" class="glyphicon glyphicon-signal error" aria-hidden="true"></span>
+      <span                    class="glyphicon glyphicon-cloud  connection-error"  aria-hidden="true"></span>
+      <span *ngIf="connected"  class="glyphicon glyphicon-signal connection-ok   "    aria-hidden="true"></span>
+      <span *ngIf="!connected" class="glyphicon glyphicon-signal connection-error" aria-hidden="true"></span>
     </td>
   </tr>
 </table>  

@@ -1,4 +1,13 @@
 .hamburger {
     cursor: pointer;
     z-index: 3;
-};
+    color: #004BC2;
+}
+
+.connection-error {
+    color: red;
+}
+
+.connection-ok {
+    color: green;
+}
