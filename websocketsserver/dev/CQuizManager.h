@@ -19,6 +19,7 @@ class CQuizManager {
 
  private:
   void                              ThreadTest(void);
+  void                              ThreadTestOne(void);
   void                              ThreadWait(const time_t waitSec);
 
  private:
@@ -28,6 +29,8 @@ class CQuizManager {
   boost::signals2::connection       m_WsQuizHandlerDisconnectConnection;
   bool                              m_TestThreadStop;
   std::thread                       m_TestThread;
+  std::mutex                        m_Lock;
+  unsigned int                      m_NbrConnected;
 };
 
 #endif //__CQUIZMANAGER__H__
