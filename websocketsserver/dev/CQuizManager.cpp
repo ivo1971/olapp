@@ -91,14 +91,37 @@ void CQuizManager::ThreadTestOne(void)
       ThreadWait(5);
     }
 
-    //show the smart-button route
+    //show the simple-button route
     {
-      m_spLogger->info("CQuizManager [%s][%u] 'smart-button' route.", __FUNCTION__, __LINE__);
+      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' route.", __FUNCTION__, __LINE__);
       json data;
       data["to"] = "simple-button";
       m_spWsQuizHandler->SendMessage("route", data);
       ThreadWait(5);
     }
+
+    //init the simple-button route: not pressed
+    {
+      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
+      json data;
+      data["pressed"]    = false;
+      data["background"] = "info";
+      data["teams"]      = "";
+      m_spWsQuizHandler->SendMessage("simple-button", data);
+      ThreadWait(5);
+    }
+
+    //init the simple-button route: not pressed
+    {
+      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
+      json data;
+      data["pressed"]    = true;
+      data["background"] = "success";
+      data["teams"]      = "";
+      m_spWsQuizHandler->SendMessage("simple-button", data);
+      ThreadWait(5);
+    }
+
   } catch(exception& ex) {
     m_spLogger->info("CQuizManager [%s][%u] exception: %s.", __FUNCTION__, __LINE__, ex.what());
   } catch(...) {
