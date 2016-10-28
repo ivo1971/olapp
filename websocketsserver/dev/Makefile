@@ -35,7 +35,7 @@ server: $(OBJECTS)
 	$(CXX) -o server $(CFLAGS) $(CPPFLAGS) $(OBJECTS) $(LIBRARY_PATHS) $(LIBRARIES)
 
 clean:
-	rm -f server $(OBJECTS) $(DEPENDENCIES) *~
+	rm -rf server $(OBJECTS) $(DEPENDENCIES) .d *~
 
 #should be at the end of the makefile
 -include $(DEPENDENCIES)

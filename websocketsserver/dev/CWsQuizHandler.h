@@ -9,26 +9,14 @@
 #include "seasocks/PrintfLogger.h"
 #include "seasocks/WebSocket.h"
 
-#include "CModeBase.h"
-#include "CTeamManager.h"
-
 class CWsQuizHandler: public seasocks::WebSocket::Handler {
  public:
-                                                       CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CTeamManager> spTeamManager);
+                                                       CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger);
                                                        ~CWsQuizHandler(void) throw();
-
- public:
-						       void SetModeHandler(std::shared_ptr<CModeBase> spModeBase);
 
  private:
                                                        CWsQuizHandler(const CWsQuizHandler& ref);
   CWsQuizHandler                                       operator=(const CWsQuizHandler& ref) const;
-
- private:
-  typedef std::pair<seasocks::WebSocket*, std::string> PairSocketId;
-  typedef std::map <seasocks::WebSocket*, std::string> MapSocketId;
-  typedef MapSocketId::iterator                        MapSocketIdIt;
-  typedef MapSocketId::const_iterator                  MapSocketIdCIt;
 
  private:
   virtual void                                         onConnect        (seasocks::WebSocket* pConnection) override;
@@ -37,16 +25,7 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
   virtual void                                         onData           (seasocks::WebSocket* pConnection, const char* pData) override;
 
  private:
-  void                                                 HandleMiId       (seasocks::WebSocket* pConnection, const nlohmann::json::const_iterator citJsonData);
-  void                                                 HandleMiMode     (seasocks::WebSocket* pConnection, const nlohmann::json::const_iterator citJsonData);
-  void                                                 ForwardToAllUsers(const std::string mi, const nlohmann::json::const_iterator citJsData);
-
- private:
   std::shared_ptr<seasocks::Logger>                    m_spLogger;
-  std::shared_ptr<CTeamManager>                        m_spTeamManager;
-  std::shared_ptr<CModeBase>                           m_spModeBase;
-  MapSocketId                                          m_MapSocketId;
-  boost::signals2::connection                          m_TeamManagerConnectionForwardToAllUsers;
 };
 
 #endif //#ifndef __WSQUIZHANDLER__H__
