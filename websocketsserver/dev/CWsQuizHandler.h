@@ -14,6 +14,11 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
                                                        CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger);
                                                        ~CWsQuizHandler(void) throw();
 
+ public:
+  typedef boost::signals2::signal<void(const std::string mi, const nlohmann::json::const_iterator citJsData)> SignalMessage;
+  boost::signals2::connection                                                                                 ConnectSignalMessage(const SignalMessage::slot_type& subscriber);
+
+
  private:
                                                        CWsQuizHandler(const CWsQuizHandler& ref);
   CWsQuizHandler                                       operator=(const CWsQuizHandler& ref) const;
@@ -26,6 +31,7 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
 
  private:
   std::shared_ptr<seasocks::Logger>                    m_spLogger;
+  SignalMessage                                        m_SignalMessage;
 };
 
 #endif //#ifndef __WSQUIZHANDLER__H__

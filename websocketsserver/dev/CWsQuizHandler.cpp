@@ -5,8 +5,14 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
+/*****************************************************************************************
+ **
+ ** Construction/Destruction
+ **
+ *****************************************************************************************/
 CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger) 
   : m_spLogger(spLogger)
+  , m_SignalMessage()
 {
   m_spLogger->info("CWsQuizHandler handler constructed.");
 }
@@ -15,6 +21,27 @@ CWsQuizHandler::~CWsQuizHandler(void) throw()
 {
 }
 
+/*****************************************************************************************
+ **
+ ** Public signal conenctions
+ **
+ *****************************************************************************************/
+boost::signals2::connection CWsQuizHandler::ConnectSignalMessage(const SignalMessage::slot_type& subscriber)
+{
+  return m_SignalMessage.connect(subscriber);
+}
+
+/*****************************************************************************************
+ **
+ ** Public functions
+ **
+ *****************************************************************************************/
+
+/*****************************************************************************************
+ **
+ ** Private functions
+ **
+ *****************************************************************************************/
 void CWsQuizHandler::onConnect(WebSocket* pConnection)
 {
   m_spLogger->info("CWsQuizHandler [%s][%u].", __FUNCTION__, __LINE__);
@@ -39,7 +66,8 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
     if(0 == mi.compare("id")) {
       m_spLogger->info("CWsQuizHandler [%s][%u] string ID.", __FUNCTION__, __LINE__);
     } else {
-      m_spLogger->error("CWsQuizHandler onData string unhandled type [%s].", mi.c_str());
+      m_spLogger->info("CWsQuizHandler [%s][%u] string [%s] emit.", __FUNCTION__, __LINE__, mi.c_str());
+      m_SignalMessage(mi, GetElement(jsonData, "data"));
     }
   } catch(std::exception& ex) {
     m_spLogger->info("CWsQuizHandler [%s][%u] string exception: %s.", __FUNCTION__, __LINE__, ex.what());
