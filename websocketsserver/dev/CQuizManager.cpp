@@ -3,6 +3,7 @@
 
 #include "json.hpp"
 
+#include "CSimpleButtonInfo.h"
 #include "CQuizManager.h"
 
 using namespace std;
@@ -67,6 +68,8 @@ void CQuizManager::ThreadTest(void)
 
 void CQuizManager::ThreadTestOne(void)
 {
+  const unsigned int stepTimeSec = 3;
+
   try {
     //wait untill at least 1 client is connected
     //before starting the test
@@ -74,7 +77,7 @@ void CQuizManager::ThreadTestOne(void)
       m_spLogger->info("CQuizManager [%s][%u] wait for connections.", __FUNCTION__, __LINE__);
       bool cont = false;
       do {
-	ThreadWait(15);
+	ThreadWait(10);
 	m_Lock.lock();
 	cont = 0 == m_NbrConnected;
 	m_Lock.unlock();
@@ -88,7 +91,7 @@ void CQuizManager::ThreadTestOne(void)
       json data;
       data["to"] = "welcome";
       m_spWsQuizHandler->SendMessage("route", data);
-      ThreadWait(5);
+      ThreadWait(stepTimeSec);
     }
 
     //show the simple-button route
@@ -97,7 +100,7 @@ void CQuizManager::ThreadTestOne(void)
       json data;
       data["to"] = "simple-button";
       m_spWsQuizHandler->SendMessage("route", data);
-      ThreadWait(5);
+      ThreadWait(stepTimeSec);
     }
 
     //init the simple-button route: not pressed
@@ -108,10 +111,10 @@ void CQuizManager::ThreadTestOne(void)
       data["background"] = "info";
       data["teams"]      = "";
       m_spWsQuizHandler->SendMessage("simple-button", data);
-      ThreadWait(5);
+      ThreadWait(stepTimeSec);
     }
 
-    //init the simple-button route: not pressed
+    //init the simple-button route: pressed
     {
       m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
       json data;
@@ -119,7 +122,68 @@ void CQuizManager::ThreadTestOne(void)
       data["background"] = "success";
       data["teams"]      = "";
       m_spWsQuizHandler->SendMessage("simple-button", data);
-      ThreadWait(5);
+      ThreadWait(stepTimeSec);
+    }
+
+    CSimpleButtonInfo simpleButtonInfo;
+
+    //simple-button: add a team with 1 member
+    {
+      simpleButtonInfo.TeamAdd("team 1");
+      simpleButtonInfo.TeamMembersAdd("team 1", "team 1 member 1");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: add a second team with 1 member
+    {
+      simpleButtonInfo.TeamAdd("team 2");
+      simpleButtonInfo.TeamMembersAdd("team 2", "team 2 member 1");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: add a member to the first team
+    {
+      simpleButtonInfo.TeamMembersAdd("team 1", "team 1 member 2");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: add a member to the second team
+    {
+      simpleButtonInfo.TeamMembersAdd("team 2", "team 2 member 2");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: add a third team with 1 member
+    {
+      simpleButtonInfo.TeamAdd("team 3");
+      simpleButtonInfo.TeamMembersAdd("team 3", "team 2 member 1");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: remove the first team
+    {
+      simpleButtonInfo.TeamRemove("team 1");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: remove the second team
+    {
+      simpleButtonInfo.TeamRemove("team 2");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
+    }
+
+    //simple-button: remove the third team
+    {
+      simpleButtonInfo.TeamRemove("team 3");
+      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+      ThreadWait(stepTimeSec);
     }
 
   } catch(exception& ex) {
