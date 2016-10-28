@@ -13,6 +13,9 @@ import {WebsocketUserService}  from './services/websocket.user.service';
 @Component({
     moduleId   : module.id,
     selector   : 'test-app',
+    styleUrls  : [
+        'app.component.css',
+    ],
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
@@ -20,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private userObservable     : Observable<User>;
     private userSubscription   : Subscription    ; 
     private websocketConnected : boolean         = false;
-    private websocketAddress   : string          = "ws://192.168.0.69:8000/quiz";
+    private websocketAddress   : string          = "ws://192.168.0.67:8000/quiz";
        
     public constructor(
       private websocketService : WebsocketUserService,
@@ -42,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
         //register routing MI
         this.websocketService.register("route").subscribe(
           value => {
-            var to : string = value.to;
+            var to : string = "/quiz/" + value.to;
             var toArray = [to];
             console.log("Route request to [" + to + "]");
             this.router.navigate(toArray);

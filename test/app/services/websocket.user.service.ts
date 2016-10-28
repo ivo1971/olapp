@@ -30,7 +30,7 @@ export class WebsocketUserService extends WebsocketMessageService {
      * Protected methods
      */
     protected onOpen(evt) : void {
-        console.log("WebsocketUserService CONNECTED");
+        //console.log("WebsocketUserService CONNECTED");
         this.sendId();
         super.onOpen(evt);
     }

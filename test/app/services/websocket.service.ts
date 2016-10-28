@@ -28,7 +28,7 @@ export class WebsocketService {
     }
 
     public send(data) : void {
-        console.log("WebsocketService send: " + JSON.stringify(data));
+        //console.log("WebsocketService send: " + JSON.stringify(data));
         this.m_SendQueue.push(data);
         this.fireQueue();
     };
@@ -45,7 +45,7 @@ export class WebsocketService {
      * Protected methods
      */
     protected prepareFront(data) : void {
-        console.log("WebsocketService prepareFront: " + JSON.stringify(data));
+        //console.log("WebsocketService prepareFront: " + JSON.stringify(data));
         this.m_SendQueue.unshift(data);
     }
     
@@ -53,7 +53,7 @@ export class WebsocketService {
      * Private methods
      */
     private connectAttempt() : void {
-        console.log("WebsocketService connect to [" + this.m_WsUri + "]");
+        //console.log("WebsocketService connect to [" + this.m_WsUri + "]");
         this.m_Websocket = new WebSocket(this.m_WsUri);
         this.m_Websocket.onopen = (evt : Event) => { 
             this.onOpen(evt); 
@@ -70,14 +70,14 @@ export class WebsocketService {
     }
 
     protected onOpen(evt) : void {
-        console.log("WebsocketService CONNECTED to [" + this.m_WsUri + "]");
+        //console.log("WebsocketService CONNECTED to [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = true;
         this.m_SubjectConnected.next(true);
         this.fireQueue();
     }
 
     private onClose(evt) : void {
-        console.log("WebsocketService DISCONNECTED from [" + this.m_WsUri + "]");
+        //console.log("WebsocketService DISCONNECTED from [" + this.m_WsUri + "]");
         this.m_WebsocketOpen = false;
         this.m_SubjectConnected.next(false);
         let timer = TimerObservable.create(2000,1000);
@@ -88,13 +88,13 @@ export class WebsocketService {
     }
 
     private onMessage(evt) : void {
-        console.log("WebsocketService MESSAGE: " + evt.data);
-        console.log(evt);
+        //console.log("WebsocketService MESSAGE: " + evt.data);
+        //console.log(evt);
         this.m_DataIn.next(JSON.parse(evt.data));
     }
 
     private onError(evt) : void {
-        console.log("WebsocketService ERROR: " + evt.data);
+        //console.log("WebsocketService ERROR: " + evt.data);
         console.log(evt);
         this.m_WebsocketOpen = false;
         //TODO: reconnect?
@@ -102,12 +102,12 @@ export class WebsocketService {
 
     private fireQueue() : void {        
         if(!this.m_Websocket) {
-            console.log("WebsocketService fire: not connected");
+            //console.log("WebsocketService fire: not connected");
         }
 
         while (this.m_WebsocketOpen && this.m_SendQueue.length) {
             let data = this.m_SendQueue.shift();
-            console.log("WebsocketService fire: sending " + JSON.stringify(data));
+            //console.log("WebsocketService fire: sending " + JSON.stringify(data));
             this.m_Websocket.send(JSON.stringify(data));
         }
     }

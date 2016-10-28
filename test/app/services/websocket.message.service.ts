@@ -45,7 +45,7 @@ export class WebsocketMessageService extends WebsocketService {
      * Public methods
      */
     public sendMsg(mi: string, data: any) : void {
-        console.log("WebsocketMessageService send [" + mi + "]: " + JSON.stringify(data));
+        //console.log("WebsocketMessageService send [" + mi + "]: " + JSON.stringify(data));
         let msg = {
             mi: mi,
             data: data
