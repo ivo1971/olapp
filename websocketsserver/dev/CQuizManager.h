@@ -14,8 +14,8 @@ class CQuizManager {
   ~CQuizManager(void) throw();
 
  private:
-  void                              HandleMessageQuiz(const std::string mi, const nlohmann::json::const_iterator citJsData);
-  void                              HandleDisconnectQuiz(const std::string id);
+  void                              HandleMessageQuiz   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+  void                              HandleDisconnectQuiz(const std::string& id);
 
  private:
   void                              ThreadTest(void);

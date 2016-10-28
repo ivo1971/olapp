@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <thread>
 
 #include "boost/signals2.hpp"
 #include "json.hpp"
@@ -11,15 +12,22 @@
 
 class CWsQuizHandler: public seasocks::WebSocket::Handler {
  public:
-                                                       CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger);
-                                                       ~CWsQuizHandler(void) throw();
+  CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<seasocks::Server> spServer);
+  ~CWsQuizHandler(void) throw();
 
  public:
-  typedef boost::signals2::signal<void(const std::string mi, const nlohmann::json::const_iterator citJsData)> SignalMessage;
-  boost::signals2::connection                                                                                 ConnectSignalMessage(const SignalMessage::slot_type& subscriber);
-  typedef boost::signals2::signal<void(const std::string id)>                                                 SignalDisconnect;
-  boost::signals2::connection                                                                                 ConnectSignalDisconnect(const SignalDisconnect::slot_type& subscriber);
+  typedef boost::signals2::signal<void(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)> SignalMessage;
+  boost::signals2::connection                                                                                                         ConnectSignalMessage(const SignalMessage::slot_type& subscriber);
+  typedef boost::signals2::signal<void(const std::string& id)>                                                                        SignalDisconnect;
+  boost::signals2::connection                                                                                                         ConnectSignalDisconnect(const SignalDisconnect::slot_type& subscriber);
 
+ public:
+  void                                                 SpSelfSet        (std::shared_ptr<CWsQuizHandler> self);
+  void                                                 SpSelfClear      (void);
+  void                                                 SendMessage      (                       const std::string& mi, const nlohmann::json::const_iterator citJsData);
+  void                                                 SendMessage      (                       const std::string& mi, const nlohmann::json&                data     );
+  void                                                 SendMessage      (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+  void                                                 SendMessage      (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
 
  private:
                                                        CWsQuizHandler(const CWsQuizHandler& ref);
@@ -39,9 +47,12 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
 
  private:
   std::shared_ptr<seasocks::Logger>                    m_spLogger;
+  std::shared_ptr<seasocks::Server>                    m_spServer;
   SignalMessage                                        m_SignalMessage;
   SignalDisconnect                                     m_SignalDisconnect;
   MapSocketId                                          m_MapSocketId;
+  std::thread::id                                      m_ServerThreadId;
+  std::shared_ptr<CWsQuizHandler>                      m_spSelf;
 };
 
 #endif //#ifndef __WSQUIZHANDLER__H__

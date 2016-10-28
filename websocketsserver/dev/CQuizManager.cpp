@@ -11,7 +11,7 @@ using namespace seasocks;
 CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler)
   : m_spLogger(spLogger)
   , m_spWsQuizHandler(spWsQuizHandler)
-  , m_WsQuizHandlerMessageConnection   (m_spWsQuizHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageQuiz,    this, _1, _2)))
+  , m_WsQuizHandlerMessageConnection   (m_spWsQuizHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageQuiz,    this, _1, _2, _3)))
   , m_WsQuizHandlerDisconnectConnection(m_spWsQuizHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectQuiz, this, _1)))
   , m_TestThreadStop(false)
   , m_TestThread(thread([=]{ThreadTest();}))
@@ -25,12 +25,12 @@ CQuizManager::~CQuizManager(void) throw()
   m_TestThread.join();
 }
 
-void CQuizManager::HandleMessageQuiz(const std::string mi, const json::const_iterator citJsData)
+void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& mi, const json::const_iterator citJsData)
 {
   m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizManager::HandleDisconnectQuiz(const std::string id)
+void CQuizManager::HandleDisconnectQuiz(const std::string& id)
 {
   m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
 }
