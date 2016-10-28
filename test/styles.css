@@ -1,6 +1,5 @@
 /* Master Styles */
 body.app {
-  margin: 10px;
   overflow:hidden; /* hide scroll-bar's */
   height: 100%;
 }
