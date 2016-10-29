@@ -3,7 +3,7 @@
         <img src="./app/images/push.gif"    (click)="onPush()" height="150" *ngIf="!pushed"/>
         <img src="./app/images/push-in.gif"                    height="150" *ngIf="pushed" />
     </div>
-    <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.alert-success]="i == 0" [class.alert-info]="i != 0">
+    <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.simple-button-success]="i == 0" [class.simple-button-warning]="i != 0">
         <b>{{team.name}}</b><br />
         <span *ngFor="let member of team.members; let j = index"><span *ngIf="0 != j">, </span>{{member}}</span><br />
     </div>

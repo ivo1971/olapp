@@ -20,7 +20,6 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
 })
 export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDestroy { 
     public pushed : boolean = false;
-    public active : boolean = true;
 
     public constructor(
       private _websocketService : WebsocketUserService,
@@ -47,34 +46,39 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         //unfortunately via JavaScript calls because the body element is
         //outside the root angular element)
         this.observableInfoSubscription = this.observableInfo.subscribe(data => {
-            console.log(data);
-
             //compare this user's team to the teams in the list to
             //detect whether the buttone has been pushed or not
+            let active           : boolean = false;
+            let firstActive      : boolean = false;
+            let firstActiveFound : boolean = false;
             if((data) && (data.teams)) {
                 let pushed : boolean = false;
-                let active : boolean = true;
                 for(let u = 0 ; u < data.teams.length ; ++u) {
                     if(this.user.team === data.teams[u].name) {
                         pushed = true;
                         active = data.teams[u].active;
+                        if(!firstActiveFound) {
+                           firstActive = true; 
+                        }
                         break;
+                    }
+
+                    if(data.teams[u].active) {
+                        firstActiveFound = true;
                     }
                 }
                 this.pushed = pushed;
-                this.active = active;
-            } else {
-                this.pushed = false;
-                this.active = true;
             }
 
             //set the overall background based upn the button status
-            let background : string = "info";
+            let background : string = "info"; //not pushed
             if(this.pushed) {
-                if(!this.active) {
-                    background = "danger";
+                if(!active) {
+                    background = "danger"; //pushed but no longer active
+                } else if(firstActive) {
+                    background = "success"; //pushed, active and first in the (active) list
                 } else {
-                    background = "success";
+                    background = "warning"; //pushed, active but not yet first in the (active) list
                 }
             }
             if(0 != this.bodyLastClass.length) {
