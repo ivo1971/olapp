@@ -23,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private userObservable     : Observable<User>;
     private userSubscription   : Subscription    ; 
     private websocketConnected : boolean         = false;
-    private websocketAddress   : string          = "ws://192.168.0.67:8000/quiz";
+    private websocketAddress   : string          = "ws://192.168.0.68:8000/quiz";
        
     public constructor(
       private websocketService : WebsocketUserService,

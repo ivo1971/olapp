@@ -13,7 +13,8 @@ import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
     templateUrl: 'simple-button-data.component.html'
 })
 export class SimpleButtonComponentData  { 
-    @Input() data    : SimpleButtonTeamInfo;
+    @Input() pushed : boolean              = false;
+    @Input() data   : SimpleButtonTeamInfo ;
 
     public onPush() : void {
         console.log("on push");

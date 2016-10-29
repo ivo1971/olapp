@@ -27,6 +27,9 @@ import {WelcomeComponent}          from "./routes/welcome/welcome.component";
 import {MenuComponent}             from "./components/menu/menu.component";
 import {StatusBarComponent}        from "./components/status-bar/status-bar.component";
 
+//Own components: pipes
+import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pipe";
+
 //Module definition
 @NgModule({
   //Inject built-in modules
@@ -91,7 +94,9 @@ import {StatusBarComponent}        from "./components/status-bar/status-bar.comp
     //components
     LoginComponent,
     MenuComponent,
-    StatusBarComponent
+    StatusBarComponent,
+    //filters
+    SimpleButtonActiveFilter
   ],
   //Module you need to bootstrap
   bootstrap:    [ 
