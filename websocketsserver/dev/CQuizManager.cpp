@@ -195,10 +195,9 @@ void CQuizManager::ThreadTestOne(void)
     {
       {
 	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' prepare new.", __FUNCTION__, __LINE__);
-	for(MapUserCIt citUser = m_Users.begin() ; m_Users.end() != citUser ; ++citUser) {
-	  json data;
-	  m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
-	}
+	json data;
+	m_spWsQuizHandler->SendMessage("simple-button", data);
+	ThreadWait(stepTimeSec);
       }
 
       CSimpleButtonInfo simpleButtonInfo;
@@ -213,11 +212,9 @@ void CQuizManager::ThreadTestOne(void)
 
     //clear the teams
     {
-      for(MapUserCIt citUser = m_Users.begin() ; m_Users.end() != citUser ; ++citUser) {
-	json data;
-	data["name"] = "";
-	m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
-      }
+      json data;
+      data["name"] = "";
+      m_spWsQuizHandler->SendMessage("team", data);
     }
 
   } catch(exception& ex) {
