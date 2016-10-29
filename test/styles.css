@@ -19,3 +19,19 @@ h2, h3 {
 .fill { 
     min-height: 100%;
 }
+
+.background-success {
+  border-color: #d6e9c6;
+}
+
+.background-info {
+  background-color: #d9edf7;  
+}
+
+.background-warning {
+  background-color: #fcf8e3;  
+}
+
+.background-danger {
+  background-color: #f2dede;
+}

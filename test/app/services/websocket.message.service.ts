@@ -25,11 +25,13 @@ export class WebsocketMessageService extends WebsocketService {
                 let miSubject : Subject<any> = this.subjectMap[mi];
                 if(undefined === miSubject) {
                     //no subscribers for this MI
+                    console.log("Unhandled MI [" + mi + "]");
                     return;
                 }
                 let data: string = msg["data"];
                 if(undefined === data) {
                     //reject
+                    console.log("Sinking MI [" + mi + "] without data");
                     return;
                 }
                 miSubject.next(data);

@@ -20,6 +20,7 @@ export class StatusBarComponent implements OnDestroy {
     private menuClosed            : boolean = true;
     private connected             : boolean = true;
     private userName              : string  = "";
+    private teamName              : string  = "";
 
     private connectedObservable   : Observable<boolean>;
     private connectedSubscription : Subscription;
@@ -39,6 +40,7 @@ export class StatusBarComponent implements OnDestroy {
         this.userSubscription = this.userObservable.subscribe(
           value => {
             this.userName = value.name;
+            this.teamName = value.team;
           });
     }
 

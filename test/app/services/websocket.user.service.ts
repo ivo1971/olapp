@@ -1,5 +1,6 @@
 import {Injectable}              from '@angular/core';
 import {Observable}              from 'rxjs/Observable';
+import {Subscription}            from 'rxjs/Subscription';
 
 import {User}                    from './../classes/user.class';
 import {UserService}             from './user.service';
@@ -20,7 +21,12 @@ export class WebsocketUserService extends WebsocketMessageService {
               this.sendId();
           }
         );
-    }    
+
+        //register and handle requests to set the team
+        this.register("team").subscribe(data => {
+            this.userService.setTeam(data.name);
+        });
+    }
 
     /**********************************************
      * Public methods
@@ -58,5 +64,5 @@ export class WebsocketUserService extends WebsocketMessageService {
     /**********************************************
      * Private members
      */
-    private user : User = new User();
+    private user             : User = new User();
 }

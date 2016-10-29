@@ -6,6 +6,9 @@
       </td>
       <td class="text-center" width="80%">
         <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
+        <span *ngIf="teamName">
+          - <span class="glyphicon glyphicon-tent" aria-hidden="true"></span> {{teamName}}
+        </span>
       </td>
       <td class="text-right" width="10%">
         <span                    class="glyphicon glyphicon-cloud  connection-error"  aria-hidden="true"></span>

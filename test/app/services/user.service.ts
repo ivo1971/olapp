@@ -27,6 +27,12 @@ export class UserService {
         this.subjectUser.next(this.user);
     };
 
+    public setTeam(team: string) : void {
+        this.user.team = team;
+        console.log("UserService: set team to [" + this.user.team + "]");
+        this.subjectUser.next(this.user);
+    };
+
     public getObservableUser() : Observable<User> {
         return this.observableUser;
     }
