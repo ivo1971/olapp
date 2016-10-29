@@ -1,7 +1,9 @@
 <div *ngIf="null !== data" class="simple-button">
     <div class="text-center">
-        <img src="./app/images/push.gif"    (click)="onPush()" height="150" *ngIf="!pushed"/>
-        <img src="./app/images/push-in.gif"                    height="150" *ngIf="pushed" />
+        <img src="./app/images/push.gif"    (click)="onPush()" height="150" width="150" *ngIf="!pushed && !wrong && !good" />
+        <img src="./app/images/push-in.gif"                    height="150" width="150" *ngIf="pushed  && !wrong && !good" />
+        <img src="./app/images/wrong.png"                      height="150" width="150" *ngIf="wrong"             />
+        <img src="./app/images/good.gif"                       height="150" width="150" *ngIf="good"              />
     </div>
     <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.simple-button-success]="i == 0" [class.simple-button-warning]="i != 0">
         <b>{{team.name}}</b><br />
@@ -9,5 +11,5 @@
     </div>
 </div>
 <div *ngIf="null === data" class="text-center">
-    <img src="./app/images/loading.gif" height="20%"/>
+    <img src="./app/images/loading.gif" height="150" />
 </div>

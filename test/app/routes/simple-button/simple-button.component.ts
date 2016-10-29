@@ -20,6 +20,8 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
 })
 export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDestroy { 
     public pushed : boolean = false;
+    public wrong  : boolean = false;
+    public good   : boolean = false;
 
     public constructor(
       private _websocketService : WebsocketUserService,
@@ -55,8 +57,9 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                 let pushed : boolean = false;
                 for(let u = 0 ; u < data.teams.length ; ++u) {
                     if(this.user.team === data.teams[u].name) {
-                        pushed = true;
-                        active = data.teams[u].active;
+                        pushed    = true;
+                        active    = data.teams[u].active;
+                        this.good = data.teams[u].good;
                         if(!firstActiveFound) {
                            firstActive = true; 
                         }
@@ -68,24 +71,32 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                     }
                 }
                 this.pushed = pushed;
+            } else {
+                this.pushed = false;
+                this.good   = false;
             }
 
             //set the overall background based upn the button status
-            let background : string = "info"; //not pushed
-            if(this.pushed) {
-                if(!active) {
-                    background = "danger"; //pushed but no longer active
-                } else if(firstActive) {
-                    background = "success"; //pushed, active and first in the (active) list
-                } else {
-                    background = "warning"; //pushed, active but not yet first in the (active) list
-                }
-            }
             if(0 != this.bodyLastClass.length) {
                 this.bodyElement.classList.remove(this.bodyLastClass);
             }
-            this.bodyLastClass = "background-" + background;
-            this.bodyElement.classList.add(this.bodyLastClass);
+            if(data) {
+                let background : string = "info"; //not pushed
+                if(this.pushed) {
+                    if(!active) {
+                        background = "danger"; //pushed but no longer active
+                        this.wrong = true;
+                    } else if(firstActive) {
+                        background = "success"; //pushed, active and first in the (active) list
+                    } else {
+                        background = "warning"; //pushed, active but not yet first in the (active) list
+                    }
+                } else {
+                    this.wrong = false;
+                }
+                this.bodyLastClass = "background-" + background;
+                this.bodyElement.classList.add(this.bodyLastClass);
+            }
         });
     }
 
