@@ -4,18 +4,12 @@ using namespace nlohmann;
 using namespace std;
 
 CSimpleButtonInfo::CSimpleButtonInfo(void)
-  : m_Pressed(false)
-  , m_Teams()
+  : m_Teams()
 {
 }
 
 CSimpleButtonInfo::~CSimpleButtonInfo(void) throw()
 {
-}
-
-void CSimpleButtonInfo::Pressed(const bool pressed)
-{
-  m_Pressed = pressed;
 }
 
 void CSimpleButtonInfo::TeamAdd(const std::string& team)
@@ -46,8 +40,6 @@ void CSimpleButtonInfo::TeamMembersAdd(const std::string& team, const std::strin
 json CSimpleButtonInfo::ToJson(void) const
 {
   json data;
-  data["pressed"]    = m_Pressed;
-  data["background"] = "warning";
   for(std::list<CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
     data["teams"].push_back(cit->ToJson());
   }

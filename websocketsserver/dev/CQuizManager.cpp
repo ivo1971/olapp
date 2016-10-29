@@ -139,28 +139,16 @@ void CQuizManager::ThreadTestOne(void)
       ThreadWait(stepTimeSec);
     }
 
-    //init the simple-button route: not pressed
+    //init the simple-button route
     {
       m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
       json data;
-      data["pressed"]    = false;
-      data["background"] = "info";
       data["teams"]      = "";
       m_spWsQuizHandler->SendMessage("simple-button", data);
       ThreadWait(stepTimeSec);
     }
 
-    //init the simple-button route: pressed
-    {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
-      json data;
-      data["pressed"]    = true;
-      data["background"] = "success";
-      data["teams"]      = "";
-      m_spWsQuizHandler->SendMessage("simple-button", data);
-      ThreadWait(stepTimeSec);
-    }
-
+    //simulate button-press info
     CSimpleButtonInfo simpleButtonInfo;
 
     //simple-button: add a team for each user

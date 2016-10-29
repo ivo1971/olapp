@@ -14,14 +14,12 @@ class CSimpleButtonInfo {
   ~CSimpleButtonInfo(void) throw();
 
  public:
-  void                             Pressed(const bool pressed);
   void                             TeamAdd(const std::string& team);
   void                             TeamRemove(const std::string& team);
   void                             TeamMembersAdd(const std::string& team, const std::string& name);
   nlohmann::json                   ToJson(void) const;
 
  private:
-  bool                             m_Pressed;
   std::list<CSimpleButtonTeamInfo> m_Teams; //has to be a list to keep the insert order
 };
 
