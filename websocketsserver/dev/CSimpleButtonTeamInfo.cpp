@@ -28,11 +28,10 @@ void CSimpleButtonTeamInfo::MembersClear(void)
   m_Members.clear();
 }
 
-json CSimpleButtonTeamInfo::ToJson(const bool first) const
+json CSimpleButtonTeamInfo::ToJson(void) const
 {
   json data;
   data["name"]       = m_Name;
-  data["background"] = first ? "success" : "info";
   data["members"]    = m_Members;
   return data;
 }

@@ -49,7 +49,7 @@ json CSimpleButtonInfo::ToJson(void) const
   data["pressed"]    = m_Pressed;
   data["background"] = "warning";
   for(std::list<CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
-    data["teams"].push_back(cit->ToJson(m_Teams.begin() == cit));
+    data["teams"].push_back(cit->ToJson());
   }
   return data;
 }

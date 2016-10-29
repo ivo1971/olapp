@@ -15,7 +15,7 @@ class CSimpleButtonTeamInfo {
   bool                   HasName(const std::string& name);
   void                   MembersAdd(const std::string& name);
   void                   MembersClear(void);
-  nlohmann::json         ToJson(const bool first) const;
+  nlohmann::json         ToJson(void) const;
 
  private:
   std::string            m_Name;
