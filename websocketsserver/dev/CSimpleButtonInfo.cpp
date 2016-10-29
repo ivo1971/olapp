@@ -20,25 +20,27 @@ void CSimpleButtonInfo::Pressed(const bool pressed)
 
 void CSimpleButtonInfo::TeamAdd(const std::string& team)
 {
-  m_Teams.insert(std::pair<std::string, CSimpleButtonTeamInfo>(team, CSimpleButtonTeamInfo(team)));
+  m_Teams.push_back(CSimpleButtonTeamInfo(team));
 }
 
 void CSimpleButtonInfo::TeamRemove(const std::string& team)
 {
-  std::map<string, CSimpleButtonTeamInfo>::iterator it = m_Teams.find(team);
-  if(m_Teams.end() == it) {
-    return;
+  for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
+    if(it->HasName(team)) {
+      m_Teams.erase(it);
+      return;
+    }
   }
-  m_Teams.erase(it);
 }
 
 void CSimpleButtonInfo::TeamMembersAdd(const std::string& team, const std::string& name)
 {
-  std::map<string, CSimpleButtonTeamInfo>::iterator it = m_Teams.find(team);
-  if(m_Teams.end() == it) {
-    return;
+  for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
+    if(it->HasName(team)) {
+      it->MembersAdd(name);
+      return;
+    }
   }
-  it->second.MembersAdd(name);
 }
 
 json CSimpleButtonInfo::ToJson(void) const
@@ -46,8 +48,8 @@ json CSimpleButtonInfo::ToJson(void) const
   json data;
   data["pressed"]    = m_Pressed;
   data["background"] = "warning";
-  for(std::map<string, CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
-    data["teams"].push_back(cit->second.ToJson(m_Teams.begin() == cit));
+  for(std::list<CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+    data["teams"].push_back(cit->ToJson(m_Teams.begin() == cit));
   }
   return data;
 }

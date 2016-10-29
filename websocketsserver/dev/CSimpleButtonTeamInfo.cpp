@@ -13,6 +13,11 @@ CSimpleButtonTeamInfo::~CSimpleButtonTeamInfo(void) throw()
 {
 }
 
+bool CSimpleButtonTeamInfo::HasName(const std::string& name)
+{
+  return name == m_Name;
+}
+
 void CSimpleButtonTeamInfo::MembersAdd(const std::string& name)
 {
   m_Members.push_back(name);

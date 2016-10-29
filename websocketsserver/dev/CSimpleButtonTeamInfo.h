@@ -12,6 +12,7 @@ class CSimpleButtonTeamInfo {
   ~CSimpleButtonTeamInfo(void) throw();
 
  public:
+  bool                   HasName(const std::string& name);
   void                   MembersAdd(const std::string& name);
   void                   MembersClear(void);
   nlohmann::json         ToJson(const bool first) const;
