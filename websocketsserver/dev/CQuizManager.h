@@ -27,7 +27,7 @@ class CQuizManager {
 
  private:
   void                              ThreadTest(void);
-  void                              ThreadTestOne(void);
+  void                              ThreadTestOne(const bool good);
   std::string                       ThreadUser2Team(const std::string& user);
   void                              ThreadWait(const time_t waitSec);
 

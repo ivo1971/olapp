@@ -7,6 +7,7 @@ CSimpleButtonTeamInfo::CSimpleButtonTeamInfo(const std::string& name)
   : m_Name(name)
   , m_Members()
   , m_Active(true)
+  , m_Good(false)
 {
 }
 
@@ -17,6 +18,11 @@ CSimpleButtonTeamInfo::~CSimpleButtonTeamInfo(void) throw()
 void CSimpleButtonTeamInfo::Deactivate(void)
 {
   m_Active = false;
+}
+
+void CSimpleButtonTeamInfo::Good(void)
+{
+  m_Good = true;
 }
 
 bool CSimpleButtonTeamInfo::HasName(const std::string& name)
@@ -37,9 +43,10 @@ void CSimpleButtonTeamInfo::MembersClear(void)
 json CSimpleButtonTeamInfo::ToJson(void) const
 {
   json data;
-  data["name"]       = m_Name;
-  data["members"]    = m_Members;
-  data["active"]     = m_Active;
+  data["name"]    = m_Name;
+  data["members"] = m_Members;
+  data["active"]  = m_Active;
+  data["good"]    = m_Good;
   return data;
 }
 

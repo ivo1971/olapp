@@ -75,13 +75,15 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
 void CQuizManager::ThreadTest(void)
 {
   m_spLogger->info("CQuizManager [%s][%u] in.", __FUNCTION__, __LINE__);
+  bool good = false;
   while(!m_TestThreadStop) {
-    ThreadTestOne();
+    ThreadTestOne(good);
+    good = !good;
   }
   m_spLogger->info("CQuizManager [%s][%u] out.", __FUNCTION__, __LINE__);
 }
 
-void CQuizManager::ThreadTestOne(void)
+void CQuizManager::ThreadTestOne(const bool good)
 {
   const unsigned int stepTimeSec = 2;
 
@@ -141,62 +143,92 @@ void CQuizManager::ThreadTestOne(void)
     }
 
     //simulate button-press info
-    CSimpleButtonInfo simpleButtonInfo;
-
-    //init the simple-button route
     {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
-      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
-      ThreadWait(stepTimeSec);
-    }
+      CSimpleButtonInfo simpleButtonInfo;
 
-    //simple-button: add a team for each user
-    {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add teams.", __FUNCTION__, __LINE__);
-      for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
-	simpleButtonInfo.TeamAdd(ThreadUser2Team(userNamesButton.front()));
-	simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), userNamesButton.front());
+      //init the simple-button route
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
+	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	ThreadWait(stepTimeSec);
+      }
+      
+      //simple-button: add a team for each user
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add teams.", __FUNCTION__, __LINE__);
+	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
+	  simpleButtonInfo.TeamAdd(ThreadUser2Team(userNamesButton.front()));
+	  simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), userNamesButton.front());
+	  m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	  ThreadWait(stepTimeSec);
+	}
+      }
+      
+      //simple-button: add second user for each team
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add second user.", __FUNCTION__, __LINE__);
+	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
+	  simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), "second");
+	  m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	  ThreadWait(stepTimeSec);
+	}
+      }
+      
+      //simple-button: deactivate teams
+      {
+	unsigned int nbrGood = good ? 1 : 0xFFFFFFFF;
+	unsigned int nbr     = 0;
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' deactivate.", __FUNCTION__, __LINE__);
+	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front(), ++nbr) {
+	  if(nbr < nbrGood) {
+	    simpleButtonInfo.TeamDeactivate(ThreadUser2Team(userNamesButton.front()));
+	    m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	    ThreadWait(stepTimeSec);
+	  } else {
+	    m_spLogger->info("CQuizManager [%s][%u] 'simple-button' GOOD.", __FUNCTION__, __LINE__);
+	    simpleButtonInfo.TeamGood(ThreadUser2Team(userNamesButton.front()));
+	    m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	    ThreadWait(stepTimeSec * 2);
+	    break;
+	  }
+	}
+      }
+      
+      //clear the simple-button route
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' reset.", __FUNCTION__, __LINE__);
+	simpleButtonInfo.Reset();
 	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
 	ThreadWait(stepTimeSec);
       }
     }
 
-    //simple-button: add second user for each team
+    //prepare for a new question
     {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add second user.", __FUNCTION__, __LINE__);
-      for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
-	simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), "second");
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' prepare new.", __FUNCTION__, __LINE__);
+	json data;
+	m_spWsQuizHandler->SendMessage("simple-button", data);
+	ThreadWait(stepTimeSec);
+      }
+
+      CSimpleButtonInfo simpleButtonInfo;
+
+      //init the simple-button route
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
 	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
 	ThreadWait(stepTimeSec);
       }
-    }
-
-    //simple-button: deactivate teams
-    {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' deactivate.", __FUNCTION__, __LINE__);
-      for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
-	simpleButtonInfo.TeamDeactivate(ThreadUser2Team(userNamesButton.front()));
-	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
-	ThreadWait(stepTimeSec);
-      }
-    }
-
-    //clear the simple-button route
-    {
-      m_spLogger->info("CQuizManager [%s][%u] 'simple-button' reset.", __FUNCTION__, __LINE__);
-      simpleButtonInfo.Reset();
-      m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
-      ThreadWait(stepTimeSec);
     }
 
     //clear the teams
     {
-      for(MapUserCIt citUser = m_Users.begin() ; m_Users.end() != citUser ; ++citUser) {
-	json data;
-	data["name"] = "";
-	m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
-      }
+      json data;
+      data["name"] = "";
+      m_spWsQuizHandler->SendMessage("team", data);
     }
+
   } catch(exception& ex) {
     m_spLogger->info("CQuizManager [%s][%u] exception: %s.", __FUNCTION__, __LINE__, ex.what());
   } catch(...) {

@@ -32,6 +32,16 @@ void CSimpleButtonInfo::TeamDeactivate(const std::string& team)
   }
 }
 
+void CSimpleButtonInfo::TeamGood(const std::string& team)
+{
+  for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
+    if(it->HasName(team)) {
+      it->Good();
+      return;
+    }
+  }
+}
+
 void CSimpleButtonInfo::TeamRemove(const std::string& team)
 {
   for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
