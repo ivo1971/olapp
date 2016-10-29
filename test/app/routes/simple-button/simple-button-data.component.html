@@ -3,9 +3,9 @@
         <img src="./app/images/push.gif"    (click)="onPush()" height="150" *ngIf="!data.pressed"/>
         <img src="./app/images/push-in.gif"                    height="150" *ngIf="data.pressed" />
     </div>
-    <div *ngFor="let team of data.teams" class="alert alert-{{team.background}}  background">
+    <div *ngFor="let team of data.teams; let i = index" class="alert background" [class.alert-success]="i == 0" [class.alert-info]="i != 0">
         <b>{{team.name}}</b><br />
-        <span *ngFor="let member of team.members; let i =index"><span *ngIf="0 != i">, </span>{{member}}</span><br />
+        <span *ngFor="let member of team.members; let j = index"><span *ngIf="0 != j">, </span>{{member}}</span><br />
     </div>
 </div>
 <div *ngIf="null === data" class="text-center">
