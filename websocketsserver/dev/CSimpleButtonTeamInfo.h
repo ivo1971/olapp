@@ -13,6 +13,7 @@ class CSimpleButtonTeamInfo {
 
  public:
   void                   Deactivate(void);
+  void                   Good(void);
   bool                   HasName(const std::string& name);
   void                   MembersAdd(const std::string& name);
   void                   MembersClear(void);
@@ -22,6 +23,7 @@ class CSimpleButtonTeamInfo {
   std::string            m_Name;
   std::list<std::string> m_Members;  
   bool                   m_Active;
+  bool                   m_Good;
 };
 
 #endif //__CSIMPLEBUTTONTEAMINFO__H__

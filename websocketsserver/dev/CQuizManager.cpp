@@ -75,13 +75,15 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
 void CQuizManager::ThreadTest(void)
 {
   m_spLogger->info("CQuizManager [%s][%u] in.", __FUNCTION__, __LINE__);
+  bool good = false;
   while(!m_TestThreadStop) {
-    ThreadTestOne();
+    ThreadTestOne(good);
+    good = !good;
   }
   m_spLogger->info("CQuizManager [%s][%u] out.", __FUNCTION__, __LINE__);
 }
 
-void CQuizManager::ThreadTestOne(void)
+void CQuizManager::ThreadTestOne(const bool good)
 {
   const unsigned int stepTimeSec = 2;
 
@@ -174,11 +176,21 @@ void CQuizManager::ThreadTestOne(void)
       
       //simple-button: deactivate teams
       {
+	unsigned int nbrGood = good ? 1 : 0xFFFFFFFF;
+	unsigned int nbr     = 0;
 	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' deactivate.", __FUNCTION__, __LINE__);
-	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
-	  simpleButtonInfo.TeamDeactivate(ThreadUser2Team(userNamesButton.front()));
-	  m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
-	  ThreadWait(stepTimeSec);
+	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front(), ++nbr) {
+	  if(nbr < nbrGood) {
+	    simpleButtonInfo.TeamDeactivate(ThreadUser2Team(userNamesButton.front()));
+	    m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	    ThreadWait(stepTimeSec);
+	  } else {
+	    m_spLogger->info("CQuizManager [%s][%u] 'simple-button' GOOD.", __FUNCTION__, __LINE__);
+	    simpleButtonInfo.TeamGood(ThreadUser2Team(userNamesButton.front()));
+	    m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	    ThreadWait(stepTimeSec * 2);
+	    break;
+	  }
 	}
       }
       
