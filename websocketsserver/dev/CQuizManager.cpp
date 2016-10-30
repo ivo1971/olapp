@@ -146,14 +146,16 @@ void CQuizManager::ThreadTestOne(const bool good)
     {
       CSimpleButtonInfo simpleButtonInfo;
 
-      //init the simple-button route
+      //arm
       {
-	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
-	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' arm.", __FUNCTION__, __LINE__);
+	json data = simpleButtonInfo.Arm();
+	m_spWsQuizHandler->SendMessage("simple-button", data);
 	ThreadWait(stepTimeSec);
       }
       
       //simple-button: add a team for each user
+      //(simulate button pushes)
       {
 	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add teams.", __FUNCTION__, __LINE__);
 	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
@@ -165,6 +167,7 @@ void CQuizManager::ThreadTestOne(const bool good)
       }
       
       //simple-button: add second user for each team
+      //(simulate button pushes)
       {
 	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add second user.", __FUNCTION__, __LINE__);
 	for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
@@ -172,6 +175,15 @@ void CQuizManager::ThreadTestOne(const bool good)
 	  m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
 	  ThreadWait(stepTimeSec);
 	}
+      }
+
+      //simple-button: simulate out-of-sequence message
+      {
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' out-of-sequence.", __FUNCTION__, __LINE__);
+	CSimpleButtonInfo simpleButtonInfoOutOfSequence;
+	json data = simpleButtonInfoOutOfSequence.Arm();
+	m_spWsQuizHandler->SendMessage("simple-button", data);
+	ThreadWait(stepTimeSec);
       }
       
       //simple-button: deactivate teams
@@ -195,29 +207,19 @@ void CQuizManager::ThreadTestOne(const bool good)
       }
       
       //clear the simple-button route
+      //(prepare for a new question)
       {
 	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' reset.", __FUNCTION__, __LINE__);
-	simpleButtonInfo.Reset();
-	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
-	ThreadWait(stepTimeSec);
-      }
-    }
-
-    //prepare for a new question
-    {
-      {
-	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' prepare new.", __FUNCTION__, __LINE__);
-	json data;
+	json data = simpleButtonInfo.Reset();
 	m_spWsQuizHandler->SendMessage("simple-button", data);
 	ThreadWait(stepTimeSec);
       }
 
-      CSimpleButtonInfo simpleButtonInfo;
-
-      //init the simple-button route
+      //arm again
       {
-	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' init.", __FUNCTION__, __LINE__);
-	m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+	m_spLogger->info("CQuizManager [%s][%u] 'simple-button' arm.", __FUNCTION__, __LINE__);
+	json data = simpleButtonInfo.Arm();
+	m_spWsQuizHandler->SendMessage("simple-button", data);
 	ThreadWait(stepTimeSec);
       }
     }

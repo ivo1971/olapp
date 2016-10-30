@@ -4,7 +4,8 @@ using namespace nlohmann;
 using namespace std;
 
 CSimpleButtonInfo::CSimpleButtonInfo(void)
-  : m_Teams()
+  : m_SequenceNbr(0)
+  , m_Teams()
 {
 }
 
@@ -12,9 +13,17 @@ CSimpleButtonInfo::~CSimpleButtonInfo(void) throw()
 {
 }
 
-void CSimpleButtonInfo::Reset(void)
+json CSimpleButtonInfo::Reset(void)
 {
+  m_SequenceNbr = 0;
   m_Teams.clear();
+  return ToJson(true);
+}
+
+json CSimpleButtonInfo::Arm(void)
+{
+  Reset();
+  return ToJson();
 }
 
 void CSimpleButtonInfo::TeamAdd(const std::string& team)
@@ -37,7 +46,8 @@ void CSimpleButtonInfo::TeamGood(const std::string& team)
   for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
     if(it->HasName(team)) {
       it->Good();
-      return;
+    } else {
+      it->Deactivate();
     }
   }
 }
@@ -62,9 +72,13 @@ void CSimpleButtonInfo::TeamMembersAdd(const std::string& team, const std::strin
   }
 }
 
-json CSimpleButtonInfo::ToJson(void) const
+json CSimpleButtonInfo::ToJson(const bool noSequenceIncrement /* = false */) const
 {
   json data;
+  if(!noSequenceIncrement) {
+    ++m_SequenceNbr;
+  }
+  data["seqNbr"] = m_SequenceNbr;
   if(0 != m_Teams.size()) {
     for(std::list<CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
       data["teams"].push_back(cit->ToJson());
