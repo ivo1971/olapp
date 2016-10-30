@@ -95,6 +95,15 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.connectedSubscription.unsubscribe();
     }
 
+    /* Event handlers called from the template
+     */
+    public onPush() : void {
+        console.log("on push");
+        this._websocketService.sendMsg("simple-button", {
+            push: 1
+        });
+    }
+
     /* Private functions
      */
     private filterSimpleButton(data : any) : boolean {

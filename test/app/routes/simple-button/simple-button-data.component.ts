@@ -14,8 +14,4 @@ import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
 })
 export class SimpleButtonComponentData  { 
     @Input() data   : SimpleButtonTeamInfo ;
-
-    public onPush() : void {
-        console.log("on push");
-    }
 }
