@@ -3,10 +3,10 @@
         <table>
             <tr>
                 <td>
-                    <img src="app/images/good.gif"  height="35px" *ngIf="team.good"                  />
-                    <img src="app/images/wrong.gif" height="35px" *ngIf="team.wrong"                 />
-                    <img src="app/images/go.gif"    height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i === 0)" />
-                    <img src="app/images/wait.gif"  height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i !== 0)" />
+                    <img src="./app/images/good.gif"  height="35px" *ngIf="team.good"                  />
+                    <img src="./app/images/wrong.gif" height="35px" *ngIf="team.wrong"                 />
+                    <img src="./app/images/go.gif"    height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i === 0)" />
+                    <img src="./app/images/wait.gif"  height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i !== 0)" />
                 </td>
                 <td>
                     <b>{{team.name}}</b><br />

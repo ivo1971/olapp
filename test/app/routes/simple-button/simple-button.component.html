@@ -3,10 +3,11 @@
         <img src="./app/images/loading.gif" height="150" />
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
-        <img src="./app/images/push.gif"    (click)="onPush()" height="150" width="150" *ngIf="!pushed && !wrong && !good" />
-        <img src="./app/images/push-in.gif"                    height="150" width="150" *ngIf="pushed  && !wrong && !good" />
-        <img src="./app/images/wrong.png"                      height="150" width="150" *ngIf="wrong"                      />
-        <img src="./app/images/good.gif"                       height="150" width="150" *ngIf="good"                       />
+        <img src="./app/images/push.gif"  height="150" width="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" />
+        <img src="./app/images/wait.gif"  height="150" width="150" *ngIf="pushed  && !pushedFirst && !wrong && !good" (click)="onPush()" />
+        <img src="./app/images/go.gif"    height="150" width="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good" />
+        <img src="./app/images/wrong.png" height="150" width="150" *ngIf="wrong"                                      />
+        <img src="./app/images/good.gif"  height="150" width="150" *ngIf="good"                                       />
     </span>
 </div>
 
@@ -23,4 +24,6 @@
     <img src="./app/images/push-in.gif" />
     <img src="./app/images/wrong.png"   />
     <img src="./app/images/good.gif"    />
+    <img src="./app/images/go.gif"      />
+    <img src="./app/images/wait.gif"    />
 </div>    

@@ -29,6 +29,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
      */
     private prevSequenceNbr : number  = 0;
     private pushed          : boolean = false;
+    private pushedFirst     : boolean = false;
     private wrong           : boolean = false;
     private good            : boolean = false;
 
@@ -159,6 +160,9 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                     //pushed
                     userOnList  = true;
                     this.pushed = true;
+                    if(!firstActiveFound) {
+                        this.pushedFirst = true;
+                    }
 
                     //check if the team is still active,
                     //if it is not: the team timed out or
@@ -202,9 +206,10 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     private reset(background : string) : void {
         console.log("reset");
-        this.pushed = false;
-        this.wrong  = false;
-        this.good   = false;
+        this.pushed      = false;
+        this.pushedFirst = false;
+        this.wrong       = false;
+        this.good        = false;
         this.backgroundSet(background);
     }
 
