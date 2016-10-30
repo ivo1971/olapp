@@ -61,6 +61,21 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.observableInfoSubscription = this.observableInfo.subscribe(data => {
             this.handleSimpleButton(data);
         });
+
+        //subscribe for status info,
+        //when the connection is lost: reset
+        //so the next incoming message will alwasy be
+        //processed as the first (not rejected because
+        //of the sequence number)
+        this.connectedSubscription = this._websocketService.getObservableConnected().subscribe(
+          connected => {
+              if(!connected) {
+                  this.reset(null);
+              }
+          });
+
+        //start clean
+        this.reset(null);
     }
 
     public ngOnDestroy() {
@@ -72,6 +87,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         //unsubscribe
         this.observableInfoSubscription.unsubscribe();
         this.userSubscription.unsubscribe();
+        this.connectedSubscription.unsubscribe();
     }
 
     /* Private functions
@@ -206,8 +222,9 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private members
      */
     private observableInfo             : Observable<SimpleButtonInfo>;
-    private observableInfoSubscription : Subscription;
-    private userSubscription           : Subscription;
+    private observableInfoSubscription : Subscription                ;
+    private userSubscription           : Subscription                ;
+    private connectedSubscription      : Subscription                ;
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
