@@ -36,3 +36,7 @@ h2, h3 {
   background-color: #e2cece;
   /* background-color: #f2dede; */
 }
+
+.preload {
+    display: none;
+}
