@@ -13,6 +13,7 @@ import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
 import {User}                  from './../../classes/user.class';
 
 import {UserService }          from './../../services/user.service';
+import {LogService }           from './../../services/log.service';
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
 @Component({
@@ -36,8 +37,9 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Construction
      */
     public constructor(
+      private userService       : UserService,
+      private logService        : LogService,
       private _websocketService : WebsocketUserService,
-      private userService : UserService
       ) {
           super(_websocketService);
     }
@@ -75,6 +77,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.connectedSubscription = this._websocketService.getObservableConnected().subscribe(
           connected => {
               if(!connected) {
+                  this.prevSequenceNbr = 0;
                   this.reset(null);
               }
           });
@@ -98,7 +101,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Event handlers called from the template
      */
     public onPush() : void {
-        console.log("on push");
+        this.logService.log("on push");
         this._websocketService.sendMsg("simple-button", {
             push: 1
         });
@@ -107,24 +110,24 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private functions
      */
     private filterSimpleButton(data : any) : boolean {
-        console.log("Simple button filter in");            
+        this.logService.log("Simple button filter in");            
         //check if data is available
         if(!data) {
-            console.error("Simple button filter sinking message without data");            
+            this.logService.error("Simple button filter sinking message without data");            
             return false;
         }
 
         //check and handle sequence number
         let sequenceNbr = data.seqNbr;
         if(0 == sequenceNbr) {
-            console.log("Simple-button filter allowing reset");
+            this.logService.log("Simple-button filter allowing reset");
             this.prevSequenceNbr = sequenceNbr;
             return true;
         } else if(this.prevSequenceNbr > sequenceNbr) {
-            console.warn("Simple-button filter sinking out-of-order [" + this.prevSequenceNbr + "] > [" + sequenceNbr + "]");
+            this.logService.warn("Simple-button filter sinking out-of-order [" + this.prevSequenceNbr + "] > [" + sequenceNbr + "]");
             return false;                
         }
-        console.log("Simple-button filter allowing message [" + sequenceNbr + "]");
+        this.logService.log("Simple-button filter allowing message [" + sequenceNbr + "]");
         this.prevSequenceNbr = sequenceNbr;
         return true;
     }
@@ -143,17 +146,17 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         // filterSimpleButton)
         let sequenceNbr = data.seqNbr;
         if(0 == data.seqNbr) {
-            console.warn("Simple-button reset");
+            this.logService.warn("Simple-button reset");
             this.reset(null);
             return;
         }
-        console.log("Simple-button handling message [" + sequenceNbr + "]");
+        this.logService.log("Simple-button handling message [" + sequenceNbr + "]");
 
         //check the teams info.
         //when there are no teams: reset 
         //(except the sequence number)
         if(!data.teams) {
-            console.log("Simple-button handling message [" + sequenceNbr + "]: no teams on the list");
+            this.logService.log("Simple-button handling message [" + sequenceNbr + "]: no teams on the list");
             this.reset("info");
             return;
         }
@@ -182,7 +185,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                     this.good = data.teams[u].good;
 
                     //set the background based upon the current state
-                    console.log("Simple-button handling message [" + sequenceNbr + "]: team found on the list (good: [" + this.good + "])(wrong: ["+ this.wrong +"])(first: [" + !firstActiveFound + "])");
+                    this.logService.log("Simple-button handling message [" + sequenceNbr + "]: team found on the list (good: [" + this.good + "])(wrong: ["+ this.wrong +"])(first: [" + !firstActiveFound + "])");
                     if(this.wrong) {
                         this.backgroundSet("danger");
                     } else if(this.good) {
@@ -203,7 +206,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                 //look for the first active team on the list
                 //as this has influence on this team's background
                 if(data.teams[u].active) {
-                    console.log("Simple-button handling message [" + sequenceNbr + "]: other prior team(s) found on the list");
+                    this.logService.log("Simple-button handling message [" + sequenceNbr + "]: other prior team(s) found on the list");
                     firstActiveFound = true;
                 }
             }
@@ -214,7 +217,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     }
 
     private reset(background : string) : void {
-        console.log("reset");
+        this.logService.debug("reset");
         this.pushed      = false;
         this.pushedFirst = false;
         this.wrong       = false;
@@ -223,7 +226,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     }
 
     private backgroundClear() : void {
-        console.log("backgroundClear");
+        this.logService.debug("backgroundClear");
         if(0 != this.bodyLastClass.length) {
             this.bodyElement.classList.remove(this.bodyLastClass);
             this.bodyLastClass = "";
@@ -232,7 +235,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     private backgroundSet(background : string) : void {
         //handle null
-        console.log("backgroundSet [" + background + "]");
+        this.logService.debug("backgroundSet [" + background + "]");
         if(!background) {
             this.backgroundClear();
             return;
@@ -241,10 +244,10 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         //detect changes to avoid needlesly changing the DOM
         let newClass : string = "background-" + background;
         if(newClass == this.bodyLastClass) {
-            console.log("backgroundSet [" + background + "] --> no change");
+            this.logService.debug("backgroundSet [" + background + "] --> no change");
             return;
         }
-        console.log("backgroundSet [" + this.bodyLastClass + "] --> [" + newClass + "]");
+        this.logService.debug("backgroundSet [" + this.bodyLastClass + "] --> [" + newClass + "]");
 
         //update the DOM
         this.backgroundClear();

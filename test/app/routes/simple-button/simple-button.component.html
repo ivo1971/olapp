@@ -8,11 +8,10 @@
         <img src="./app/images/go.gif"    height="150" width="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good" />
         <img src="./app/images/wrong.png" height="150" width="150" *ngIf="wrong"                                      />
         <img src="./app/images/good.gif"  height="150" width="150" *ngIf="good"                                       />
+        <div class="text-left">
+            <simple-button-data [data]="observableInfo | async"></simple-button-data>
+        </div>
     </span>
-</div>
-
-<div class="text-left">
-    <simple-button-data [data]="observableInfo | async"></simple-button-data>
 </div>
 
 <!-- ensure images are always in the DOM to avoid loading them over and over again

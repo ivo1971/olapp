@@ -7,6 +7,7 @@ import {NgModule}                  from '@angular/core';
 import {RouterModule}              from '@angular/router';
 
 //Own services
+import {LogService}                from './services/log.service';
 import {UserService}               from './services/user.service';
 import {WebsocketUserService}      from './services/websocket.user.service';
 
@@ -77,8 +78,9 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
   //Inject your own services
   providers: [
     //services
-    WebsocketUserService,
+    LogService,
     UserService,
+    WebsocketUserService,
     //guards
     UsernameSetGuard,
   ],
