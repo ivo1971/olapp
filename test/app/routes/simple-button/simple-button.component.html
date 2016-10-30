@@ -1,1 +1,25 @@
-<simple-button-data [pushed]="pushed" [wrong]="wrong" [good]="good" [data]="observableInfo | async"></simple-button-data>
+<div class="text-center">
+    <span *ngIf="prevSequenceNbr === 0">
+        <img src="./app/images/loading.gif" height="150" />
+    </span>
+    <span *ngIf="prevSequenceNbr !== 0">
+        <img src="./app/images/push.gif"    (click)="onPush()" height="150" width="150" *ngIf="!pushed && !wrong && !good" />
+        <img src="./app/images/push-in.gif"                    height="150" width="150" *ngIf="pushed  && !wrong && !good" />
+        <img src="./app/images/wrong.png"                      height="150" width="150" *ngIf="wrong"                      />
+        <img src="./app/images/good.gif"                       height="150" width="150" *ngIf="good"                       />
+    </span>
+</div>
+<div class="text-left">
+    <simple-button-data [data]="observableInfo | async"></simple-button-data>
+</div>
+
+<!-- ensure images are always in the DOM to avoid loading them over and over again
+     (wich seems to be happening in FireFox otherwise)
+     -->
+<div class="preload">
+    <img src="./app/images/loading.gif" />
+    <img src="./app/images/push.gif"    />
+    <img src="./app/images/push-in.gif" />
+    <img src="./app/images/wrong.png"   />
+    <img src="./app/images/good.gif"    />
+</div>    

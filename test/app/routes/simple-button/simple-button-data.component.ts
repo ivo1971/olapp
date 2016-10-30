@@ -13,9 +13,6 @@ import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
     templateUrl: 'simple-button-data.component.html'
 })
 export class SimpleButtonComponentData  { 
-    @Input() pushed : boolean              = false;
-    @Input() wrong  : boolean              = false;
-    @Input() good   : boolean              = false;
     @Input() data   : SimpleButtonTeamInfo ;
 
     public onPush() : void {

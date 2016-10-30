@@ -16,14 +16,19 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
 @Component({
     moduleId   : module.id,
     selector   : 'simple-button',
+    styleUrls  : [
+        'simple-button.component.css'
+    ],
     templateUrl: 'simple-button.component.html'
 })
 export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDestroy { 
-    /* Public variables: usable for the template
+    /* Private variables intended for the template
+     * (hence at the top)
      */
-    public pushed : boolean = false;
-    public wrong  : boolean = false;
-    public good   : boolean = false;
+    private prevSequenceNbr : number  = 0;
+    private pushed          : boolean = false;
+    private wrong           : boolean = false;
+    private good            : boolean = false;
 
     /* Construction
      */
@@ -81,7 +86,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private handleSimpleButton(data : SimpleButtonInfo) : void {
         //check if data is available
         if(!data) {
-            console.error("Simple button sinking message without data")
+            console.error("Simple button sinking message without data");            
             return;
         }
 
@@ -206,5 +211,4 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
-    private prevSequenceNbr            : number                      = 0;
 }
