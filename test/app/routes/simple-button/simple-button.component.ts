@@ -4,6 +4,8 @@ import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 
+import 'rxjs/add/operator/filter';
+
 import {ComponentBase}        from './../../classes/component-base.class';
 import {SimpleButtonInfo}     from './../../classes/simple-button-info.class';
 import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
@@ -46,9 +48,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.sendLocation("simple-button");
 
         //register routing MI
-        this.observableInfo = this._websocketService.register("simple-button");
+        this.observableInfo = this._websocketService
+                                    .register("simple-button")
+                                    .filter(data => this.filterSimpleButton(data));
 
-        //get user info
+        //get user info (name & team)
         this.userSubscription = this.userService.getObservableUser().subscribe(
           user => {
             this.user = user;
@@ -92,6 +96,29 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     /* Private functions
      */
+    private filterSimpleButton(data : any) : boolean {
+        console.log("Simple button filter in");            
+        //check if data is available
+        if(!data) {
+            console.error("Simple button filter sinking message without data");            
+            return false;
+        }
+
+        //check and handle sequence number
+        let sequenceNbr = data.seqNbr;
+        if(0 == sequenceNbr) {
+            console.log("Simple-button filter allowing reset");
+            this.prevSequenceNbr = sequenceNbr;
+            return true;
+        } else if(this.prevSequenceNbr > sequenceNbr) {
+            console.warn("Simple-button filter sinking out-of-order [" + this.prevSequenceNbr + "] > [" + sequenceNbr + "]");
+            return false;                
+        }
+        console.log("Simple-button filter allowing message [" + sequenceNbr + "]");
+        this.prevSequenceNbr = sequenceNbr;
+        return true;
+    }
+
     //this funciont evaluates 1 incoming simple-button message.
     //It should completely evaluate the message and act on it,
     //without any history. Except for the sequence number wich
@@ -100,24 +127,16 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     //Handling without history is important in case the device
     //loses connection a short time.
     private handleSimpleButton(data : SimpleButtonInfo) : void {
-        //check if data is available
-        if(!data) {
-            console.error("Simple button sinking message without data");            
-            return;
-        }
-
-        //check and handle sequence number
+        //handle sequence number 0
+        //(do not care about out-of-sequence, they have been filtered
+        // before this point by observable.filter calling
+        // filterSimpleButton)
         let sequenceNbr = data.seqNbr;
-        if(0 == sequenceNbr) {
+        if(0 == data.seqNbr) {
             console.warn("Simple-button reset");
-            this.prevSequenceNbr = 0;
             this.reset(null);
             return;
-        } else if(this.prevSequenceNbr > sequenceNbr) {
-            console.warn("Simple-button sinking out-of-order [" + this.prevSequenceNbr + "] > [" + sequenceNbr + "]");
-            return;                
         }
-        this.prevSequenceNbr = sequenceNbr;
         console.log("Simple-button handling message [" + sequenceNbr + "]");
 
         //check the teams info.
