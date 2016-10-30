@@ -7,6 +7,7 @@ export class SimpleButtonTeamInfo {
 }
 
 export class SimpleButtonInfo {
+    public seqNbr     : number                 = 99999999;
     public teams      : SimpleButtonTeamInfo[] = [];
 };
 

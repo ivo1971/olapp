@@ -19,10 +19,14 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'simple-button.component.html'
 })
 export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDestroy { 
+    /* Public variables: usable for the template
+     */
     public pushed : boolean = false;
     public wrong  : boolean = false;
     public good   : boolean = false;
 
+    /* Construction
+     */
     public constructor(
       private _websocketService : WebsocketUserService,
       private userService : UserService
@@ -30,6 +34,8 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
           super(_websocketService);
     }
 
+    /* Life-cycle hooks
+     */
     public ngOnInit() : void {
         //inform parent
         this.sendLocation("simple-button");
@@ -48,55 +54,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         //unfortunately via JavaScript calls because the body element is
         //outside the root angular element)
         this.observableInfoSubscription = this.observableInfo.subscribe(data => {
-            //compare this user's team to the teams in the list to
-            //detect whether the buttone has been pushed or not
-            let active           : boolean = false;
-            let firstActive      : boolean = false;
-            let firstActiveFound : boolean = false;
-            if((data) && (data.teams)) {
-                let pushed : boolean = false;
-                for(let u = 0 ; u < data.teams.length ; ++u) {
-                    if(this.user.team === data.teams[u].name) {
-                        pushed    = true;
-                        active    = data.teams[u].active;
-                        this.good = data.teams[u].good;
-                        if(!firstActiveFound) {
-                           firstActive = true; 
-                        }
-                        break;
-                    }
-
-                    if(data.teams[u].active) {
-                        firstActiveFound = true;
-                    }
-                }
-                this.pushed = pushed;
-            } else {
-                this.pushed = false;
-                this.good   = false;
-            }
-
-            //set the overall background based upn the button status
-            if(0 != this.bodyLastClass.length) {
-                this.bodyElement.classList.remove(this.bodyLastClass);
-            }
-            if(data) {
-                let background : string = "info"; //not pushed
-                if(this.pushed) {
-                    if(!active) {
-                        background = "danger"; //pushed but no longer active
-                        this.wrong = true;
-                    } else if(firstActive) {
-                        background = "success"; //pushed, active and first in the (active) list
-                    } else {
-                        background = "warning"; //pushed, active but not yet first in the (active) list
-                    }
-                } else {
-                    this.wrong = false;
-                }
-                this.bodyLastClass = "background-" + background;
-                this.bodyElement.classList.add(this.bodyLastClass);
-            }
+            this.handleSimpleButton(data);
         });
     }
 
@@ -111,10 +69,142 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.userSubscription.unsubscribe();
     }
 
+    /* Private functions
+     */
+    //this funciont evaluates 1 incoming simple-button message.
+    //It should completely evaluate the message and act on it,
+    //without any history. Except for the sequence number wich
+    //is required to catch potential races in the send mechanism
+    //on the server.
+    //Handling without history is important in case the device
+    //loses connection a short time.
+    private handleSimpleButton(data : SimpleButtonInfo) : void {
+        //check if data is available
+        if(!data) {
+            console.error("Simple button sinking message without data")
+            return;
+        }
+
+        //check and handle sequence number
+        let sequenceNbr = data.seqNbr;
+        if(0 == sequenceNbr) {
+            console.warn("Simple-button reset");
+            this.prevSequenceNbr = 0;
+            this.reset(null);
+            return;
+        } else if(this.prevSequenceNbr > sequenceNbr) {
+            console.warn("Simple-button sinking out-of-order [" + this.prevSequenceNbr + "] > [" + sequenceNbr + "]");
+            return;                
+        }
+        this.prevSequenceNbr = sequenceNbr;
+        console.log("Simple-button handling message [" + sequenceNbr + "]");
+
+        //check the teams info.
+        //when there are no teams: reset 
+        //(except the sequence number)
+        if(!data.teams) {
+            console.log("Simple-button handling message [" + sequenceNbr + "]: no teams on the list");
+            this.reset("info");
+            return;
+        }
+
+        //compare this user's team to the teams in the list to
+        //calculate the current state and act on it
+        {
+            let userOnList       : boolean = false;
+            let firstActiveFound : boolean = false;
+            for(let u = 0 ; u < data.teams.length ; ++u) {
+                if(this.user.team === data.teams[u].name) {
+                    //team is on the list, so the button has been
+                    //pushed
+                    userOnList  = true;
+                    this.pushed = true;
+
+                    //check if the team is still active,
+                    //if it is not: the team timed out or
+                    //answered wrong
+                    this.wrong = !data.teams[u].active;
+
+                    //check if the team has the 'good' flag
+                    this.good = data.teams[u].good;
+
+                    //set the background based upon the current state
+                    console.log("Simple-button handling message [" + sequenceNbr + "]: team found on the list (good: [" + this.good + "])(wrong: ["+ this.wrong +"])(first: [" + !firstActiveFound + "])");
+                    if(this.wrong) {
+                        this.backgroundSet("danger");
+                    } else if(this.good) {
+                        this.backgroundSet("success");
+                    } else if(!firstActiveFound) {
+                        //this team is the first on the list                        
+                        this.backgroundSet("success");
+                    } else {
+                        //team has pushed, but other teams
+                        //are preceding it on the list
+                        this.backgroundSet("warning");                        
+                    }
+
+                    //quit the loop as early as possible
+                    break;
+                }
+
+                //look for the first active team on the list
+                //as this has influence on this team's background
+                if(data.teams[u].active) {
+                    console.log("Simple-button handling message [" + sequenceNbr + "]: other prior team(s) found on the list");
+                    firstActiveFound = true;
+                }
+            }
+            if(!userOnList) {
+                this.reset("info");
+            }
+        }
+    }
+
+    private reset(background : string) : void {
+        console.log("reset");
+        this.pushed = false;
+        this.wrong  = false;
+        this.good   = false;
+        this.backgroundSet(background);
+    }
+
+    private backgroundClear() : void {
+        console.log("backgroundClear");
+        if(0 != this.bodyLastClass.length) {
+            this.bodyElement.classList.remove(this.bodyLastClass);
+            this.bodyLastClass = "";
+        }
+    }
+
+    private backgroundSet(background : string) : void {
+        //handle null
+        console.log("backgroundSet [" + background + "]");
+        if(!background) {
+            this.backgroundClear();
+            return;
+        }
+
+        //detect changes to avoid needlesly changing the DOM
+        let newClass : string = "background-" + background;
+        if(newClass == this.bodyLastClass) {
+            console.log("backgroundSet [" + background + "] --> no change");
+            return;
+        }
+        console.log("backgroundSet [" + this.bodyLastClass + "] --> [" + newClass + "]");
+
+        //update the DOM
+        this.backgroundClear();
+        this.bodyLastClass = newClass;
+        this.bodyElement.classList.add(this.bodyLastClass);
+    }
+
+    /* Private members
+     */
     private observableInfo             : Observable<SimpleButtonInfo>;
     private observableInfoSubscription : Subscription;
     private userSubscription           : Subscription;
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
+    private prevSequenceNbr            : number                      = 0;
 }
