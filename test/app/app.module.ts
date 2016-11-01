@@ -24,6 +24,7 @@ import {EchoComponent}             from "./routes/echo/echo.component";
 import {LoginComponent}            from "./routes/login/login.component";
 import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData} from "./routes/simple-button/simple-button-data.component";
+import {TestComponent}             from "./routes/test/test.component";
 import {WelcomeComponent}          from "./routes/welcome/welcome.component";
 
 //Own components: components
@@ -66,6 +67,10 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
             component: SimpleButtonComponent
           },
           {
+            path: 'test',
+            component: TestComponent,
+          },
+          {
             path: 'welcome',
             component: WelcomeComponent,
           },
@@ -96,6 +101,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     EchoComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
+    TestComponent,
     WelcomeComponent,
     //components
     LoginComponent,
