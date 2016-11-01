@@ -21,6 +21,7 @@ import {AppComponent}              from "./app.component";
 
 //Own components: routes
 import {AboutComponent}            from "./routes/about/about.component";
+import {ConfigurationComponent}    from "./routes/configuration/configuration.component";
 import {LoginComponent}            from "./routes/login/login.component";
 import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData} from "./routes/simple-button/simple-button-data.component";
@@ -82,6 +83,10 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
             path: 'about',
             component: AboutComponent
           },
+          {
+            path: 'configure',
+            component: ConfigurationComponent
+          },
         ]
       },
       {
@@ -107,6 +112,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     AppComponent,
     //routes
     AboutComponent,
+    ConfigurationComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
     TestComponent,

@@ -1,0 +1,31 @@
+<!-- input styling according to http://stackoverflow.com/questions/18838964/add-bootstrap-glyphicon-to-input-box -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 text-center">
+        <h4>Configureer</h4>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-lg-3 col-md-2 col-sm-3 col-xs-3">
+        Websocket server:
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6">
+        <div class="inner-addon left-addon">
+            <i class="glyphicon glyphicon-signal"></i>
+            <input type="text" class="form-control" [(ngModel)]="wsServer" required name="wsServer" id="wsServer" (keyup)="onWsServerChanged($event.target.value)"/>
+        </div>
+        <div [hidden]="wsServerValid" class="alert alert-danger">
+            Ongeldig IP adres.
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-2 col-sm-3 col-xs-3">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 text-center">
+        <button [disabled]="!wsServerValid" class="btn btn-info"    (click)="onConfigure()">Configureer</button>
+        <button                            class="btn btn-warning" (click)="onCancel()">Cancel</button>
+    </div>
+  </div>
+</div>

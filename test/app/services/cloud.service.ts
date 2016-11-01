@@ -52,6 +52,16 @@ export class CloudService {
         return this.observableConnected;
     }
 
+    public getWsAddress() : string {
+        return this.websocketAddress;
+    }
+
+    public setWsAddress(wsAddress : string) : void {
+        this.websocketAddress       = wsAddress;
+        this.websocketAddressManual = true;
+        this.websocketConnect();
+    }
+
     /**********************************************
      * Private methods
      */
@@ -66,10 +76,22 @@ export class CloudService {
     }
 
     private getWebsocketAddress() : void {
+        if(this.websocketAddressManual) {
+            //address has been overridden manually
+            //ignore request result
+            //(untill the app restarts)
+            return;
+        }
         this.http.get(this.cloudUrl)
                  .map((res : any) => res.json())
                  .subscribe(
                      res => {
+                        if(this.websocketAddressManual) {
+                            //address has been overridden manually
+                            //ignore request result
+                            //(untill the app restarts)
+                            return;
+                        }
                         this.logService.log("cloud-service getWebsocketAddress response");
                         if(!res.address) {
                             this.logService.error("cloud-service getWebsocketAddress no address");
@@ -78,9 +100,8 @@ export class CloudService {
                         }  else {                    
                             this.logService.log(res);
                             this.subjectConnected.next(true);
-                            let websocketAddress = "ws://" + res.address + ":8000/quiz";
-                            if(websocketAddress !== this.websocketAddress) {
-                                this.websocketAddress = websocketAddress;
+                            if(res.address !== this.websocketAddress) {
+                                this.websocketAddress = res.address;
                                 this.logService.log(this.websocketAddress);                     
                                 this.websocketConnect();
                             }
@@ -98,13 +119,14 @@ export class CloudService {
         //connect as soon as all information is available
         this.logService.debug("websocketConnect in");                     
         if((this.userNameValid) && (0 != this.websocketAddress.length)) {
+            let websocketUri = "ws://" + this.websocketAddress + ":8000/quiz";
             if(!this.websocketUserServiceConnectCalled) {
                 this.logService.debug("websocketConnect connect");                     
                 this.websocketUserServiceConnectCalled = true;
-                this.websocketUserService.connect(this.websocketAddress);
+                this.websocketUserService.connect(websocketUri);
             } else {
                 this.logService.debug("websocketConnect reconfigure");                     
-                this.websocketUserService.reconfigureUri(this.websocketAddress);
+                this.websocketUserService.reconfigureUri(websocketUri);
             }
         }
         this.logService.debug("websocketConnect out");                     
@@ -118,6 +140,7 @@ export class CloudService {
     private observableConnected               : Observable<boolean>      = this.subjectConnected.asObservable();
     private connectedSubscription             : Subscription             ; 
     private websocketAddress                  : string                   = "";
+    private websocketAddressManual            : boolean                  = false;
     private userNameValid                     : boolean                  = false;
     private userSubscription                  : Subscription             ; 
     private websocketUserServiceConnectCalled : boolean                  = false;

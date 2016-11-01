@@ -62,6 +62,7 @@ export class WebsocketService {
 
     private connectAttempt() : void {
         //console.log("WebsocketService connect to [" + this.m_WsUri + "]");
+        delete(this.m_Websocket);
         this.m_Websocket = new WebSocket(this.m_WsUri);
         this.m_Websocket.onopen = (evt : Event) => { 
             this.onOpen(evt); 

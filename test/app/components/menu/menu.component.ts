@@ -35,4 +35,9 @@ export class MenuComponent {
         this.router.navigate(['/configuration/about']);
         this.toggleMenu();
     }    
+
+    public onClickConfigure() : void {
+        this.router.navigate(['/configuration/configure']);
+        this.toggleMenu();
+    }    
 }
