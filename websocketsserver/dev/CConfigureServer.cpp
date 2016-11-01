@@ -56,9 +56,6 @@ void CConfigureServer::ThreadConfigure(void)
       fprintf(stdout, "\nsend configure server request: OK\n");
     }
 
-    /* Always cleanup */ 
-    curl_easy_cleanup(pCurl);
-  
     /* Free the custom headers */ 
     curl_slist_free_all(pChunk);
 
@@ -73,6 +70,10 @@ void CConfigureServer::ThreadConfigure(void)
       usleep(1000 * 1000);
     }
   }
+
+  /* Always cleanup */ 
+  curl_easy_cleanup(pCurl);
+  
   fprintf(stdout, "send configure server request thread out\n");
 }
 
