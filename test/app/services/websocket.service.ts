@@ -19,12 +19,12 @@ export class WebsocketService {
         if(this.m_Websocket) {
             throw new Error("WebsocketService already connected");
         }
-        let match = new RegExp('wss?:\/\/').test(wsUri);
-        if (!match) {
-            throw new Error("WebsocketService invalid url [" + wsUri + "provided");
-        }
-        this.m_WsUri = wsUri;
+        this.setUri(wsUri);
         this.connectAttempt();
+    }
+
+    public reconfigureUri(wsUri : string) : void {
+        this.setUri(wsUri);
     }
 
     public send(data) : void {
@@ -52,6 +52,14 @@ export class WebsocketService {
     /**********************************************
      * Private methods
      */
+    private setUri(wsUri : string) : void {
+        let match = new RegExp('wss?:\/\/').test(wsUri);
+        if (!match) {
+            throw new Error("WebsocketService invalid url [" + wsUri + "provided");
+        }
+        this.m_WsUri = wsUri;
+    }
+
     private connectAttempt() : void {
         //console.log("WebsocketService connect to [" + this.m_WsUri + "]");
         this.m_Websocket = new WebSocket(this.m_WsUri);

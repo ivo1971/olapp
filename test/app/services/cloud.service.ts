@@ -30,9 +30,7 @@ export class CloudService {
         this.userSubscription = this.userService.getObservableUser().subscribe(
           value => {
             this.userNameValid = (0 !== value.name.length);
-            if(!this.websocketUserServiceConnectCalled) {
-                this.websocketConnect();
-            }
+            this.websocketConnect();
           }
         );
 
@@ -100,9 +98,14 @@ export class CloudService {
         //connect as soon as all information is available
         this.logService.debug("websocketConnect in");                     
         if((this.userNameValid) && (0 != this.websocketAddress.length)) {
-            this.logService.debug("websocketConnect connect");                     
-            this.websocketUserServiceConnectCalled = true;
-            this.websocketUserService.connect(this.websocketAddress);
+            if(!this.websocketUserServiceConnectCalled) {
+                this.logService.debug("websocketConnect connect");                     
+                this.websocketUserServiceConnectCalled = true;
+                this.websocketUserService.connect(this.websocketAddress);
+            } else {
+                this.logService.debug("websocketConnect reconfigure");                     
+                this.websocketUserService.reconfigureUri(this.websocketAddress);
+            }
         }
         this.logService.debug("websocketConnect out");                     
     }
