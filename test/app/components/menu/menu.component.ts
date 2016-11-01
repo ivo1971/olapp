@@ -30,4 +30,9 @@ export class MenuComponent {
         this.router.navigate(['/login']);
         this.toggleMenu();
     }
+
+    public onClickAbout() : void {
+        this.router.navigate(['/configuration/about']);
+        this.toggleMenu();
+    }    
 }

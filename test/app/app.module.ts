@@ -20,6 +20,7 @@ import {UsernameSetGuard}          from './providers/guards/username-set.guard';
 import {AppComponent}              from "./app.component";
 
 //Own components: routes
+import {AboutComponent}            from "./routes/about/about.component";
 import {EchoComponent}             from "./routes/echo/echo.component";
 import {LoginComponent}            from "./routes/login/login.component";
 import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
@@ -50,7 +51,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
             UsernameSetGuard  
         ]
       },
-      //these routes require pre-login
+      //these routes require post-login
       //(hence the canActivate-guard)
       {
         path: 'quiz',
@@ -77,6 +78,18 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
         ]
       },
       {
+        path: 'configuration',
+        canActivate: [
+            UsernameSetGuard  
+        ],
+        children : [
+          {
+            path: 'about',
+            component: AboutComponent
+          },
+        ]
+      },
+      {
         path: '',
         redirectTo: '/quiz/welcome',
         pathMatch: 'full'
@@ -98,6 +111,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     //application
     AppComponent,
     //routes
+    AboutComponent,
     EchoComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
