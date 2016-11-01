@@ -3,10 +3,12 @@ import {BrowserModule}             from '@angular/platform-browser';
 import {CanActivate}               from '@angular/router';
 import {CanDeactivate}             from '@angular/router';
 import {FormsModule}               from '@angular/forms';
+import {HttpModule}                from "@angular/http";
 import {NgModule}                  from '@angular/core';
 import {RouterModule}              from '@angular/router';
 
 //Own services
+import {CloudService}              from './services/cloud.service';
 import {LogService}                from './services/log.service';
 import {UserService}               from './services/user.service';
 import {WebsocketUserService}      from './services/websocket.user.service';
@@ -37,6 +39,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
   imports: [
     BrowserModule, 
     FormsModule,
+    HttpModule,
     RouterModule.forRoot([
       //no need to be logged in before
       {
@@ -78,6 +81,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
   //Inject your own services
   providers: [
     //services
+    CloudService,
     LogService,
     UserService,
     WebsocketUserService,

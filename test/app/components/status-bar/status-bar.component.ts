@@ -1,12 +1,13 @@
 import {Component}             from '@angular/core';
 import {Observable}            from 'rxjs/Observable';
-import {OnDestroy}            from '@angular/core';
+import {OnDestroy}             from '@angular/core';
 import {Subscription}          from 'rxjs/Subscription';
 
 import {User}                  from './../../classes/user.class';
 
-import {WebsocketUserService } from './../../services/websocket.user.service';
+import {CloudService }         from './../../services/cloud.service';
 import {UserService }          from './../../services/user.service';
+import {WebsocketUserService } from './../../services/websocket.user.service';
 
 @Component({
   moduleId   : module.id,
@@ -17,24 +18,33 @@ import {UserService }          from './../../services/user.service';
   templateUrl: 'status-bar.component.html'
 })
 export class StatusBarComponent implements OnDestroy { 
-    private menuClosed            : boolean = true;
-    private connected             : boolean = true;
-    private userName              : string  = "";
-    private teamName              : string  = "";
+    private menuClosed                 : boolean = true;
+    private cloudConnected             : boolean = true;
+    private wsConnected                : boolean = true;
+    private userName                   : string  = "";
+    private teamName                   : string  = "";
 
-    private connectedObservable   : Observable<boolean>;
-    private connectedSubscription : Subscription;
-    private userObservable        : Observable<User>;
-    private userSubscription      : Subscription;
+    private cloudConnectedObservable   : Observable<boolean>;
+    private cloudConnectedSubscription : Subscription;
+    private wsConnectedObservable      : Observable<boolean>;
+    private wsConnectedSubscription    : Subscription;
+    private userObservable             : Observable<User>;
+    private userSubscription           : Subscription;
 
     public constructor(
-      private websocketUserService : WebsocketUserService,
-      private userService : UserService
+      private cloudService         : CloudService,
+      private userService          : UserService,
+      private websocketUserService : WebsocketUserService
       ) {
-        this.connectedObservable   = websocketUserService.getObservableConnected();
-        this.connectedSubscription = this.connectedObservable.subscribe(
+        this.wsConnectedObservable   = websocketUserService.getObservableConnected();
+        this.wsConnectedSubscription = this.wsConnectedObservable.subscribe(
           value => {
-            this.connected = value;
+            this.wsConnected = value;
+          });
+        this.cloudConnectedObservable   = websocketUserService.getObservableConnected();
+        this.cloudConnectedSubscription = this.cloudConnectedObservable.subscribe(
+          value => {
+            this.cloudConnected = value;
           });
         this.userObservable = userService.getObservableUser();
         this.userSubscription = this.userObservable.subscribe(
@@ -46,7 +56,7 @@ export class StatusBarComponent implements OnDestroy {
 
     public ngOnDestroy() : void {
         this.userSubscription.unsubscribe();
-        this.connectedSubscription.unsubscribe();
+        this.wsConnectedSubscription.unsubscribe();
     }
 
     public toggleSideBar() : void {

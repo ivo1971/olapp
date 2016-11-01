@@ -11,9 +11,10 @@
         </span>
       </td>
       <td class="text-right" width="10%">
-        <span                    class="glyphicon glyphicon-cloud  connection-error"  aria-hidden="true"></span>
-        <span *ngIf="connected"  class="glyphicon glyphicon-signal connection-ok   "    aria-hidden="true"></span>
-        <span *ngIf="!connected" class="glyphicon glyphicon-signal connection-error" aria-hidden="true"></span>
+        <span *ngIf="cloudConnected"  class="glyphicon glyphicon-cloud  connection-ok"     aria-hidden="true"></span>
+        <span *ngIf="!cloudConnected" class="glyphicon glyphicon-cloud  connection-error"  aria-hidden="true"></span>
+        <span *ngIf="wsConnected"     class="glyphicon glyphicon-signal connection-ok"     aria-hidden="true"></span>
+        <span *ngIf="!wsConnected"    class="glyphicon glyphicon-signal connection-error"  aria-hidden="true"></span>
       </td>
     </tr>
   </table>  

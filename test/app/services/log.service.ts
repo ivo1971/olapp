@@ -19,7 +19,7 @@ export class LogService {
      * Public construction/destruction
      */
     public debug(text : string) : void {
-        console.debug(text);
+        //console.debug(text);
         this.send("debug", text);
     }
 
@@ -59,7 +59,7 @@ export class LogService {
                 level: level,
                 text:  text
             }
-        );
+        })
     }
 
     /**********************************************
