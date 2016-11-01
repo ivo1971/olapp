@@ -10,7 +10,6 @@ export class UserService {
      * Public construction/destruction
      */
     constructor() {
-        console.log("UserService: constructed with name [" + this.user.name + "]");
     }    
 
     /**********************************************
@@ -23,13 +22,11 @@ export class UserService {
     public setName(name : string) : void {
         this.user.name = name;
         this.user.store();
-        console.log("UserService: set name to [" + this.user.name + "]");
         this.subjectUser.next(this.user);
     };
 
     public setTeam(team: string) : void {
         this.user.team = team;
-        console.log("UserService: set team to [" + this.user.team + "]");
         this.subjectUser.next(this.user);
     };
 
