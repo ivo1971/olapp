@@ -24,30 +24,20 @@ export class StatusBarComponent implements OnDestroy {
     private userName                   : string  = "";
     private teamName                   : string  = "";
 
-    private cloudConnectedObservable   : Observable<boolean>;
-    private cloudConnectedSubscription : Subscription;
-    private wsConnectedObservable      : Observable<boolean>;
-    private wsConnectedSubscription    : Subscription;
-    private userObservable             : Observable<User>;
-    private userSubscription           : Subscription;
-
     public constructor(
       private cloudService         : CloudService,
       private userService          : UserService,
       private websocketUserService : WebsocketUserService
       ) {
-        this.wsConnectedObservable   = websocketUserService.getObservableConnected();
-        this.wsConnectedSubscription = this.wsConnectedObservable.subscribe(
+        this.wsConnectedSubscription = this.websocketUserService.getObservableConnected().subscribe(
           value => {
             this.wsConnected = value;
           });
-        this.cloudConnectedObservable   = websocketUserService.getObservableConnected();
-        this.cloudConnectedSubscription = this.cloudConnectedObservable.subscribe(
+        this.cloudConnectedSubscription = this.cloudService.getObservableConnected().subscribe(
           value => {
             this.cloudConnected = value;
           });
-        this.userObservable = userService.getObservableUser();
-        this.userSubscription = this.userObservable.subscribe(
+        this.userSubscription = this.userService.getObservableUser().subscribe(
           value => {
             this.userName = value.name;
             this.teamName = value.team;
@@ -56,10 +46,15 @@ export class StatusBarComponent implements OnDestroy {
 
     public ngOnDestroy() : void {
         this.userSubscription.unsubscribe();
+        this.cloudConnectedSubscription.unsubscribe();
         this.wsConnectedSubscription.unsubscribe();
     }
 
     public toggleSideBar() : void {
       this.menuClosed = !this.menuClosed;
     }
+
+    private cloudConnectedSubscription : Subscription;
+    private wsConnectedSubscription    : Subscription;
+    private userSubscription           : Subscription;
 }

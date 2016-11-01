@@ -4,7 +4,6 @@ import {OnInit}                from '@angular/core';
 import {Router}                from '@angular/router';
 import {Subscription}          from 'rxjs/Subscription';
 
-import {CloudService}          from './services/cloud.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 @Component({
@@ -17,7 +16,6 @@ import {WebsocketUserService}  from './services/websocket.user.service';
 })
 export class AppComponent implements OnInit {
     public constructor(
-      private cloudService     : CloudService,
       private router           : Router,
       private websocketService : WebsocketUserService
       ) {

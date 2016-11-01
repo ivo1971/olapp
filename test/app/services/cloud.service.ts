@@ -12,6 +12,7 @@ import {RequestOptions}            from "@angular/http";
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
+import {LogService}                from './log.service';
 import {UserService}               from './user.service';
 import {WebsocketUserService}      from './websocket.user.service';
 
@@ -22,6 +23,7 @@ export class CloudService {
      */
     constructor(
         private http                 : Http,
+        private logService           : LogService,
         private userService          : UserService,
         private websocketUserService : WebsocketUserService
     ) {
@@ -37,9 +39,9 @@ export class CloudService {
         this.connectedSubscription = websocketUserService.getObservableConnected().subscribe(
           value => {
               if(value) {
-                  console.log("CloudService got connected");
+                  logService.log("CloudService got connected");
               } else {
-                  console.log("CloudService got DISconnected");
+                  logService.log("CloudService got DISconnected");
                   this.getWebsocketAddress();
               }
           });
@@ -55,32 +57,54 @@ export class CloudService {
     /**********************************************
      * Private methods
      */
+    private getWebsocketAddressTimed() : void {
+        this.logService.log("cloud-service getWebsocketAddressTimed timer start");
+        let timer = TimerObservable.create(5000,1000);
+        let timerSubscription = timer.subscribe(t => {
+            this.logService.log("cloud-service getWebsocketAddressTimed timer expired");
+            timerSubscription.unsubscribe();
+            this.getWebsocketAddress();
+        });
+    }
+
     private getWebsocketAddress() : void {
         this.http.get(this.cloudUrl)
                  .map((res : any) => res.json())
-                 .catch((error:any) => Observable.throw(error.json().error || 'Server error'))
-                 .subscribe(res => {
-                    console.log("cloud-service getWebsocketAddress response");
-                    console.log(res);                     
-                    this.subjectConnected.next(true);
-                    let websocketAddress = "ws://" + res.address + ":8000/quiz";
-                    if(websocketAddress !== this.websocketAddress) {
-                        this.websocketAddress = websocketAddress;
-                        console.log(this.websocketAddress);                     
-                        this.websocketConnect();
-                    }
-                 })
+                 .subscribe(
+                     res => {
+                        this.logService.log("cloud-service getWebsocketAddress response");
+                        if(!res.address) {
+                            this.logService.error("cloud-service getWebsocketAddress no address");
+                            this.logService.error(res);
+                            this.getWebsocketAddressTimed();
+                        }  else {                    
+                            this.logService.log(res);
+                            this.subjectConnected.next(true);
+                            let websocketAddress = "ws://" + res.address + ":8000/quiz";
+                            if(websocketAddress !== this.websocketAddress) {
+                                this.websocketAddress = websocketAddress;
+                                this.logService.log(this.websocketAddress);                     
+                                this.websocketConnect();
+                            }
+                        }
+                     },
+                     err => {
+                        this.logService.error("cloud-service getWebsocketAddress error response err");
+                        this.logService.error(err);
+                        this.getWebsocketAddressTimed();
+                     }
+                 )
     }
 
     private websocketConnect() : void {
         //connect as soon as all information is available
-        console.log("websocketConnect in");                     
+        this.logService.debug("websocketConnect in");                     
         if((this.userNameValid) && (0 != this.websocketAddress.length)) {
-            console.log("websocketConnect connect");                     
+            this.logService.debug("websocketConnect connect");                     
             this.websocketUserServiceConnectCalled = true;
             this.websocketUserService.connect(this.websocketAddress);
         }
-        console.log("websocketConnect out");                     
+        this.logService.debug("websocketConnect out");                     
     }
 
     /**********************************************
