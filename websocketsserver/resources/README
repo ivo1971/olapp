@@ -16,3 +16,14 @@ boost
 Download boost 1.62.0 from the boost website (too large to store in github).
 Untar it (no need to build).
 In case a more recent version of boost is used: update the include path in the makefile.
+
+curl
+====
+1. Untar curl
+2. cd curl-7.50.3
+3. /configure
+4. make
+5. cd ./lib/.libs/
+6. mv libcurl.so libcurl.so.org
+7. mv libcurl.so.4 libcurl.so.4.org
+8. mv libcurl.so.4.4.0 libcurl.so.4.4.0.org

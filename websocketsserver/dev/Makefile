@@ -15,9 +15,9 @@ CFLAGS        :=
 CPPFLAGS      := -std=c++11 -pthread
 DEPFLAGS      := -MMD -MP -o $@
 
-INCLUDE_PATHS := -I../resources/seasocks-master/src/main/c -I../resources/json/ -I../resources/boost_1_62_0
-LIBRARY_PATHS := -L../resources/seasocks-master/build/src/main/c
-LIBRARIES     := -lseasocks
+INCLUDE_PATHS := -I../resources/seasocks-master/src/main/c -I../resources/json/ -I../resources/boost_1_62_0 -I../resources/curl-7.50.3/include
+LIBRARY_PATHS := -L../resources/seasocks-master/build/src/main/c -L../resources/curl-7.50.3/lib/.libs
+LIBRARIES     := -lseasocks -lcurl
 
 COMPILE.cpp   := $(CXX) $(INCLUDE_PATHS) $(CFLAGS) $(CPPFLAGS) -c
 
