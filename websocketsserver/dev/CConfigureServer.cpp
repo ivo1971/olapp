@@ -1,3 +1,4 @@
+#include <sstream>
 #include <unistd.h>
 
 #include "curl/curl.h"
@@ -38,20 +39,23 @@ void CConfigureServer::ThreadConfigure(void)
     /* Add headers */ 
     struct curl_slist* pChunk = NULL;
     pChunk = curl_slist_append(pChunk, "olapId: 1234hoedjevanhoedjevan");
-    pChunk = curl_slist_append(pChunk, "olapIp: a.b.c.d");
+    std::stringstream ss;
+    ss << "olapIp: " << m_IpAddress;
+    pChunk = curl_slist_append(pChunk, ss.str().c_str());
     
     /* Set our custom set of headers */ 
     curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, pChunk);
+    //curl_easy_setopt(pCurl, CURLOPT_URL,        "192.168.0.65:5000/api/address/set");
     curl_easy_setopt(pCurl, CURLOPT_URL,        "http://chilling-coffin-40047.herokuapp.com/api/address/set");
     curl_easy_setopt(pCurl, CURLOPT_VERBOSE,    1L);
  
     const CURLcode res = curl_easy_perform(pCurl);
     if(CURLE_OK != res) {
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-	      curl_easy_strerror(res));
+      fprintf(stderr, "\ncurl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    } else {
+      fprintf(stdout, "\nsend configure server request: OK\n");
     }
-    fprintf(stdout, "send configure server request: OK\n");
-    
+
     /* Always cleanup */ 
     curl_easy_cleanup(pCurl);
   
