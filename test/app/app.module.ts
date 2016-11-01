@@ -21,7 +21,6 @@ import {AppComponent}              from "./app.component";
 
 //Own components: routes
 import {AboutComponent}            from "./routes/about/about.component";
-import {EchoComponent}             from "./routes/echo/echo.component";
 import {LoginComponent}            from "./routes/login/login.component";
 import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData} from "./routes/simple-button/simple-button-data.component";
@@ -59,10 +58,6 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
             UsernameSetGuard  
         ],
         children : [
-          {
-            path: 'echo',
-            component: EchoComponent
-          },
           {
             path: 'simple-button',
             component: SimpleButtonComponent
@@ -112,7 +107,6 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     AppComponent,
     //routes
     AboutComponent,
-    EchoComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
     TestComponent,
