@@ -24,8 +24,14 @@
   </div>
   <div class="row">
     <div class="col-xs-12 text-center">
-        <button [disabled]="!wsServerValid" class="btn btn-info"    (click)="onConfigure()">Configureer</button>
-        <button                            class="btn btn-warning" (click)="onCancel()">Cancel</button>
+        <button [disabled]="!wsServerValid" class="btn btn-primary" (click)="onConfigure()">Configureer</button>
+        <button                             class="btn btn-warning" (click)="onCancel()">Cancel</button>
+    </div>
+  </div>
+  <br />
+  <div class="row">
+    <div class="col-xs-12 text-center">
+        <button class="btn btn-danger" (click)="onDefault()">Zet standaard waarden terug</button>
     </div>
   </div>
 </div>

@@ -55,6 +55,11 @@ export class CloudService {
         this.websocketConnect();
     }
 
+    public setWsDefault() : void {
+        this.websocketAddressManual = false;
+        this.getWebsocketAddress();
+    }
+
     /**********************************************
      * Private methods
      */
@@ -82,7 +87,7 @@ export class CloudService {
                         if(this.websocketAddressManual) {
                             //address has been overridden manually
                             //ignore request result
-                            //(untill the app restarts)
+                            //(do not start the timer)
                             return;
                         }
                         this.logService.log("cloud-service getWebsocketAddress response");

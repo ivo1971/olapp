@@ -24,7 +24,28 @@ export class WebsocketService {
     }
 
     public reconfigureUri(wsUri : string) : void {
-        this.setUri(wsUri);
+        //check if there is a URI change
+        if(!this.setUri(wsUri)) {
+            //no change
+            return;
+        }
+
+        //check for an open connection
+        if(!this.m_WebsocketOpen) {
+            //no socket open,
+            //reconnect is imminent
+            return;
+        }
+
+        //check for a valud socket
+        if(!this.m_Websocket) {
+            //this should not happen
+            return;
+        }
+
+        //socket open
+        //force reconnect
+        this.m_Websocket.close();
     }
 
     public send(data) : void {
@@ -52,12 +73,22 @@ export class WebsocketService {
     /**********************************************
      * Private methods
      */
-    private setUri(wsUri : string) : void {
+    private setUri(wsUri : string) : boolean {
+        //only change when there is a change
+        if(wsUri === this.m_WsUri) {
+            //no change
+            return false;
+        }
+
+        //validate
         let match = new RegExp('wss?:\/\/').test(wsUri);
         if (!match) {
             throw new Error("WebsocketService invalid url [" + wsUri + "provided");
         }
+
+        //change
         this.m_WsUri = wsUri;
+        return true;
     }
 
     private connectAttempt() : void {
