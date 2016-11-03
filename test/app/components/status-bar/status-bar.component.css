@@ -13,6 +13,10 @@
     color: darkorange;
 }
 
+.connection-warning {
+    color: yellow;
+}
+
 .connection-ok {
     color: green;
 }

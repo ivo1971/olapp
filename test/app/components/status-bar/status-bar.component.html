@@ -11,8 +11,9 @@
         </span>
       </td>
       <td class="text-right" width="10%">
-        <span *ngIf="cloudConnected"  class="glyphicon glyphicon-cloud  connection-ok"     aria-hidden="true"></span>
-        <span *ngIf="!cloudConnected" class="glyphicon glyphicon-cloud  connection-error"  aria-hidden="true"></span>
+        <span *ngIf="cloudConnected > 0"   class="glyphicon glyphicon-cloud  connection-ok"      aria-hidden="true"></span>
+        <span *ngIf="cloudConnected < 0"   class="glyphicon glyphicon-cloud  connection-error"   aria-hidden="true"></span>
+        <span *ngIf="cloudConnected == 0"  class="glyphicon glyphicon-cloud  connection-warning" aria-hidden="true"></span>
         <span *ngIf="wsConnected"     class="glyphicon glyphicon-signal connection-ok"     aria-hidden="true"></span>
         <span *ngIf="!wsConnected"    class="glyphicon glyphicon-signal connection-error"  aria-hidden="true"></span>
       </td>

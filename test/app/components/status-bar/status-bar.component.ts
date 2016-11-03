@@ -19,7 +19,7 @@ import {WebsocketUserService } from './../../services/websocket.user.service';
 })
 export class StatusBarComponent implements OnDestroy { 
     private menuClosed                 : boolean = true;
-    private cloudConnected             : boolean = true;
+    private cloudConnected             : number  = -1;
     private wsConnected                : boolean = true;
     private userName                   : string  = "";
     private teamName                   : string  = "";

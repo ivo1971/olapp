@@ -34,21 +34,14 @@ export class CloudService {
           }
         );
 
-        this.connectedSubscription = websocketUserService.getObservableConnected().subscribe(
-          value => {
-              if(value) {
-                  logService.log("CloudService got connected");
-              } else {
-                  logService.log("CloudService got DISconnected");
-                  this.getWebsocketAddress();
-              }
-          });
+        //kick getting the cloud address
+        this.getWebsocketAddress();
     }  
 
     /**********************************************
      * Public methods
      */
-    public getObservableConnected() : Observable<boolean> {
+    public getObservableConnected() : Observable<number> {
         return this.observableConnected;
     }
 
@@ -65,9 +58,9 @@ export class CloudService {
     /**********************************************
      * Private methods
      */
-    private getWebsocketAddressTimed() : void {
+    private getWebsocketAddressTimed(timeSec : number = 5) : void {
         this.logService.log("cloud-service getWebsocketAddressTimed timer start");
-        let timer = TimerObservable.create(5000,1000);
+        let timer = TimerObservable.create(timeSec * 1000, 1000);
         let timerSubscription = timer.subscribe(t => {
             this.logService.log("cloud-service getWebsocketAddressTimed timer expired");
             timerSubscription.unsubscribe();
@@ -96,11 +89,16 @@ export class CloudService {
                         if(!res.address) {
                             this.logService.error("cloud-service getWebsocketAddress no address");
                             this.logService.error(res);
+                            this.subjectConnected.next(-1);                            
                             this.getWebsocketAddressTimed();
                         }  else {                    
                             this.logService.log(res);
-                            this.subjectConnected.next(true);
-                            if(res.address !== this.websocketAddress) {
+                            if(0 == res.address) {
+                                console.warn("cloud-service getWebsocketAddress got 0 address");
+                                this.subjectConnected.next(0);
+                                this.getWebsocketAddressTimed(20);
+                            } else if(res.address !== this.websocketAddress) {
+                                this.subjectConnected.next(1);
                                 this.websocketAddress = res.address;
                                 this.logService.log(this.websocketAddress);                     
                                 this.websocketConnect();
@@ -110,6 +108,7 @@ export class CloudService {
                      err => {
                         this.logService.error("cloud-service getWebsocketAddress error response err");
                         this.logService.error(err);
+                        this.subjectConnected.next(-1);                            
                         this.getWebsocketAddressTimed();
                      }
                  )
@@ -136,8 +135,8 @@ export class CloudService {
      * Private members
      */
     private cloudUrl                          : string                   = "http://chilling-coffin-40047.herokuapp.com/api/address";
-    private subjectConnected                  : BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private observableConnected               : Observable<boolean>      = this.subjectConnected.asObservable();
+    private subjectConnected                  : BehaviorSubject<number>  = new BehaviorSubject<number>(-1);
+    private observableConnected               : Observable<number>       = this.subjectConnected.asObservable();
     private connectedSubscription             : Subscription             ; 
     private websocketAddress                  : string                   = "";
     private websocketAddressManual            : boolean                  = false;
