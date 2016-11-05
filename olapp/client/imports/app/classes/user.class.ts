@@ -1,5 +1,3 @@
-import "/node_modules/fingerprintjs2/dist/fingerprint2.min.js";
-
 //avoid compilation issues because Fingerprint library has no typings
 declare var Fingerprint2: any
 
@@ -20,6 +18,8 @@ export class User {
             || ("null" == this.id)
             ) {
             let _this = this;
+                _this.id = "abcdefgh";
+                _this.store();
             new Fingerprint2().get(function(result, components){
                 _this.id = result;
                 _this.store();

@@ -17,12 +17,12 @@ import {LogService }           from './../../services/log.service';
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
 import template                from "./simple-button.component.html";
-import style                   from "./simple-button.component.scss";
+//import style                   from "./simple-button.component.scss";
 
 @Component({
   selector: "simple-button",
   template,
-  styles: [ style ]
+  //styles: [ style ]
 })
 export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDestroy { 
     /* Private variables intended for the template
