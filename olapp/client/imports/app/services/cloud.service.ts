@@ -97,15 +97,14 @@ export class CloudService {
                             this.subjectConnected.next(-1);                            
                             this.getWebsocketAddressTimed();
                         }  else {                    
-                            this.logService.log(res);
                             if(0 == res.address) {
-                                console.warn("cloud-service getWebsocketAddress got 0 address");
+                                this.logService.warn("cloud-service getWebsocketAddress got 0 address");
                                 this.subjectConnected.next(0);
                                 this.getWebsocketAddressTimed(20);
                             } else if(res.address !== this.websocketAddress) {
                                 this.subjectConnected.next(1);
                                 this.websocketAddress = res.address;
-                                this.logService.log(this.websocketAddress);                     
+                                this.logService.log("cloud-service getWebsocketAddress got address [" + this.websocketAddress + "]");
                                 this.websocketConnect();
                             }
                         }

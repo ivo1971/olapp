@@ -1,8 +1,7 @@
-<!-- input styling according to http://stackoverflow.com/questions/18838964/add-bootstrap-glyphicon-to-input-box -->
-
+<br />
 <div class="container">
   <div class="row">
-    <div class="col-xs-12 text-center">
+    <div class="col-xs-12 text-xs-center">
         <h4>Kies een gebruikersnaam</h4>
     </div>
   </div>
@@ -10,16 +9,18 @@
     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-3">
     </div>
     <div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
-        <div class="inner-addon left-addon">
-            <i class="glyphicon glyphicon-user"></i>
-            <input type="text" class="form-control" [(ngModel)]="userName" />
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+            <input type="text" class="form-control" [(ngModel)]="userName" placeholder="Gebruiker">
+          </div>
         </div>
     </div>
     <div class="col-lg-5 col-md-4 col-sm-4 col-xs-3">
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12 text-center">
+    <div class="col-xs-12 text-xs-center">
         <button class="btn btn-info"    (click)="setName()">Set name</button>
         <button class="btn btn-warning" (click)="cancel()">Cancel</button>
     </div>

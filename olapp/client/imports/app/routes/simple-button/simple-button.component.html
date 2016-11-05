@@ -1,6 +1,6 @@
-<div class="text-center">
+<div class="text-xs-center">
     <span *ngIf="prevSequenceNbr === 0">
-        <img src="./app/images/loading.gif" height="150" />
+        <img src="./images/loading.gif" height="150" />
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
         <img src="./images/push.gif"  height="150" width="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" />
@@ -8,7 +8,7 @@
         <img src="./images/go.gif"    height="150" width="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good" />
         <img src="./images/wrong.png" height="150" width="150" *ngIf="wrong"                                      />
         <img src="./images/good.gif"  height="150" width="150" *ngIf="good"                                       />
-        <div class="text-left">
+        <div class="text-xs-left">
             <simple-button-data [data]="observableInfo | async"></simple-button-data>
         </div>
     </span>

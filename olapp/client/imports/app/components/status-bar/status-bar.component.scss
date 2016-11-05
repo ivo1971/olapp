@@ -20,3 +20,8 @@
 .connection-ok {
     color: green;
 }
+
+.stay-on-top {
+  position: absolute;
+  z-index: 999;
+}
