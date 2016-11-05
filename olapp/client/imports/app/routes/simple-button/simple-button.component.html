@@ -3,11 +3,11 @@
         <img src="./app/images/loading.gif" height="150" />
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
-        <img src="./app/images/push.gif"  height="150" width="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" />
-        <img src="./app/images/wait.gif"  height="150" width="150" *ngIf="pushed  && !pushedFirst && !wrong && !good" (click)="onPush()" />
-        <img src="./app/images/go.gif"    height="150" width="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good" />
-        <img src="./app/images/wrong.png" height="150" width="150" *ngIf="wrong"                                      />
-        <img src="./app/images/good.gif"  height="150" width="150" *ngIf="good"                                       />
+        <img src="./images/push.gif"  height="150" width="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" />
+        <img src="./images/wait.gif"  height="150" width="150" *ngIf="pushed  && !pushedFirst && !wrong && !good" (click)="onPush()" />
+        <img src="./images/go.gif"    height="150" width="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good" />
+        <img src="./images/wrong.png" height="150" width="150" *ngIf="wrong"                                      />
+        <img src="./images/good.gif"  height="150" width="150" *ngIf="good"                                       />
         <div class="text-left">
             <simple-button-data [data]="observableInfo | async"></simple-button-data>
         </div>
@@ -18,10 +18,10 @@
      (wich seems to be happening in FireFox otherwise)
      -->
 <div class="preload">
-    <img src="./app/images/loading.gif" />
-    <img src="./app/images/push.gif"    />
-    <img src="./app/images/wait.gif"    />
-    <img src="./app/images/go.gif"      />
-    <img src="./app/images/wrong.png"   />
-    <img src="./app/images/good.gif"    />
+    <img src="./images/loading.gif" />
+    <img src="./images/push.gif"    />
+    <img src="./images/wait.gif"    />
+    <img src="./images/go.gif"      />
+    <img src="./images/wrong.png"   />
+    <img src="./images/good.gif"    />
 </div>    
