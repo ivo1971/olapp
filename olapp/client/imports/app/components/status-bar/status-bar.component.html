@@ -1,0 +1,23 @@
+<div class="background" >
+  <table width="100%">
+    <tr>
+      <td class="text-left" width="10%">
+        <i class="fa fa-bars" (click)="toggleSideBar()"></i>
+      </td>
+      <td class="text-center" width="80%">
+        <i class="fa fa-user"></i> {{userName}}
+        <span *ngIf="teamName">
+          - <i class="fa fa-users"></i> {{teamName}}
+        </span>
+      </td>
+      <td class="text-right" width="10%">
+        <span *ngIf="cloudConnected > 0"  class="fa fa-cloud  connection-ok"      aria-hidden="true"></span>
+        <span *ngIf="cloudConnected < 0"  class="fa fa-could  connection-error"   aria-hidden="true"></span>
+        <span *ngIf="cloudConnected == 0" class="fa fa-cloud  connection-warning" aria-hidden="true"></span>
+        <span *ngIf="wsConnected"         class="fa fa-signal connection-ok"      aria-hidden="true"></span>
+        <span *ngIf="!wsConnected"        class="fa fa-signal connection-error"   aria-hidden="true"></span>
+      </td>
+    </tr>
+  </table>  
+  <menu [(menuClosed)]='menuClosed'></menu>
+</div>

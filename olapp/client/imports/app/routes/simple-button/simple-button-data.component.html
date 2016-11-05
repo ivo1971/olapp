@@ -1,0 +1,28 @@
+<div *ngIf="null !== data" class="simple-button"> <!-- NULL-check required for bootstrapping -->
+    <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.simple-button-success]="i == 0" [class.simple-button-warning]="i != 0">
+        <table>
+            <tr>
+                <td>
+                    <img src="./app/images/good.gif"  height="35px" *ngIf="team.good"                  />
+                    <img src="./app/images/wrong.gif" height="35px" *ngIf="team.wrong"                 />
+                    <img src="./app/images/go.gif"    height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i === 0)" />
+                    <img src="./app/images/wait.gif"  height="35px" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i !== 0)" />
+                </td>
+                <td>
+                    <b>{{team.name}}</b><br />
+                    <span *ngFor="let member of team.members; let j = index"><span *ngIf="0 != j">, </span>{{member}}</span><br />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- ensure images are always in the DOM to avoid loading them over and over again
+     (wich seems to be happening in FireFox otherwise)
+     -->
+<div class="preload">
+    <img src="./app/images/good.gif"    />
+    <img src="./app/images/wrong.png"   />
+    <img src="./app/images/go.gif"      />
+    <img src="./app/images/wait.gif"    />
+</div>    

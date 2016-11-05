@@ -1,0 +1,39 @@
+.simple-button {
+    font-family: Verdana,sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.background {
+    margin: 10px;
+}
+
+.simple-button-success {
+  color: #3c763d;
+  background-color: #dff0c8;
+  /* background-color: #dff0d8; */
+  border-color: #d6e9c6;
+}
+
+/*
+.simple-button-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+*/
+
+.simple-button-warning {
+  color: #8a6d3b;
+  background-color: #ccd8c3;
+  /* background-color: #fcf8e3; */
+  border-color: #faebcc;
+}
+
+/*
+.simple-button-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+*/
