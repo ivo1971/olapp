@@ -1,11 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ilu.olapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ilu.olapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
     <name>olapp</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        An application to use on the yearly OLENG weekend.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="ivo.ivo@olapp.comm" href="http://olapp.com">
+        Ivo
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -16,9 +20,13 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-intent href="market:*" />
+    <icon density="ldpi" src="res/android//icons/ldpi.png" />
+    <icon density="mdpi" src="res/android/icons/mdpi.png" />
+    <icon density="hdpi" src="res/android/icons/hdpi.png" />
+    <icon density="xhdpi" src="res/android/icons/xhdpi.png" />
+    <icon density="xxhdpi" src="res/android/icons/xxhdpi.png" />
+    <icon density="xxxhdpi" src="res/android/icons/xxxhdpi.png" />
     <preference name="loglevel" value="DEBUG" />
-    <feature name="Whitelist">
-        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
-        <param name="onload" value="true" />
-    </feature>
+    <preference name="Fullscreen" value="true" />
+    <preference name="LogLevel" value="VERBOSE" />
 </widget>
