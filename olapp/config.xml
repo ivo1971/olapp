@@ -39,5 +39,5 @@
     <preference name="LogLevel" value="VERBOSE" />
     <plugin name="cordova-plugin-android-permissions" spec="~0.10.0" />
     <plugin name="cordova-custom-config" spec="~3.0.14" />
-    <engine name="android" spec="~5.2.2" />
+    <engine name="android" spec="~6.0.0" />
 </widget>
