@@ -1,0 +1,23 @@
+<div class="background" >
+  <table width="100%">
+    <tr>
+      <td class="text-left" width="10%">
+        <span class="hamburger glyphicon glyphicon-menu-hamburger" aria-hidden="true" (click)="toggleSideBar()"></span>
+      </td>
+      <td class="text-center" width="80%">
+        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
+        <span *ngIf="teamName">
+          - <span class="glyphicon glyphicon-tent" aria-hidden="true"></span> {{teamName}}
+        </span>
+      </td>
+      <td class="text-right" width="10%">
+        <span *ngIf="cloudConnected > 0"   class="glyphicon glyphicon-cloud  connection-ok"      aria-hidden="true"></span>
+        <span *ngIf="cloudConnected < 0"   class="glyphicon glyphicon-cloud  connection-error"   aria-hidden="true"></span>
+        <span *ngIf="cloudConnected == 0"  class="glyphicon glyphicon-cloud  connection-warning" aria-hidden="true"></span>
+        <span *ngIf="wsConnected"     class="glyphicon glyphicon-signal connection-ok"     aria-hidden="true"></span>
+        <span *ngIf="!wsConnected"    class="glyphicon glyphicon-signal connection-error"  aria-hidden="true"></span>
+      </td>
+    </tr>
+  </table>  
+  <menu [(menuClosed)]='menuClosed'></menu>
+</div>
