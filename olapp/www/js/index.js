@@ -19,20 +19,27 @@
 var app = {
     // Application Constructor
     initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        var isCordovaApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+        console.log("application constructor: cordova [" + isCordovaApp + "]");
+        if(isCordovaApp) {
+            //wait for device ready
+            document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        } else {
+            //immediately start Angular
+            this.bootstrapAngular2();
+        }
     },
 
     // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        this.receivedEvent('deviceready');
+        console.log("device ready");
+        this.bootstrapAngular2();
     },
 
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        console.log('Received Event: ' + id);
+    // start Angular
+    bootstrapAngular2: function() {
+        //start Angular 2
+        console.log("start Angular 2");
         System.import('app')
             .catch(function(err){ 
                 console.error(err); 

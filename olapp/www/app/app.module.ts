@@ -1,5 +1,4 @@
 //Built-in modules
-import {APP_BASE_HREF}             from '@angular/common';
 import {BrowserModule}             from '@angular/platform-browser';
 import {CanActivate}               from '@angular/router';
 import {CanDeactivate}             from '@angular/router';
@@ -104,9 +103,6 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
   ],
   //Inject your own services
   providers: [
-    //base href for router to avoid it in the head,
-    //which cordova does not like at all (file not found)
-    {provide: APP_BASE_HREF, useValue : '/' },
     //services
     CloudService,
     LogService,
@@ -122,12 +118,12 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     //routes
     AboutComponent,
     ConfigurationComponent,
+    LoginComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
     TestComponent,
     WelcomeComponent,
     //components
-    LoginComponent,
     MenuComponent,
     StatusBarComponent,
     //filters
