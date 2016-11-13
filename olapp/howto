@@ -1,0 +1,21 @@
+TODO: implement a script that takes care of all this
+
+generate keystore:
+    "C:\Program Files\Java\jre1.8.0_111\bin\keytool.exe" -genkey -v -keystore C:\Users\u0049648\olapp.keystore -alias olapp -keyalg RSA -keysize 2048 -validity 10000
+
+build unsigned release"
+    cordova build --release
+    --> this results in an unsigned apk
+
+sign application:
+    C:\Users\u0049648>"C:\Program Files\Java\jdk1.8.0_102\bin\jarsigner.exe" -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore C:\Users\u0049648\olapp.keystore C:\Users\u0049648\tmp\tmp\olapp\olapp\platforms\android\build\outputs\apk\android-release-unsigned.apk olapp
+
+rename the apk from unsigned to signed (see debug apk name)
+
+zipalign: (from the directory in which the apk resides)
+    C:\Users\u0049648\AppData\Local\Android\sdk\build-tools\24.0.2\zipalign.exe -v 4 android-release.apk android-release.al.apk
+browser:
+    - https://developers.google.com/
+    - sign in
+    - upload signed and aligned apk
+
