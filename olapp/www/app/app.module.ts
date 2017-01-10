@@ -29,6 +29,7 @@ import {TestComponent}             from "./routes/test/test.component";
 import {WelcomeComponent}          from "./routes/welcome/welcome.component";
 
 //Own components: components
+import {ImageLocalComponent}       from "./components/image-local/image-local.component";
 import {MenuComponent}             from "./components/menu/menu.component";
 import {StatusBarComponent}        from "./components/status-bar/status-bar.component";
 
@@ -124,6 +125,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     TestComponent,
     WelcomeComponent,
     //components
+    ImageLocalComponent,
     MenuComponent,
     StatusBarComponent,
     //filters

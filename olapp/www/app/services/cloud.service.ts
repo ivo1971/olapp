@@ -103,8 +103,8 @@ export class CloudService {
                                 this.subjectConnected.next(0);
                                 this.getWebsocketAddressTimed(20);
                             } else if(res.address !== this.websocketAddress) {
-                                this.subjectConnected.next(1);
                                 this.websocketAddress = res.address;
+                                this.subjectConnected.next(1);
                                 this.logService.log(this.websocketAddress);                     
                                 this.websocketConnect();
                             }
