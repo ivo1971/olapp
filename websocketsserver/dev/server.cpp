@@ -41,7 +41,7 @@ int main(int argc, const char* argv[]) {
   spServer->addWebSocketHandler("/quiz",       spWsQuizHandler      );
 
   //run server
-  spServer->serve("/dev/null", 8000);
+  spServer->serve("./resources/http", 8000);
 
   //cleanup
   configureServer.Stop();
