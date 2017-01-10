@@ -61,7 +61,6 @@ export class ConfigurationComponent extends ComponentBase implements OnInit {
     }
 
     public onDefault() {
-        console.log("11111111");
         console.log("onDefault");
         this.cloudServerice.setWsDefault();
         this.router.navigate(['/quiz/welcome']);
