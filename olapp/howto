@@ -1,7 +1,7 @@
 starting from a new clean git clone
 ===================================
 cordova add platform android
-cordova run --release
+cordova run --debug
 
 
 
@@ -33,3 +33,20 @@ browser:
 
 
 
+
+building a release, signing it, deploying it locally
+====================================================
+cd to the directory containing the APK's 
+
+cordova build --release
+"C:\Program Files\Java\jdk1.8.0_102\bin\jarsigner.exe" -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore C:\Users\u0049648\olapp.keystore C:\Users\u0049648\olapp\olapp\platforms\android\build\outputs\apk\android-release-unsigned.apk olapp
+--> enter key store password
+del android-release.al.apk
+C:\Users\u0049648\AppData\Local\Android\sdk\build-tools\24.0.2\zipalign.exe -v 4 android-release-unsigned.apk android-release.al.apk
+cordova run --release
+
+
+enable debugging in release mode
+================================
+manually edit the android manifest: platforms\android\AndroidManifest.xml
+   add 'android:debuggable="true"' as an extra attribute in the <application> element

@@ -64,7 +64,8 @@ module.exports = function(ctx) {
             var dataProcessed = "";
             for(var u = 0 ; u < arr.length ; ++u) {
                 if(arr[u].match(/base href/)) {
-                    arr[u] = arr[u].replace("/", "/android_asset/www/");
+                    //arr[u] = arr[u].replace("/", "/android_asset/www/");
+                    arr[u] = arr[u].replace("/", "");
                 }
                 dataProcessed += arr[u] + "\n";
             }
