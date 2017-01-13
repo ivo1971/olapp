@@ -174,6 +174,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                     this.pushed = true;
                     if(!firstActiveFound) {
                         this.pushedFirst = true;
+                        if(!this.pushVibrateDone) {
+                            this.logService.log("Simple-button vibrate");
+                            navigator.vibrate(1000);
+                            this.pushVibrateDone = true;
+                        }
                     }
 
                     //check if the team is still active,
@@ -218,10 +223,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     private reset(background : string) : void {
         this.logService.debug("reset");
-        this.pushed      = false;
-        this.pushedFirst = false;
-        this.wrong       = false;
-        this.good        = false;
+        this.pushed             = false;
+        this.pushedFirst        = false;
+        this.wrong              = false;
+        this.good               = false;
+        this.pushVibrateDone    = false;
         this.backgroundSet(background);
     }
 
@@ -264,4 +270,5 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
+    private pushVibrateDone            : bool                        ;
 }
