@@ -270,5 +270,5 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
-    private pushVibrateDone            : bool                        ;
+    private pushVibrateDone            : boolean                     ;
 }
