@@ -25,12 +25,6 @@ class CQuizManager {
     void                                  HandleDisconnectBeamer(const std::string& id);
 
   private:
-    void                                  ThreadTest(void);
-    void                                  ThreadTestOne(const bool good);
-    std::string                           ThreadUser2Team(const std::string& user);
-    void                                  ThreadWait(const time_t waitSec);
-
-  private:
     std::shared_ptr<CWsQuizHandler>       m_spWsQuizHandler;
     std::shared_ptr<CWsQuizHandler>       m_spWsMasterHandler;
     std::shared_ptr<CWsQuizHandler>       m_spWsBeamerHandler;

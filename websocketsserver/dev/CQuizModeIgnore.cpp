@@ -4,8 +4,8 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeIgnore::CQuizModeIgnore(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler)
-   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler)
+CQuizModeIgnore::CQuizModeIgnore(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users)
+   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, users)
    , m_spLogger(spLogger)
 {
 }
