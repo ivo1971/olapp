@@ -2,6 +2,8 @@ import {Component}             from '@angular/core';
 import {Input}                 from '@angular/core';
 import {OnInit}                from '@angular/core';
 
+import {IsCordova}             from './../../help/cordova';
+
 @Component({
   moduleId   : module.id,
   selector   : 'image-native',
@@ -18,8 +20,7 @@ export class ImageNativeComponent implements OnInit {
     }
 
     public ngOnInit() : void {
-        var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
-        if (app) {
+        if(IsCordova()) {
             //Cordova application
             this.fullSrc = "file:///android_asset/www/" +
                             this.source;  

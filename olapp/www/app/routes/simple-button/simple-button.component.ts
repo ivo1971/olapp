@@ -10,6 +10,8 @@ import {ComponentBase}        from './../../classes/component-base.class';
 import {SimpleButtonInfo}     from './../../classes/simple-button-info.class';
 import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
 
+import {EMedia}                from './../../classes/media-player.class';
+import {MediaPlayer}           from './../../classes/media-player.class';
 import {User}                  from './../../classes/user.class';
 
 import {UserService }          from './../../services/user.service';
@@ -41,7 +43,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
       private logService        : LogService,
       private _websocketService : WebsocketUserService,
       ) {
+          //call base class
           super(_websocketService);
+
+          //additional initialization
+          this.mediaPlayer = new MediaPlayer(logService);
     }
 
     /* Life-cycle hooks
@@ -193,8 +199,10 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                     //set the background based upon the current state
                     this.logService.log("Simple-button handling message [" + sequenceNbr + "]: team found on the list (good: [" + this.good + "])(wrong: ["+ this.wrong +"])(first: [" + !firstActiveFound + "])");
                     if(this.wrong) {
+                        this.playResult(EMedia.SadTrombone);
                         this.backgroundSet("danger");
                     } else if(this.good) {
+                        this.playResult(EMedia.Applause);
                         this.backgroundSet("success");
                     } else if(!firstActiveFound) {
                         //this team is the first on the list                        
@@ -222,6 +230,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         }
     }
 
+    private playResult(media : EMedia) : void {
+        this.resultSoundDone    = true;
+        this.mediaPlayer.Play(media);
+    }
+
     private reset(background : string) : void {
         this.logService.debug("reset");
         this.pushed             = false;
@@ -229,6 +242,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.wrong              = false;
         this.good               = false;
         this.pushVibrateDone    = false;
+        this.resultSoundDone    = false;
         this.backgroundSet(background);
     }
 
@@ -271,5 +285,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
-    private pushVibrateDone            : boolean                     ;
+    private pushVibrateDone            : boolean                     = false;
+    private resultSoundDone            : boolean                     = false;
+    private mediaPlayer                : MediaPlayer                 = null;
 }
