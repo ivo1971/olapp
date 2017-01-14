@@ -6,6 +6,7 @@
 
 #include "CSimpleButtonInfo.h"
 #include "CQuizManager.h"
+#include "CQuizModeIgnore.h"
 #include "JsonHelpers.h"
 #include "Typedefs.h"
 
@@ -28,6 +29,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_TestThread(thread([=]{ThreadTest();}))
   , m_Lock()
   , m_Users()
+  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler))
 {
 }
 
@@ -54,6 +56,10 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       } else {
         userIt->second.NameSet(name);
       }
+      m_CurrentQuizMode->UsersChanged(m_Users);
+    } else {
+      //default: forward to current node
+      m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
     }
   } catch(...) {
     m_Lock.unlock();
@@ -70,6 +76,7 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
       MapUserIt userIt = m_Users.find(id);
       if(m_Users.end() != userIt) {
 	      m_Users.erase(userIt);
+        m_CurrentQuizMode->UsersChanged(m_Users);
       }
   } catch(...) {
     m_Lock.unlock();
@@ -86,6 +93,9 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
     if("id" == mi) {
       //get info from message
       const std::string& name = GetElementString(citJsData, "name");
+    } else {
+      //default: forward to current node
+      m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
     }
   } catch(...) {
     m_Lock.unlock();
@@ -114,6 +124,9 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
     if("id" == mi) {
       //get info from message
       const std::string& name = GetElementString(citJsData, "name");
+    } else {
+      //default: forward to current node
+      m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
     }
   } catch(...) {
     m_Lock.unlock();
