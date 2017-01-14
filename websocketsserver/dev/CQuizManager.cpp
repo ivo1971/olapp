@@ -13,11 +13,17 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler)
+CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler)
   : m_spLogger(spLogger)
   , m_spWsQuizHandler(spWsQuizHandler)
-  , m_WsQuizHandlerMessageConnection   (m_spWsQuizHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageQuiz,    this, _1, _2, _3)))
-  , m_WsQuizHandlerDisconnectConnection(m_spWsQuizHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectQuiz, this, _1)))
+  , m_spWsMasterHandler(spWsMasterHandler)
+  , m_spWsBeamerHandler(spWsBeamerHandler)
+  , m_WsQuizHandlerMessageConnection     (m_spWsQuizHandler->ConnectSignalMessage     (boost::bind(&CQuizManager::HandleMessageQuiz,      this, _1, _2, _3)))
+  , m_WsQuizHandlerDisconnectConnection  (m_spWsQuizHandler->ConnectSignalDisconnect  (boost::bind(&CQuizManager::HandleDisconnectQuiz,   this, _1)))
+  , m_WsMasterHandlerMessageConnection   (m_spWsMasterHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageMaster,    this, _1, _2, _3)))
+  , m_WsMasterHandlerDisconnectConnection(m_spWsMasterHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectMaster, this, _1)))
+  , m_WsBeamerHandlerMessageConnection   (m_spWsBeamerHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageBeamer,    this, _1, _2, _3)))
+  , m_WsBeamerHandlerDisconnectConnection(m_spWsBeamerHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectBeamer, this, _1)))
   , m_TestThreadStop(false)
   , m_TestThread(thread([=]{ThreadTest();}))
   , m_Lock()
@@ -72,12 +78,72 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
   m_Lock.unlock();
 }
 
+void CQuizManager::HandleMessageMaster(const std::string& id, const std::string& mi, const json::const_iterator citJsData)
+{
+  m_Lock.lock();
+  try {
+    m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    if("id" == mi) {
+      //get info from message
+      const std::string& name = GetElementString(citJsData, "name");
+    }
+  } catch(...) {
+    m_Lock.unlock();
+    throw;
+  }
+  m_Lock.unlock();
+}
+
+void CQuizManager::HandleDisconnectMaster(const std::string& id)
+{
+  m_Lock.lock();
+  try {
+      m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
+  } catch(...) {
+    m_Lock.unlock();
+    throw;
+  }
+  m_Lock.unlock();
+}
+
+void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string& mi, const json::const_iterator citJsData)
+{
+  m_Lock.lock();
+  try {
+    m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    if("id" == mi) {
+      //get info from message
+      const std::string& name = GetElementString(citJsData, "name");
+    }
+  } catch(...) {
+    m_Lock.unlock();
+    throw;
+  }
+  m_Lock.unlock();
+}
+
+void CQuizManager::HandleDisconnectBeamer(const std::string& id)
+{
+  m_Lock.lock();
+  try {
+      m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
+  } catch(...) {
+    m_Lock.unlock();
+    throw;
+  }
+  m_Lock.unlock();
+}
+
 void CQuizManager::ThreadTest(void)
 {
   m_spLogger->info("CQuizManager [%s][%u] in.", __FUNCTION__, __LINE__);
   bool good = false;
   while(!m_TestThreadStop) {
+#if 1
+    ThreadWait(5);
+#else
     ThreadTestOne(good);
+#endif
     good = !good;
   }
   m_spLogger->info("CQuizManager [%s][%u] out.", __FUNCTION__, __LINE__);

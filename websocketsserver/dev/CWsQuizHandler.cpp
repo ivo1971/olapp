@@ -114,12 +114,18 @@ void CWsQuizHandler::SendMessage(const std::string& id, const std::string& mi, c
 
 void CWsQuizHandler::SendMessage(const std::string& id, const std::string& mi, const json& data)
 {
+  //check if this function is called from the thread which is running the server or not
   if(m_ServerThreadId != std::this_thread::get_id()) {
+    //not the server thread
+    //so schedule a runnable in the server thread to send this message
+    //(delay the actual send)
     shared_ptr<RunnableFromServerThread> spRunnableFromServerThread(new RunnableFromServerThread(m_spLogger, m_spSelf, mi, data, id));
     m_spServer->execute(spRunnableFromServerThread);
     return;
   }
 
+  //this is the server thread
+  //so send the message
   json jsonData;
   jsonData["mi"]   = mi;
   jsonData["data"] = data;
@@ -161,7 +167,7 @@ void CWsQuizHandler::onDisconnect(WebSocket* pConnection)
 
 void CWsQuizHandler::onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length)
 {
-  m_spLogger->info("CWsQuizHandler [%s][%u] binary.", __FUNCTION__, __LINE__);
+  m_spLogger->info("CWsQuizHandler [%s][%u] ignoring binary data.", __FUNCTION__, __LINE__);
 }
 
 void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
@@ -181,9 +187,9 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
     } else {
       const MapSocketIdCIt cit = m_MapSocketId.find(pConnection);
       if(m_MapSocketId.end() == cit) {
-	//ID not found in the map
-	m_spLogger->info("CWsQuizHandler [%s][%u] string ID not found", __FUNCTION__, __LINE__);
-	return;
+        //ID not found in the map
+        m_spLogger->info("CWsQuizHandler [%s][%u] string ID not found", __FUNCTION__, __LINE__);
+        return;
       }
       id = cit->second;
     }
@@ -197,4 +203,3 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
     m_spLogger->info("CWsQuizHandler [%s][%u] string exception: %s.", __FUNCTION__, __LINE__, "unknown");
   } 
 }
-
