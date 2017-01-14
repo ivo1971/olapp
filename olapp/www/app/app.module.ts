@@ -10,6 +10,7 @@ import {RouterModule}              from '@angular/router';
 //Own services
 import {CloudService}              from './services/cloud.service';
 import {LogService}                from './services/log.service';
+import {ModeService}               from './services/mode.service';
 import {UserService}               from './services/user.service';
 import {WebsocketUserService}      from './services/websocket.user.service';
 
@@ -108,6 +109,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     //services
     CloudService,
     LogService,
+    ModeService,
     UserService,
     WebsocketUserService,
     //guards

@@ -2,6 +2,7 @@ import {Injectable}            from '@angular/core';
 import {Observable}            from 'rxjs/Observable';
 import {Subject}               from 'rxjs/Subject';
 
+import {ModeService}           from './mode.service';
 import {WebsocketService}      from './websocket.service';
 
 interface SubjectMap {
@@ -13,8 +14,10 @@ export class WebsocketMessageService extends WebsocketService {
     /**********************************************
      * Public construction/destruction
      */
-    constructor() {
-        super();
+    constructor(
+                private _modeService          : ModeService
+        ) {
+        super(_modeService);
         this.getObservable().subscribe(
             msg => {
                 let mi: string = msg["mi"];

@@ -2,6 +2,7 @@ import {Injectable}              from '@angular/core';
 import {Observable}              from 'rxjs/Observable';
 import {Subscription}            from 'rxjs/Subscription';
 
+import {ModeService}             from './mode.service';
 import {User}                    from './../classes/user.class';
 import {UserService}             from './user.service';
 import {WebsocketMessageService} from './websocket.message.service';
@@ -11,8 +12,11 @@ export class WebsocketUserService extends WebsocketMessageService {
     /**********************************************
      * Public construction/destruction
      */
-    constructor(private userService : UserService) {
-        super();
+    constructor(
+        private __modeService : ModeService,
+        private userService   : UserService
+        ) {
+        super(__modeService);
 
         let user : Observable<User> = this.userService.getObservableUser();
         user.subscribe(

@@ -5,10 +5,12 @@
         <span class="hamburger glyphicon glyphicon-menu-hamburger" aria-hidden="true" (click)="toggleSideBar()"></span>
       </td>
       <td class="text-center" width="80%">
-        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
-        <span *ngIf="teamName">
-          - <span class="glyphicon glyphicon-tent" aria-hidden="true"></span> {{teamName}}
-        </span>
+        <span *ngIf="userName">
+          <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{userName}}
+          <span *ngIf="teamName">
+            - <span class="glyphicon glyphicon-tent" aria-hidden="true"></span> {{teamName}}
+          </span>
+      </span>
       </td>
       <td class="text-right" width="10%">
         <span *ngIf="cloudConnected > 0"   class="glyphicon glyphicon-cloud  connection-ok"      aria-hidden="true"></span>

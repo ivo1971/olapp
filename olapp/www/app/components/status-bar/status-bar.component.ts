@@ -6,6 +6,7 @@ import {Subscription}          from 'rxjs/Subscription';
 import {User}                  from './../../classes/user.class';
 
 import {CloudService }         from './../../services/cloud.service';
+import {ModeService, EMode}    from './../../services/mode.service';
 import {UserService }          from './../../services/user.service';
 import {WebsocketUserService } from './../../services/websocket.user.service';
 
@@ -26,6 +27,7 @@ export class StatusBarComponent implements OnDestroy {
 
     public constructor(
       private cloudService         : CloudService,
+      private modeService          : ModeService,
       private userService          : UserService,
       private websocketUserService : WebsocketUserService
       ) {
@@ -39,8 +41,23 @@ export class StatusBarComponent implements OnDestroy {
           });
         this.userSubscription = this.userService.getObservableUser().subscribe(
           value => {
-            this.userName = value.name;
-            this.teamName = value.team;
+            switch(modeService.GetMode()) {
+              case EMode.Beamer:
+              case EMode.Master:
+                //no name & team in the task bar
+                this.userName = "";
+                this.teamName = "";
+                break;
+              case EMode.Master:
+                //no name & team in the task bar
+                this.userName = "QuizMaster";
+                this.teamName = "";
+                break;
+              default:
+                //set name & team
+                this.userName = value.name;
+                this.teamName = value.team;
+            }
           });
     }
 

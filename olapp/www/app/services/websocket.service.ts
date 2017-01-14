@@ -4,12 +4,16 @@ import {Observable}         from 'rxjs/Observable';
 import {BehaviorSubject}    from 'rxjs/BehaviorSubject';
 import {Subject}            from 'rxjs/Subject';
 
+import {ModeService, EMode} from './mode.service';
+
 @Injectable()
 export class WebsocketService {
     /**********************************************
      * Public construction/destruction
      */
-    constructor() {
+    constructor(
+        private modeService          : ModeService
+    ) {
     }    
 
     /**********************************************
@@ -75,7 +79,7 @@ export class WebsocketService {
      */
     private setUri(wsUri : string) : boolean {
         //only change when there is a change
-        if(wsUri === this.m_WsUri) {
+        if(wsUri === this.m_WsUriBase) {
             //no change
             return false;
         }
@@ -87,7 +91,24 @@ export class WebsocketService {
         }
 
         //change
-        this.m_WsUri = wsUri;
+        this.m_WsUriBase = wsUri;
+        let mode : string = "";
+        switch(this.modeService.GetMode()) {
+            case EMode.Beamer:
+                mode = "beamer";
+                break;            
+            case EMode.Master:
+                mode = "master";
+                break;            
+            default:
+                console.log("Unhandled mode [" + this.modeService.GetMode() + "] --> using default");
+                //intended fall-through for default mode
+            case EMode.Quiz:
+                mode = "quiz";
+                break;            
+        }
+        this.m_WsUri = wsUri + ":8000/" + mode;
+        console.log("connect [" + this.m_WsUri + "]");
         return true;
     }
 
@@ -155,6 +176,7 @@ export class WebsocketService {
     /**********************************************
      * Private members
      */
+    private m_WsUriBase           : string                   ;
     private m_WsUri               : string                   ;
     private m_Websocket           : any                      ;
     private m_WebsocketOpen       : boolean                  = false;

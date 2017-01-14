@@ -123,7 +123,7 @@ export class CloudService {
         //connect as soon as all information is available
         this.logService.debug("websocketConnect in");                     
         if((this.userNameValid) && (0 != this.websocketAddress.length)) {
-            let websocketUri = "ws://" + this.websocketAddress + ":8000/quiz";
+            let websocketUri = "ws://" + this.websocketAddress;
             if(!this.websocketUserServiceConnectCalled) {
                 this.logService.debug("websocketConnect connect");                     
                 this.websocketUserServiceConnectCalled = true;
