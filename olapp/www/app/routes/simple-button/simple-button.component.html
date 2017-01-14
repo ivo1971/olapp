@@ -4,7 +4,7 @@
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
         <image-local source="push.gif"  height="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" ></image-local>
-        <image-local source="wait.gif"  height="150" *ngIf="pushed  && !pushedFirst && !wrong && !good" (click)="onPush()" ></image-local>
+        <image-local source="wait.gif"  height="150" *ngIf="pushed  && !pushedFirst && !wrong && !good"                    ></image-local>
         <image-local source="go.gif"    height="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good"                    ></image-local>
         <image-local source="wrong.png" height="150" *ngIf="wrong"                                                         ></image-local>
         <image-local source="good.gif"  height="150" *ngIf="good"                                                          ></image-local>

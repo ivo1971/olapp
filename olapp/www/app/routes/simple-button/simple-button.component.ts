@@ -102,6 +102,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
      */
     public onPush() : void {
         this.logService.log("on push");
+        navigator.vibrate(300);
         this._websocketService.sendMsg("simple-push", {
             push: 1
         });
