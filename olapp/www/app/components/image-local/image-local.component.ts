@@ -25,10 +25,9 @@ export class ImageLocalComponent implements OnInit {
         }
 
     public ngOnInit() : void {
-        //sanity
         if(("-1" == this.height) && ("-1" == this.width)) {
-            this.height = "100px";
-            this.width  = "100px";
+            this.height = "100";
+            this.width  = "100";
         } else if("-1" == this.height) {
             this.height = this.width;
         } else if("-1" == this.width) {
