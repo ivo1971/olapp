@@ -14,8 +14,9 @@ import {EMedia}                from './../../classes/media-player.class';
 import {MediaPlayer}           from './../../classes/media-player.class';
 import {User}                  from './../../classes/user.class';
 
-import {UserService }          from './../../services/user.service';
 import {LogService }           from './../../services/log.service';
+import {ModeService, EMode}    from './../../services/mode.service';
+import {UserService }          from './../../services/user.service';
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
 @Component({
@@ -35,12 +36,14 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private pushedFirst     : boolean = false;
     private wrong           : boolean = false;
     private good            : boolean = false;
+    private modeIsQuiz      : boolean = true;
 
     /* Construction
      */
     public constructor(
       private userService       : UserService,
       private logService        : LogService,
+      private modeService       : ModeService,
       private _websocketService : WebsocketUserService,
       ) {
           //call base class
@@ -48,6 +51,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
           //additional initialization
           this.mediaPlayer = new MediaPlayer(logService);
+          this.modeIsQuiz  = this.modeService.IsQuiz();
     }
 
     /* Life-cycle hooks
@@ -260,6 +264,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         if(!background) {
             this.backgroundClear();
             return;
+        }
+
+        //background fixed color in not-quiz mode
+        if(!this.modeIsQuiz) {
+            background = "info";
         }
 
         //detect changes to avoid needlesly changing the DOM

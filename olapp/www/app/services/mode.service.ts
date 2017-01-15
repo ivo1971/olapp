@@ -28,5 +28,9 @@ export class ModeService {
         return this.mode;
     }
 
+    public IsQuiz() : boolean {
+        return EMode.Quiz == this.mode;
+    }
+
     private mode : EMode = EMode.Quiz;
 }
