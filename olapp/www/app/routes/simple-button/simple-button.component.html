@@ -4,11 +4,11 @@
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
         <span *ngIf="modeIsQuiz">
-            <image-local source="push.gif"  height="150" *ngIf="!pushed && !wrong && !good"                 (click)="onPush()" ></image-local>
-            <image-local source="wait.gif"  height="150" *ngIf="pushed  && !pushedFirst && !wrong && !good"                    ></image-local>
-            <image-local source="go.gif"    height="150" *ngIf="pushed  &&  pushedFirst && !wrong && !good"                    ></image-local>
-            <image-local source="wrong.png" height="150" *ngIf="wrong"                                                         ></image-local>
-            <image-local source="good.gif"  height="150" *ngIf="good"                                                          ></image-local>
+            <image-local source="push.gif"  height="150" *ngIf="!wait && !go && !wrong && !good" (click)="onPush()" ></image-local>
+            <image-local source="good.gif"  height="150" *ngIf="good"                                               ></image-local>
+            <image-local source="wrong.png" height="150" *ngIf="wrong"                                              ></image-local>
+            <image-local source="go.gif"    height="150" *ngIf="go"                                                 ></image-local>
+            <image-local source="wait.gif"  height="150" *ngIf="wait"                                               ></image-local>
         </span>
         <div class="text-left">
             <simple-button-data [data]="observableInfo | async"></simple-button-data>
@@ -22,8 +22,8 @@
 <div class="preload">
     <image-local source="loading.gif" ></image-local>
     <image-local source="push.gif"    ></image-local>
-    <image-local source="wait.gif"    ></image-local>
-    <image-local source="go.gif"      ></image-local>
-    <image-local source="wrong.png"   ></image-local>
     <image-local source="good.gif"    ></image-local>
+    <image-local source="wrong.png"   ></image-local>
+    <image-local source="go.gif"      ></image-local>
+    <image-local source="wait.gif"    ></image-local>
 </div>    

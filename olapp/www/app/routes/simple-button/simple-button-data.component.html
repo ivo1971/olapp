@@ -1,12 +1,12 @@
 <div *ngIf="null !== data" class="simple-button"> <!-- NULL-check required for bootstrapping -->
-    <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.simple-button-success]="i == 0" [class.simple-button-warning]="i != 0">
+    <div *ngFor="let team of data.teams | simpleButtonActiveFilter; let i = index" class="alert background" [class.simple-button-good]="team.good" [class.simple-button-wrong]="team.wrong" [class.simple-button-go]="team.go" [class.simple-button-wait]="team.wait">
         <table>
             <tr>
                 <td>
-                    <image-local source="good.gif"  height="35" *ngIf="team.good"                                                   ></image-local>
-                    <image-local source="wrong.gif" height="35" *ngIf="team.wrong"                                                  ></image-local>
-                    <image-local source="go.gif"    height="35" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i === 0)" ></image-local>
-                    <image-local source="wait.gif"  height="35" *ngIf="(!team.good) && (!team.wrong) && (team.active) && (i !== 0)" ></image-local>
+                    <image-local source="good.gif"  height="35" *ngIf="team.good" ></image-local>
+                    <image-local source="wrong.png" height="35" *ngIf="team.wrong"></image-local>
+                    <image-local source="go.gif"    height="35" *ngIf="team.go"   ></image-local>
+                    <image-local source="wait.gif"  height="35" *ngIf="team.wait" ></image-local>
                 </td>
                 <td>
                     <b>{{team.name}}</b><br />

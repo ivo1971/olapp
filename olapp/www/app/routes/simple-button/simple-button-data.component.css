@@ -8,28 +8,26 @@
     margin: 10px;
 }
 
-.simple-button-success {
+.simple-button-good {
   color: #3c763d;
-  background-color: #dff0c8;
-  /* background-color: #dff0d8; */
-  border-color: #d6e9c6;
+  background-color: #efffd8;
+  border-color: #e6f9d6;
 }
 
-.simple-button-info {
-  color: #31708f;
-  background-color: #d9edf7;
-  border-color: #bce8f1;
-}
-
-.simple-button-warning {
-  color: #8a6d3b;
-  background-color: #ccd8c3;
-  /* background-color: #fcf8e3; */
-  border-color: #faebcc;
-}
-
-.simple-button-danger {
+.simple-button-wrong {
   color: #a94442;
   background-color: #f2dede;
   border-color: #ebccd1;
+}
+
+.simple-button-go {
+  color: #3c763d;
+  background-color: #dff0c8;
+  border-color: #d6e9c6;
+}
+
+.simple-button-wait {
+  color: #8a6d3b;
+  background-color: #ccd8c3;
+  border-color: #ccd8c3;
 }

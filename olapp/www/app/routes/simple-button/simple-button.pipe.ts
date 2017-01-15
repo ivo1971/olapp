@@ -21,14 +21,11 @@ export class SimpleButtonActiveFilter implements PipeTransform {
      */
     transform(items: SimpleButtonTeamInfo[]): SimpleButtonTeamInfo[] {
         if(!items) return [];
-        /*
         if(this.modeIsQuiz) {
             return items.filter(item => item.active);
         } else {
             return items;            
         }
-        */
-        return items.filter(item => item.active);
     }
 
     private modeIsQuiz : boolean = true;

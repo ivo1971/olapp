@@ -9,6 +9,7 @@ import 'rxjs/add/operator/filter';
 import {ComponentBase}        from './../../classes/component-base.class';
 import {SimpleButtonInfo}     from './../../classes/simple-button-info.class';
 import {SimpleButtonTeamInfo} from './../../classes/simple-button-info.class';
+import {calculate}            from './../../classes/simple-button-info.class';
 
 import {EMedia}                from './../../classes/media-player.class';
 import {MediaPlayer}           from './../../classes/media-player.class';
@@ -31,12 +32,12 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private prevSequenceNbr : number  = 0;
-    private pushed          : boolean = false;
-    private pushedFirst     : boolean = false;
-    private wrong           : boolean = false;
-    private good            : boolean = false;
     private modeIsQuiz      : boolean = true;
+    private prevSequenceNbr : number  = 0;
+    private good            : boolean = false;
+    private wrong           : boolean = false;
+    private go              : boolean = false;
+    private wait            : boolean = false;
 
     /* Construction
      */
@@ -172,65 +173,61 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
             return;
         }
 
-        //compare this user's team to the teams in the list to
-        //calculate the current state and act on it
+        //evaluate all items on the list
+        let teamOnList : boolean = false;
         {
-            let userOnList       : boolean = false;
             let firstActiveFound : boolean = false;
-            for(let u = 0 ; u < data.teams.length ; ++u) {
-                if(this.user.team === data.teams[u].name) {
-                    //team is on the list, so the button has been
-                    //pushed
-                    userOnList  = true;
-                    this.pushed = true;
-                    if(!firstActiveFound) {
-                        this.pushedFirst = true;
-                        if(!this.pushVibrateDone) {
-                            this.logService.log("Simple-button vibrate");
-                            navigator.vibrate(1000);
-                            this.pushVibrateDone = true;
+            for(let u : number = 0 ; u < data.teams.length ; ++u) {
+                //evaluate team on the list
+                firstActiveFound = calculate(data.teams[u], firstActiveFound);
+                this.logService.log("Simple-button handling message team [" + u + "][" + data.teams[u].good + "][" + data.teams[u].wrong + "][" + data.teams[u].go + "][" + data.teams[u].wait + "]");
+
+                //is it this team?
+                if(this.modeIsQuiz) {
+                    if(this.user.team === data.teams[u].name) {
+                        //team found
+                        this.logService.log("Simple-button handling message MATCH team [" + u + "][" + data.teams[u].good + "][" + data.teams[u].wrong + "][" + data.teams[u].go + "][" + data.teams[u].wait + "]");
+                        this.good  = data.teams[u].good ;
+                        this.wrong = data.teams[u].wrong;
+                        this.go    = data.teams[u].go   ;
+                        this.wait  = data.teams[u].wait ;
+                        teamOnList = true;
+
+                        //set the background based upon the current state
+                        if(this.good) {
+                            this.backgroundSet("good");
+                            this.playResult(EMedia.Applause);
+                        } else if(this.wrong) {
+                            this.backgroundSet("wrong");
+                            this.playResult(EMedia.SadTrombone);
+                        } else if(this.go) {
+                            //this team is the first on the active-list                        
+                            this.backgroundSet("go");
+                            this.handleSimpleButtonVibrate();
+                        } else if(this.wait) {
+                            //team has pushed, but other teams
+                            //are preceding it on the list
+                            this.backgroundSet("wait");                        
+                            this.handleSimpleButtonVibrate();
+                        } else {
+                            this.logService.log("Simple-button handling message UNHANDLED team [" + u + "][" + this.good + "][" + this.wrong + "][" + this.go + "][" + this.wait + "]");
                         }
                     }
-
-                    //check if the team is still active,
-                    //if it is not: the team timed out or
-                    //answered wrong
-                    this.wrong = !data.teams[u].active;
-
-                    //check if the team has the 'good' flag
-                    this.good = data.teams[u].good;
-
-                    //set the background based upon the current state
-                    this.logService.log("Simple-button handling message [" + sequenceNbr + "]: team found on the list (good: [" + this.good + "])(wrong: ["+ this.wrong +"])(first: [" + !firstActiveFound + "])");
-                    if(this.wrong) {
-                        this.playResult(EMedia.SadTrombone);
-                        this.backgroundSet("danger");
-                    } else if(this.good) {
-                        this.playResult(EMedia.Applause);
-                        this.backgroundSet("success");
-                    } else if(!firstActiveFound) {
-                        //this team is the first on the list                        
-                        this.backgroundSet("success");
-                    } else {
-                        //team has pushed, but other teams
-                        //are preceding it on the list
-                        this.backgroundSet("warning");                        
-                    }
-
-                    //quit the loop as early as possible
-                    break;
-                }
-
-                //look for the first active team on the list
-                //as this has influence on this team's background
-                if(data.teams[u].active) {
-                    this.logService.log("Simple-button handling message [" + sequenceNbr + "]: other prior team(s) found on the list");
-                    firstActiveFound = true;
                 }
             }
-            if(!userOnList) {
-                this.reset("info");
-            }
+        }
+
+        //final evaluation for this user's team
+        if((this.modeIsQuiz) && (!teamOnList)) {
+            this.reset("info");
+        }
+    }
+
+    private handleSimpleButtonVibrate() : void {
+        if(!this.pushVibrateDone) {
+            this.logService.log("Simple-button vibrate 2");
+            navigator.vibrate(1000);
+            this.pushVibrateDone = true;
         }
     }
 
@@ -241,10 +238,10 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     private reset(background : string) : void {
         this.logService.debug("reset");
-        this.pushed             = false;
-        this.pushedFirst        = false;
-        this.wrong              = false;
         this.good               = false;
+        this.wrong              = false;
+        this.go                 = false;
+        this.wait               = false;
         this.pushVibrateDone    = false;
         this.resultSoundDone    = false;
         this.backgroundSet(background);
@@ -264,11 +261,6 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         if(!background) {
             this.backgroundClear();
             return;
-        }
-
-        //background fixed color in not-quiz mode
-        if(!this.modeIsQuiz) {
-            background = "info";
         }
 
         //detect changes to avoid needlesly changing the DOM
