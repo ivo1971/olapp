@@ -4,6 +4,8 @@ import {OnInit}                from '@angular/core';
 import {Router}                from '@angular/router';
 import {Subscription}          from 'rxjs/Subscription';
 
+import {LogService }           from './services/log.service';
+import {ModeService, EMode}    from './services/mode.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
 @Component({
@@ -15,10 +17,14 @@ import {WebsocketUserService}  from './services/websocket.user.service';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
+    private isQuizMaster : boolean = false;
     public constructor(
       private router           : Router,
+      private logService       : LogService,
+      private modeService      : ModeService,
       private websocketService : WebsocketUserService
       ) {
+          this.isQuizMaster = EMode.Master == this.modeService.GetMode();
     }
 
     public ngOnInit() {
@@ -30,6 +36,13 @@ export class AppComponent implements OnInit {
             console.log("Route request to [" + to + "]");
             this.router.navigate(toArray);
           });
+    }
+
+    public onChangeMode(mode : string) : any {
+        this.logService.log("select mode [" + mode + "]");
+        this.websocketService.sendMsg("select-mode", {
+            mode: mode
+        });
     }
 }
 
