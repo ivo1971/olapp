@@ -1,2 +1,12 @@
 <status-bar></status-bar>
+<div *ngIf="isQuizMaster">
+    <select (change)="onChangeMode($event.target.value)">
+        <option value="none">--- please select ---</option>
+        <option value="welcome">Welcome</option>
+        <option value="simple-button-demo">Simble button demo</option>
+        <option value="simple-button">Simble button</option>
+        <option value="test">Test</option>
+    </select> 
+    <hr />
+</div>
 <router-outlet  class=""></router-outlet>
