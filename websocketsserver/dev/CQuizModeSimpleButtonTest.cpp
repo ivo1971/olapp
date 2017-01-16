@@ -8,10 +8,7 @@ using namespace seasocks;
 
 CQuizModeSimpleButtonTest::CQuizModeSimpleButtonTest(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users)
    : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, users)
-   , m_spLogger(spLogger)
-   , m_spWsQuizHandler(spWsQuizHandler)
-   , m_spWsMasterHandler(spWsMasterHandler)
-   , m_spWsBeamerHandler(spWsBeamerHandler)
+   , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "simple-button")
    , m_TestThreadStop(false)
    , m_TestThread(thread([=]{ThreadTest();}))
    , m_Users(users)
@@ -46,6 +43,11 @@ void CQuizModeSimpleButtonTest::UsersChanged(const MapUser& users)
     m_Lock.lock();
     m_Users = users;
     m_Lock.unlock();
+}
+
+void CQuizModeSimpleButtonTest::ReConnect(const std::string& id)
+{
+    CQuizModeBase::ReConnect(id);
 }
 
 void CQuizModeSimpleButtonTest::ThreadTest(void)
@@ -94,7 +96,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
       m_spLogger->info("CQuizManager [%s][%u] 'welcome' route.", __FUNCTION__, __LINE__);
       json data;
       data["to"] = "welcome";
-      m_spWsQuizHandler->SendMessage("route", data);
+      SendMessage("route", data);
       ThreadWait(stepTimeSec);
     }
 
@@ -105,7 +107,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
         team << "Team " << citUser->second.NameGet();
         json data;
         data["name"] = team.str();
-        m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
+        SendMessage(citUser->first, "team", data);
       }
     }
 
@@ -114,7 +116,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
       m_spLogger->info("CQuizManager [%s][%u] 'simple-button' route.", __FUNCTION__, __LINE__);
       json data;
       data["to"] = "simple-button";
-      m_spWsQuizHandler->SendMessage("route", data);
+      SendMessage("route", data);
       ThreadWait(stepTimeSec);
     }
 
@@ -126,7 +128,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
       {
         m_spLogger->info("CQuizManager [%s][%u] 'simple-button' arm.", __FUNCTION__, __LINE__);
         json data = simpleButtonInfo.Arm();
-        m_spWsQuizHandler->SendMessage("simple-button", data);
+        SendMessage("simple-button", data);
         ThreadWait(stepTimeSec);
       }
       
@@ -137,7 +139,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
         for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
           simpleButtonInfo.TeamAdd(ThreadUser2Team(userNamesButton.front()));
           simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), userNamesButton.front());
-          m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+          SendMessage("simple-button", simpleButtonInfo.ToJson());
           ThreadWait(stepTimeSec);
         }
       }
@@ -148,7 +150,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
         m_spLogger->info("CQuizManager [%s][%u] 'simple-button' add second user.", __FUNCTION__, __LINE__);
         for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front()) {
           simpleButtonInfo.TeamMembersAdd(ThreadUser2Team(userNamesButton.front()), "second");
-          m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+          SendMessage("simple-button", simpleButtonInfo.ToJson());
           ThreadWait(stepTimeSec);
         }
       }
@@ -158,7 +160,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
         m_spLogger->info("CQuizManager [%s][%u] 'simple-button' out-of-sequence.", __FUNCTION__, __LINE__);
         CSimpleButtonInfo simpleButtonInfoOutOfSequence;
         json data = simpleButtonInfoOutOfSequence.Arm();
-        m_spWsQuizHandler->SendMessage("simple-button", data);
+        SendMessage("simple-button", data);
         ThreadWait(stepTimeSec);
       }
       
@@ -170,12 +172,12 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
         for(ListString userNamesButton = userNames ; 0 != userNamesButton.size() ; userNamesButton.pop_front(), ++nbr) {
           if(nbr < nbrGood) {
             simpleButtonInfo.TeamDeactivate(ThreadUser2Team(userNamesButton.front()));
-            m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+            SendMessage("simple-button", simpleButtonInfo.ToJson());
             ThreadWait(stepTimeSec);
           } else {
             m_spLogger->info("CQuizManager [%s][%u] 'simple-button' GOOD.", __FUNCTION__, __LINE__);
             simpleButtonInfo.TeamGood(ThreadUser2Team(userNamesButton.front()));
-            m_spWsQuizHandler->SendMessage("simple-button", simpleButtonInfo.ToJson());
+            SendMessage("simple-button", simpleButtonInfo.ToJson());
             ThreadWait(stepTimeSec * 2);
             break;
           }
@@ -187,7 +189,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
       {
         m_spLogger->info("CQuizManager [%s][%u] 'simple-button' reset.", __FUNCTION__, __LINE__);
         json data = simpleButtonInfo.Reset();
-        m_spWsQuizHandler->SendMessage("simple-button", data);
+        SendMessage("simple-button", data);
         ThreadWait(stepTimeSec);
       }
 
@@ -195,7 +197,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
       {
         m_spLogger->info("CQuizManager [%s][%u] 'simple-button' arm.", __FUNCTION__, __LINE__);
         json data = simpleButtonInfo.Arm();
-        m_spWsQuizHandler->SendMessage("simple-button", data);
+        SendMessage("simple-button", data);
         ThreadWait(stepTimeSec);
       }
     }
@@ -204,7 +206,7 @@ void CQuizModeSimpleButtonTest::ThreadTestOne(const bool good)
     {
       json data;
       data["name"] = "";
-      m_spWsQuizHandler->SendMessage("team", data);
+      SendMessage("team", data);
     }
 
   } catch(exception& ex) {
@@ -237,4 +239,32 @@ void CQuizModeSimpleButtonTest::ThreadWait(const time_t waitSec)
 
   //stop request
   throw std::exception();
+}
+
+void CQuizModeSimpleButtonTest::SendMessage(const std::string& mi, const nlohmann::json::const_iterator citJsData)
+{
+  m_spWsQuizHandler->SendMessage  (mi, citJsData);
+  m_spWsMasterHandler->SendMessage(mi, citJsData);
+  m_spWsBeamerHandler->SendMessage(mi, citJsData);
+}
+
+void CQuizModeSimpleButtonTest::SendMessage(const std::string& mi, const nlohmann::json& data)
+{
+  m_spWsQuizHandler->SendMessage  (mi, data);
+  m_spWsMasterHandler->SendMessage(mi, data);
+  m_spWsBeamerHandler->SendMessage(mi, data);
+}
+
+void CQuizModeSimpleButtonTest::SendMessage(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+{
+  m_spWsQuizHandler->SendMessage  (id, mi, citJsData);
+  m_spWsMasterHandler->SendMessage(id, mi, citJsData);
+  m_spWsBeamerHandler->SendMessage(id, mi, citJsData);
+}
+
+void CQuizModeSimpleButtonTest::SendMessage(const std::string& id, const std::string& mi, const nlohmann::json& data)
+{
+  m_spWsQuizHandler->SendMessage  (id, mi, data);
+  m_spWsMasterHandler->SendMessage(id, mi, data);
+  m_spWsBeamerHandler->SendMessage(id, mi, data);
 }

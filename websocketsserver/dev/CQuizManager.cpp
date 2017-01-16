@@ -7,6 +7,8 @@
 #include "CQuizManager.h"
 #include "CQuizModeIgnore.h"
 #include "CQuizModeSimpleButtonTest.h"
+#include "CQuizModeTest.h"
+#include "CQuizModeWelcome.h"
 #include "JsonHelpers.h"
 #include "Typedefs.h"
 
@@ -26,8 +28,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_WsBeamerHandlerMessageConnection   (m_spWsBeamerHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageBeamer,    this, _1, _2, _3)))
   , m_WsBeamerHandlerDisconnectConnection(m_spWsBeamerHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectBeamer, this, _1)))
   , m_Users()
-  //TODO , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Users))
-  , m_CurrentQuizMode(new CQuizModeSimpleButtonTest(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Users))
+  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Users))
 {
 }
 
@@ -51,6 +52,7 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       } else {
         userIt->second.NameSet(name);
       }
+      m_CurrentQuizMode->ReConnect(id);
       m_CurrentQuizMode->UsersChanged(m_Users);
     } else {
       //default: forward to current node
@@ -88,6 +90,11 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
     if("id" == mi) {
       //get info from message
       const std::string& name = GetElementString(citJsData, "name");
+      m_CurrentQuizMode->ReConnect(id);
+    } else if("select-mode" == mi) {
+      //get info from message
+      const std::string& mode = GetElementString(citJsData, "mode");
+      SelectMode(mode);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageMaster(id, mi, citJsData);
@@ -103,7 +110,7 @@ void CQuizManager::HandleDisconnectMaster(const std::string& id)
 {
   m_Lock.lock();
   try {
-      m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
+    m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
   } catch(...) {
     m_Lock.unlock();
     throw;
@@ -119,6 +126,7 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
     if("id" == mi) {
       //get info from message
       const std::string& name = GetElementString(citJsData, "name");
+      m_CurrentQuizMode->ReConnect(id);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageBeamer(id, mi, citJsData);
@@ -140,4 +148,18 @@ void CQuizManager::HandleDisconnectBeamer(const std::string& id)
     throw;
   }
   m_Lock.unlock();
+}
+
+void CQuizManager::SelectMode(const std::string& mode)
+{
+  m_spLogger->info("CQuizManager [%s][%u] switching to mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
+  if("welcome" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+  } else if("test" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+  } else if("simple-button-test" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+  } else {
+    m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
+  }
 }

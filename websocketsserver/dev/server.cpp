@@ -39,11 +39,11 @@ int main(int argc, const char* argv[]) {
    CConfigureServer                 configureServer      (ipAddressServer);
 
    //configuration
-   spWsQuizHandler->SpSelfSet(spWsQuizHandler);
-   spServer->addWebSocketHandler("/quiz",       spWsQuizHandler      );
+   spWsQuizHandler->SpSelfSet  (spWsQuizHandler  );
    spWsMasterHandler->SpSelfSet(spWsMasterHandler);
+   spWsBeamerHandler->SpSelfSet(spWsBeamerHandler);
+   spServer->addWebSocketHandler("/quiz",       spWsQuizHandler      );
    spServer->addWebSocketHandler("/master",     spWsMasterHandler    );
-   spWsMasterHandler->SpSelfSet(spWsBeamerHandler);
    spServer->addWebSocketHandler("/beamer",     spWsBeamerHandler    );
 
    //run server

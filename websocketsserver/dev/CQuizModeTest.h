@@ -1,12 +1,15 @@
-#ifndef __CQUIZMODEIGNORE__H__
-#define __CQUIZMODEIGNORE__H__
+#ifndef __CQUIZMODETEST__H__
+#define __CQUIZMODETEST__H__
+
+#include <mutex>
 
 #include "IQuizMode.h"
+#include "CQuizModeBase.h"
 
-class CQuizModeIgnore : public IQuizMode {
+class CQuizModeTest : public IQuizMode, public CQuizModeBase {
    public:
-                                            CQuizModeIgnore(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users);
-      virtual                               ~CQuizModeIgnore(void) throw();
+                                            CQuizModeTest(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users);
+      virtual                               ~CQuizModeTest(void) throw();
 
    public:
       virtual void                          HandleMessageQuiz     (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
@@ -14,9 +17,6 @@ class CQuizModeIgnore : public IQuizMode {
       virtual void                          HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
       virtual void                          UsersChanged          (const MapUser& users);
       virtual void                          ReConnect             (const std::string& id);
-
-   private:
-      std::shared_ptr<seasocks::Logger>     m_spLogger;
 };
 
-#endif //__CQUIZMODEIGNORE__H__
+#endif //__CQUIZMODESSIMPLEBUTTONTEST__H__

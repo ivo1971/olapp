@@ -17,6 +17,7 @@ class IQuizMode {
       virtual void                          HandleMessageMaster   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData) = 0;
       virtual void                          HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData) = 0;
       virtual void                          UsersChanged          (const MapUser& users) = 0;
+      virtual void                          ReConnect             (const std::string& id) = 0;
 };
 
 #endif //__IQUIZMODE__H__

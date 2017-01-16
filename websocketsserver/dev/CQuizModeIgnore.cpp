@@ -33,3 +33,8 @@ void CQuizModeIgnore::UsersChanged(const MapUser& users)
 {
     m_spLogger->info("CQuizModeIgnore [%s][%u].", __FUNCTION__, __LINE__);
 }
+
+void CQuizModeIgnore::ReConnect(const std::string& id)
+{
+    m_spLogger->info("CQuizModeIgnore [%s][%u].", __FUNCTION__, __LINE__);
+}

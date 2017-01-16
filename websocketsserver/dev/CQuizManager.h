@@ -23,6 +23,7 @@ class CQuizManager {
     void                                  HandleDisconnectMaster(const std::string& id);
     void                                  HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
     void                                  HandleDisconnectBeamer(const std::string& id);
+    void                                  SelectMode            (const std::string& mode);
 
   private:
     std::shared_ptr<CWsQuizHandler>       m_spWsQuizHandler;
@@ -39,7 +40,7 @@ class CQuizManager {
     std::thread                           m_TestThread;
     std::mutex                            m_Lock;
     MapUser                               m_Users;
-    std::shared_ptr<IQuizMode>            m_CurrentQuizMode;
+    std::unique_ptr<IQuizMode>            m_CurrentQuizMode;
 };
 
 #endif //__CQUIZMANAGER__H__
