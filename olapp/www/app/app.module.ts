@@ -1,42 +1,43 @@
 //Built-in modules
-import {BrowserModule}             from '@angular/platform-browser';
-import {CanActivate}               from '@angular/router';
-import {CanDeactivate}             from '@angular/router';
-import {FormsModule}               from '@angular/forms';
-import {HttpModule}                from "@angular/http";
-import {NgModule}                  from '@angular/core';
-import {RouterModule}              from '@angular/router';
+import {BrowserModule}                 from '@angular/platform-browser';
+import {CanActivate}                   from '@angular/router';
+import {CanDeactivate}                 from '@angular/router';
+import {FormsModule}                   from '@angular/forms';
+import {HttpModule}                    from "@angular/http";
+import {NgModule}                      from '@angular/core';
+import {RouterModule}                  from '@angular/router';
 
 //Own services
-import {CloudService}              from './services/cloud.service';
-import {LogService}                from './services/log.service';
-import {ModeService}               from './services/mode.service';
-import {UserService}               from './services/user.service';
-import {WebsocketUserService}      from './services/websocket.user.service';
+import {CloudService}                  from './services/cloud.service';
+import {LogService}                    from './services/log.service';
+import {ModeService}                   from './services/mode.service';
+import {UserService}                   from './services/user.service';
+import {WebsocketUserService}          from './services/websocket.user.service';
 
 //Own providers: guards
-import {UsernameSetGuard}          from './providers/guards/username-set.guard';
+import {UsernameSetGuard}              from './providers/guards/username-set.guard';
 
 //Own components: application
-import {AppComponent}              from "./app.component";
+import {AppComponent}                  from "./app.component";
 
 //Own components: routes
-import {AboutComponent}            from "./routes/about/about.component";
-import {ConfigurationComponent}    from "./routes/configuration/configuration.component";
-import {LoginComponent}            from "./routes/login/login.component";
-import {SimpleButtonComponent}     from "./routes/simple-button/simple-button.component";
-import {SimpleButtonComponentData} from "./routes/simple-button/simple-button-data.component";
-import {TestComponent}             from "./routes/test/test.component";
-import {WelcomeComponent}          from "./routes/welcome/welcome.component";
+import {AboutComponent}                from "./routes/about/about.component";
+import {ConfigurationComponent}        from "./routes/configuration/configuration.component";
+import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/configure-teams-master.component";
+import {LoginComponent}                from "./routes/login/login.component";
+import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
+import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
+import {TestComponent}                 from "./routes/test/test.component";
+import {WelcomeComponent}              from "./routes/welcome/welcome.component";
 
 //Own components: components
-import {ImageLocalComponent}       from "./components/image-local/image-local.component";
-import {ImageNativeComponent}      from "./components/image-native/image-native.component";
-import {MenuComponent}             from "./components/menu/menu.component";
-import {StatusBarComponent}        from "./components/status-bar/status-bar.component";
+import {ImageLocalComponent}           from "./components/image-local/image-local.component";
+import {ImageNativeComponent}          from "./components/image-native/image-native.component";
+import {MenuComponent}                 from "./components/menu/menu.component";
+import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
 
 //Own components: pipes
-import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pipe";
+import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
 
 //Module definition
 @NgModule({
@@ -62,6 +63,10 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
             UsernameSetGuard  
         ],
         children : [
+          {
+            path: 'configure-teams',
+            component: ModeService.SIsMaster() ? ConfigureTeamsMasterComponent : WelcomeComponent
+          },
           {
             path: 'simple-button',
             component: SimpleButtonComponent
@@ -122,6 +127,7 @@ import {SimpleButtonActiveFilter}  from "./routes/simple-button/simple-button.pi
     //routes
     AboutComponent,
     ConfigurationComponent,
+    ConfigureTeamsMasterComponent,
     LoginComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
