@@ -143,7 +143,7 @@ void CWsQuizHandler::SendMessage(const std::string& id, const std::string& mi, c
  ** Private functions
  **
  *****************************************************************************************/
-void CWsQuizHandler::onConnect(WebSocket* pConnection)
+void CWsQuizHandler::onConnect(WebSocket* /* pConnection */)
 {
   m_spLogger->info("CWsQuizHandler [%s][%u].", __FUNCTION__, __LINE__);
 }
@@ -165,7 +165,7 @@ void CWsQuizHandler::onDisconnect(WebSocket* pConnection)
   }
 }
 
-void CWsQuizHandler::onData(WebSocket* /* pConnection */, const uint8_t* pData, size_t length)
+void CWsQuizHandler::onData(WebSocket* /* pConnection */, const uint8_t* /* pData */, size_t /* length */)
 {
   m_spLogger->info("CWsQuizHandler [%s][%u] ignoring binary data.", __FUNCTION__, __LINE__);
 }

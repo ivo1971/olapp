@@ -36,8 +36,6 @@ class CQuizManager {
     boost::signals2::connection           m_WsMasterHandlerDisconnectConnection;
     boost::signals2::connection           m_WsBeamerHandlerMessageConnection;
     boost::signals2::connection           m_WsBeamerHandlerDisconnectConnection;
-    bool                                  m_TestThreadStop;
-    std::thread                           m_TestThread;
     std::mutex                            m_Lock;
     MapUser                               m_Users;
     std::unique_ptr<IQuizMode>            m_CurrentQuizMode;

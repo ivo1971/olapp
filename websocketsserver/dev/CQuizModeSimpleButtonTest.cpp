@@ -22,17 +22,17 @@ CQuizModeSimpleButtonTest::~CQuizModeSimpleButtonTest(void) throw()
    m_TestThread.join();
 }
 
-void CQuizModeSimpleButtonTest::HandleMessageQuiz(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeSimpleButtonTest::HandleMessageQuiz(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButtonTest [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeSimpleButtonTest::HandleMessageMaster(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeSimpleButtonTest::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButtonTest [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeSimpleButtonTest::HandleMessageBeamer(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeSimpleButtonTest::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButtonTest [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }

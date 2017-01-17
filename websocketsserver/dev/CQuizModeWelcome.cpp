@@ -14,22 +14,22 @@ CQuizModeWelcome::~CQuizModeWelcome(void) throw()
 {
 }
 
-void CQuizModeWelcome::HandleMessageQuiz(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeWelcome::HandleMessageQuiz(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeWelcome [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeWelcome::HandleMessageMaster(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeWelcome::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeWelcome [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeWelcome::HandleMessageBeamer(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+void CQuizModeWelcome::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeWelcome [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeWelcome::UsersChanged(const MapUser& users)
+void CQuizModeWelcome::UsersChanged(const MapUser& /* users */)
 {
     m_spLogger->info("CQuizModeWelcome [%s][%u].", __FUNCTION__, __LINE__);
 }

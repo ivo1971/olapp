@@ -17,10 +17,10 @@ using namespace nlohmann;
 using namespace seasocks;
 
 CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler)
-  : m_spLogger(spLogger)
-  , m_spWsQuizHandler(spWsQuizHandler)
+  : m_spWsQuizHandler(spWsQuizHandler)
   , m_spWsMasterHandler(spWsMasterHandler)
   , m_spWsBeamerHandler(spWsBeamerHandler)
+  , m_spLogger(spLogger)
   , m_WsQuizHandlerMessageConnection     (m_spWsQuizHandler->ConnectSignalMessage     (boost::bind(&CQuizManager::HandleMessageQuiz,      this, _1, _2, _3)))
   , m_WsQuizHandlerDisconnectConnection  (m_spWsQuizHandler->ConnectSignalDisconnect  (boost::bind(&CQuizManager::HandleDisconnectQuiz,   this, _1)))
   , m_WsMasterHandlerMessageConnection   (m_spWsMasterHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageMaster,    this, _1, _2, _3)))
@@ -88,8 +88,6 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
   try {
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
-      //get info from message
-      const std::string& name = GetElementString(citJsData, "name");
       m_CurrentQuizMode->ReConnect(id);
     } else if("select-mode" == mi) {
       //get info from message
@@ -124,8 +122,6 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
   try {
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
-      //get info from message
-      const std::string& name = GetElementString(citJsData, "name");
       m_CurrentQuizMode->ReConnect(id);
     } else {
       //default: forward to current node

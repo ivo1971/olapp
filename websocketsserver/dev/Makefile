@@ -12,7 +12,7 @@
 CXX           := clang++
 
 CFLAGS        := 
-CPPFLAGS      := -std=c++11 -pthread
+CPPFLAGS      := -std=c++11 -pthread -Werror -W -Weffc++ -Wall -Wextra -Wpointer-arith -Woverloaded-virtual
 DEPFLAGS      := -MMD -MP -o $@
 
 INCLUDE_PATHS := -I../resources/seasocks-master/src/main/c -I../resources/json/ -I../resources/boost_1_62_0 -I../resources/curl-7.50.3/include
@@ -25,7 +25,7 @@ SOURCES       := $(shell find . -type f -iname '*.cpp')
 HEADERS       := $(shell find . -type f -iname '*.h')
 OBJECTS       := $(foreach x, $(basename $(SOURCES)), $(x).o)
 DEPENDENCIES  := $(foreach x, $(basename $(SOURCES)), $(x).d)
-
+ 
 .PHONY: clean
 
 %.o : %.cpp $(HEADERS)
