@@ -5,6 +5,7 @@
 #include "json.hpp"
 
 #include "CQuizManager.h"
+#include "CQuizModeConfigureTeams.h"
 #include "CQuizModeIgnore.h"
 #include "CQuizModeSimpleButtonTest.h"
 #include "CQuizModeTest.h"
@@ -155,6 +156,8 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
   } else if("simple-button-demo" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+  } else if("configure-teams" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeConfigureTeams(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }
