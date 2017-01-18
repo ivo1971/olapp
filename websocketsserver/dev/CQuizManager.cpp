@@ -28,8 +28,9 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_WsMasterHandlerDisconnectConnection(m_spWsMasterHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectMaster, this, _1)))
   , m_WsBeamerHandlerMessageConnection   (m_spWsBeamerHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageBeamer,    this, _1, _2, _3)))
   , m_WsBeamerHandlerDisconnectConnection(m_spWsBeamerHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectBeamer, this, _1)))
+  , m_Teams()
   , m_Users()
-  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Users))
+  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Teams, m_Users))
 {
 }
 
@@ -94,6 +95,19 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       //get info from message
       const std::string& mode = GetElementString(citJsData, "mode");
       SelectMode(mode);
+    } else if("team-add" == mi) {
+      //get info from message
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+      const std::string& teamName = GetElementString(citJsData, "teamName");
+
+      //new or existing team?
+      MapTeamIt teamIt = m_Teams.find(teamId);
+      if(m_Teams.end() == teamIt) {
+        m_Teams.insert(PairTeam(teamId, CTeam(teamId, teamName)));
+      } else {
+        teamIt->second.NameSet(teamName);
+      }
+      m_CurrentQuizMode->TeamsChanged(m_Teams);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageMaster(id, mi, citJsData);
@@ -151,13 +165,13 @@ void CQuizManager::SelectMode(const std::string& mode)
 {
   m_spLogger->info("CQuizManager [%s][%u] switching to mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   if("welcome" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else if("test" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else if("simple-button-demo" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else if("configure-teams" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeConfigureTeams(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }

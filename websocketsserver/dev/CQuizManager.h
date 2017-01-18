@@ -6,6 +6,7 @@
 
 #include "seasocks/PrintfLogger.h"
 
+#include "CTeam.h"
 #include "CUser.h"
 #include "CWsQuizHandler.h"
 #include "IQuizMode.h"
@@ -37,6 +38,7 @@ class CQuizManager {
     boost::signals2::connection           m_WsBeamerHandlerMessageConnection;
     boost::signals2::connection           m_WsBeamerHandlerDisconnectConnection;
     std::mutex                            m_Lock;
+    MapTeam                               m_Teams;
     MapUser                               m_Users;
     std::unique_ptr<IQuizMode>            m_CurrentQuizMode;
 };

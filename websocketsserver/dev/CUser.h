@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "json.hpp"
+
 //the CUser class
 class CUser {
  public:
@@ -15,8 +17,7 @@ class CUser {
  public:
   void               NameSet(const std::string& name);
   const std::string& NameGet(void) const;
-
- private:
+  nlohmann::json     ToJson(void) const;
 
  private:
   std::string        m_Name;
@@ -28,5 +29,7 @@ typedef std::map<std::string, CUser>  MapUser;
 typedef MapUser::iterator             MapUserIt;
 typedef MapUser::const_iterator       MapUserCIt;
 
-#endif //__CUSER__H__
+//extra functions
+nlohmann::json MapTeamToJson(const MapUser& teams);
 
+#endif //__CUSER__H__

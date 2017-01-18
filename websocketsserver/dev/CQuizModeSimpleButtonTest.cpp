@@ -6,8 +6,8 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeSimpleButtonTest::CQuizModeSimpleButtonTest(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users)
-   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, users)
+CQuizModeSimpleButtonTest::CQuizModeSimpleButtonTest(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapTeam& teams, const MapUser& users)
+   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, teams, users)
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "simple-button")
    , m_TestThreadStop(false)
    , m_TestThread(thread([=]{ThreadTest();}))
@@ -35,6 +35,11 @@ void CQuizModeSimpleButtonTest::HandleMessageMaster(const std::string& /* id */,
 void CQuizModeSimpleButtonTest::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButtonTest [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+}
+
+void CQuizModeSimpleButtonTest::TeamsChanged(const MapTeam& /* teams */)
+{
+    m_spLogger->info("CQuizModeSimpleButtonTest [%s][%u].", __FUNCTION__, __LINE__);
 }
 
 void CQuizModeSimpleButtonTest::UsersChanged(const MapUser& users)

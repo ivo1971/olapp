@@ -4,10 +4,13 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeConfigureTeams::CQuizModeConfigureTeams(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapUser& users)
-   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, users)
+CQuizModeConfigureTeams::CQuizModeConfigureTeams(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapTeam& teams, const MapUser& users)
+   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, teams, users)
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "configure-teams")
+   , m_Teams(teams)
 {
+    TeamsChanged(m_Teams);
+    UsersChanged(users);
 }
 
 CQuizModeConfigureTeams::~CQuizModeConfigureTeams(void) throw()
@@ -29,6 +32,13 @@ void CQuizModeConfigureTeams::HandleMessageBeamer(const std::string& /* id */, c
     m_spLogger->info("CQuizModeConfigureTeams [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
+void CQuizModeConfigureTeams::TeamsChanged(const MapTeam& teams)
+{
+    m_spLogger->info("CQuizModeConfigureTeams [%s][%u].", __FUNCTION__, __LINE__);
+    m_Teams = teams;
+    m_spWsMasterHandler->SendMessage("team-list", MapTeamToJson(m_Teams));
+}
+
 void CQuizModeConfigureTeams::UsersChanged(const MapUser& /* users */)
 {
     m_spLogger->info("CQuizModeConfigureTeams [%s][%u].", __FUNCTION__, __LINE__);
@@ -36,5 +46,6 @@ void CQuizModeConfigureTeams::UsersChanged(const MapUser& /* users */)
 
 void CQuizModeConfigureTeams::ReConnect(const std::string& id)
 {
-    CQuizModeBase::ReConnect(id);
+    CQuizModeBase::ReConnect(id); //route
+    TeamsChanged(m_Teams);        //send current teams
 }
