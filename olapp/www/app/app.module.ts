@@ -35,6 +35,8 @@ import {ImageLocalComponent}           from "./components/image-local/image-loca
 import {ImageNativeComponent}          from "./components/image-native/image-native.component";
 import {MenuComponent}                 from "./components/menu/menu.component";
 import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
+import {TeamInfoComponent}             from "./components/team-info/team-info.component";
+import {TeamInfoListComponent}         from "./components/team-info-list/team-info-list.component";
 
 //Own components: pipes
 import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
@@ -138,6 +140,8 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
     ImageNativeComponent,
     MenuComponent,
     StatusBarComponent,
+    TeamInfoComponent,
+    TeamInfoListComponent,
     //filters
     SimpleButtonActiveFilter
   ],

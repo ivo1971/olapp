@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fuid">
   <div class="row">
     <div class="col-md-6">
       <b><u>Teams</u></b>
@@ -6,6 +6,8 @@
       <input #textbox type="text" [(ngModel)]="newTeamName" required> 
       <button (click)="onClickAddTeam(textbox.value)">Add</button>
       <button (click)="newTeamName=''">Clear</button>
+      <hr />
+      <team-info-list [data]="observableTeamInfo | async"></team-info-list>
     </div>
     <div class="col-md-6">
       <b><u>Users</u></b>

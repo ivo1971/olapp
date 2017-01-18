@@ -1,7 +1,9 @@
 import {Component}             from '@angular/core';
 import {OnInit}                from '@angular/core';
+import {Observable}            from 'rxjs/Observable';
 
 import {ComponentBase}         from './../../classes/component-base.class';
+import {TeamInfo}              from './../../classes/team-info.class';
 
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
@@ -27,6 +29,9 @@ export class ConfigureTeamsMasterComponent extends ComponentBase implements OnIn
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
+        //register routing MI
+        this.observableTeamInfo = this._websocketUserService
+                                      .register("team-list")
     }
 
     /* Template event handlers
@@ -60,5 +65,7 @@ export class ConfigureTeamsMasterComponent extends ComponentBase implements OnIn
             return (c=='x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
     }
+
+    private observableTeamInfo         : Observable<TeamInfo>;
 }
  
