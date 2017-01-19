@@ -103,9 +103,41 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       //new or existing team?
       MapTeamIt teamIt = m_Teams.find(teamId);
       if(m_Teams.end() == teamIt) {
+        //new --> add it
         m_Teams.insert(PairTeam(teamId, CTeam(teamId, teamName)));
       } else {
+        //existing --> error
+        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] already exists.", __FUNCTION__, __LINE__, teamId.c_str());
         teamIt->second.NameSet(teamName);
+      }
+      m_CurrentQuizMode->TeamsChanged(m_Teams);
+    } else if("team-edit" == mi) {
+      //get info from message
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+      const std::string& teamName = GetElementString(citJsData, "teamName");
+
+      //new or existing team?
+      MapTeamIt teamIt = m_Teams.find(teamId);
+      if(m_Teams.end() == teamIt) {
+        //new --> error
+        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] does not yet exists.", __FUNCTION__, __LINE__, teamId.c_str());
+      } else {
+        //existing --> edit
+        teamIt->second.NameSet(teamName);
+      }
+      m_CurrentQuizMode->TeamsChanged(m_Teams);
+    } else if("team-delete" == mi) {
+      //get info from message
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+
+      //new or existing team?
+      MapTeamIt teamIt = m_Teams.find(teamId);
+      if(m_Teams.end() == teamIt) {
+        //new --> error
+        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] does not yet exists.", __FUNCTION__, __LINE__, teamId.c_str());
+      } else {
+        //existing --> edit
+        m_Teams.erase(teamIt);
       }
       m_CurrentQuizMode->TeamsChanged(m_Teams);
     } else {
