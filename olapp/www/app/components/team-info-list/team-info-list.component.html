@@ -1,5 +1,5 @@
 <div *ngIf="null !== data"> <!-- NULL-check required for bootstrapping -->
-        <div class="row" *ngFor="let team of data.teams">
-            <team-info [team]="team"></team-info>
-        </div>
+  <div class="row alert alert-success" *ngFor="let team of data.teams">
+    <team-info [team]="team"></team-info>
+  </div>
 </div>
