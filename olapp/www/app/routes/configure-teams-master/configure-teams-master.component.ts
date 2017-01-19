@@ -45,9 +45,6 @@ export class ConfigureTeamsMasterComponent extends ComponentBase implements OnIn
 
         //clear edit box
         this.newTeamName = "";
-        //TODO:
-        //- sent to websocket
-        //- generate a team ID, required to rename later
     }
 
     /* Help functions
