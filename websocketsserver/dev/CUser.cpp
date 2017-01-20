@@ -1,4 +1,5 @@
 #include "CUser.h"
+#include "JsonHelpers.h"
 
 using namespace nlohmann;
 
@@ -16,6 +17,15 @@ CUser::CUser(const CUser& ref)
   , m_Team(ref.m_Team)
   , m_Connected(ref.m_Connected)
 {
+}
+
+CUser::CUser(const nlohmann::json& jsonData, MapUser& mapUsers)
+  : m_Id(GetElementString(jsonData, "id"))
+  , m_Name(GetElementString(jsonData, "name"))
+  , m_Team(GetElementString(jsonData, "team"))
+  , m_Connected(false)
+{
+  mapUsers.insert(PairUser(m_Id, *this));
 }
 
 CUser::~CUser(void) throw()

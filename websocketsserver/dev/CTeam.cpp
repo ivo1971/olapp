@@ -1,4 +1,5 @@
 #include "CTeam.h"
+#include "JsonHelpers.h"
 
 using namespace nlohmann;
 
@@ -12,6 +13,13 @@ CTeam::CTeam(const CTeam& ref)
   : m_Id(ref.m_Id)
   , m_Name(ref.m_Name)
 {
+}
+
+CTeam::CTeam(const nlohmann::json& jsonData, MapTeam& mapTeams)
+  : m_Id(GetElementString(jsonData, "id"))
+  , m_Name(GetElementString(jsonData, "name"))
+{
+  mapTeams.insert(PairTeam(m_Id, *this));
 }
 
 CTeam::~CTeam(void) throw()

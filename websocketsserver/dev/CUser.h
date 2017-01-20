@@ -6,11 +6,21 @@
 
 #include "json.hpp"
 
+//forward declaration required for map typedefs
+class CUser;
+
+//typedefs around the CUser class
+typedef std::pair<std::string, CUser> PairUser;
+typedef std::map<std::string, CUser>  MapUser;
+typedef MapUser::iterator             MapUserIt;
+typedef MapUser::const_iterator       MapUserCIt;
+
 //the CUser class
 class CUser {
   public:
                         CUser(const std::string& id, const std::string& name, const bool connected);
                         CUser(const CUser& ref);
+                        CUser(const nlohmann::json& jsonData, MapUser& mapUsers);
                         ~CUser(void) throw();
     CUser&              operator=(const CUser& ref);
 
@@ -29,12 +39,6 @@ class CUser {
     std::string         m_Team;
     bool                m_Connected;
 };
-
-//typedefs around the CUser class
-typedef std::pair<std::string, CUser> PairUser;
-typedef std::map<std::string, CUser>  MapUser;
-typedef MapUser::iterator             MapUserIt;
-typedef MapUser::const_iterator       MapUserCIt;
 
 //extra functions
 nlohmann::json MapUserToJson(const MapUser& teams);
