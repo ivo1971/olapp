@@ -17,35 +17,34 @@ export class SimpleButtonTeamInfo {
 //is instantiated from incoming JSON data and apparently this
 //does not add the class methods somehow...
 export function calculate(team : SimpleButtonTeamInfo, firstActiveFound : boolean) : boolean {
-        //not active means wrong
-        if(!team.active) {
-            team.good  = false;
-            team.wrong = true;
-            team.wait  = false;
-            team.go    = false;
-            return false;
-        }
-        team.wrong = false;
-
-        //good is incoming data
-        if(team.good) {
-            team.wait  = false;
-            team.go    = false;
-            return true;
-        }        
-
-        //this is not the first active
-        if(firstActiveFound) {
-            team.wait  = true;
-            team.go    = false;
-            return true;
-        }        
-
-        //this is the first active
+    //not active means wrong
+    if(!team.active) {
+        team.good  = false;
+        team.wrong = true;
         team.wait  = false;
-        team.go    = true;
-        return true;
+        team.go    = false;
+        return false;
     }
+    team.wrong = false;
+
+    //good is incoming data
+    if(team.good) {
+        team.wait  = false;
+        team.go    = false;
+        return true;
+    }        
+
+    //this is not the first active
+    if(firstActiveFound) {
+        team.wait  = true;
+        team.go    = false;
+        return true;
+    }        
+
+    //this is the first active
+    team.wait  = false;
+    team.go    = true;
+    return true;
 }
 
 export class SimpleButtonInfo {

@@ -1,17 +1,17 @@
-<div class="col-md-8">
+<div class="col-md-7">
     <span *ngIf="!editMode">
         {{team.name}}
     </span>
-    <span *ngIf="editMode">
+    <span *ngIf="editMode && edit">
         <input class="form-control" type="text" [(ngModel)]="nameEdit">
     </span>
 </div>    
-<div class="col-md-4">
-    <span *ngIf="!editMode">
+<div class="col-md-5">
+    <span *ngIf="!editMode && edit">
         <button type="button" class="btn btn-info"    (click)="onClickEdit()"  >Edit  </button>
         <button type="button" class="btn btn-danger"  (click)="onClickDelete()">Delete</button>
     </span>
-    <span *ngIf="editMode">
+    <span *ngIf="editMode && edit">
         <button type="button" class="btn btn-success" (click)="onClickSubmit()" [class.disabled]="0===nameEdit.length">Submit</button>
         <button type="button" class="btn btn-warning" (click)="onClickCancel()">Cancel</button>
     </span>

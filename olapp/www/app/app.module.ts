@@ -37,6 +37,8 @@ import {MenuComponent}                 from "./components/menu/menu.component";
 import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
 import {TeamInfoComponent}             from "./components/team-info/team-info.component";
 import {TeamInfoListComponent}         from "./components/team-info-list/team-info-list.component";
+import {UserInfoComponent}             from "./components/user-info/user-info.component";
+import {UserInfoListComponent}         from "./components/user-info-list/user-info-list.component";
 
 //Own components: pipes
 import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
@@ -142,6 +144,8 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
     StatusBarComponent,
     TeamInfoComponent,
     TeamInfoListComponent,
+    UserInfoComponent,
+    UserInfoListComponent,
     //filters
     SimpleButtonActiveFilter
   ],

@@ -4,23 +4,17 @@
       <h2 class="text-center"><b><u>Team configuration</u></b></h2>
     </div>
   </div>
+</div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-5">
       <h3 class="text-center"><b><u>Teams</u></b></h3>
-      <br />
-      <div class="row alert alert-info">
-        <div class="col-md-8">
-          <input #textbox type="text" [(ngModel)]="newTeamName" required> 
-        </div>
-        <div class="col-md-4">
-          <button type="button" class="btn btn-success" (click)="onClickAddTeam()" [class.disabled]="0===newTeamName.length">Add</button>
-          <button type="button" class="btn btn-warning" (click)="newTeamName=''">Clear</button>
-        </div>
-      </div>
-      <team-info-list [data]="observableTeamInfo | async"></team-info-list>
+      <team-info-list [teamsInfo]="teamsInfo"></team-info-list>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-5">
       <h3 class="text-center"><b><u>Uses</u></b></h3>
+      <team-info-list [teamsInfo]="teamsInfoNone" [teamsInfoAll]="teamsInfo" [usersInfo]="usersInfo" [edit]="false" [alert]="true" ></team-info-list>
+      <team-info-list [teamsInfo]="teamsInfo"     [teamsInfoAll]="teamsInfo" [usersInfo]="usersInfo" [edit]="false" [alert]="false"></team-info-list>
     </div>
   </div>
-</div>

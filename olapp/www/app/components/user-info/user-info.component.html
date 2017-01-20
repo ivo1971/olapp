@@ -1,0 +1,13 @@
+<div class="col-md-5">
+    {{user.name}}
+</div>    
+<div class="col-md-6">
+  <select (change)="onSelectionChange($event.target.value)">
+    <option value="">no team</option>
+    <option *ngFor="let team of teamsInfoAll" [value]="team.id" [selected]="team.id == user.team">{{team.name}}</option>
+  </select>
+</div>    
+<div class="col-md-1">
+    <span *ngIf="user.connected"   class="glyphicon glyphicon-cloud  connection-ok"    ></span>
+    <span *ngIf="!user.connected"  class="glyphicon glyphicon-cloud  connection-error" ></span>
+</div>

@@ -1,0 +1,5 @@
+<span *ngFor="let user of usersInfo">
+  <div class="row alert alert-warning" *ngIf="((!alert) && (team.id == user.team)) || ((alert) && (0 == user.team.length))">
+    <user-info [user]="user" [teamsInfoAll]="teamsInfoAll"></user-info>
+  </div>
+</span>
