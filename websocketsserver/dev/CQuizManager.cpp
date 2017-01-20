@@ -50,9 +50,10 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       //new or existing user?
       MapUserIt userIt = m_Users.find(id);
       if(m_Users.end() == userIt) {
-        m_Users.insert(PairUser(id, CUser(name)));
+        m_Users.insert(PairUser(id, CUser(id, name, true)));
       } else {
         userIt->second.NameSet(name);
+        userIt->second.ConnectedSet(true);
       }
       m_CurrentQuizMode->ReConnect(id);
       m_CurrentQuizMode->UsersChanged(m_Users);
@@ -74,7 +75,7 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
       m_spLogger->info("CQuizManager [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
       MapUserIt userIt = m_Users.find(id);
       if(m_Users.end() != userIt) {
-	      m_Users.erase(userIt);
+        userIt->second.ConnectedSet(false);
         m_CurrentQuizMode->UsersChanged(m_Users);
       }
   } catch(...) {
@@ -126,6 +127,17 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
         teamIt->second.NameSet(teamName);
       }
       m_CurrentQuizMode->TeamsChanged(m_Teams);
+    } else if("user-select-team" == mi) {
+      //get info from message
+      const std::string& userId   = GetElementString(citJsData, "userId"  );
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+
+      //existing user?
+      MapUserIt userIt = m_Users.find(userId);
+      if(m_Users.end() != userIt) {
+        userIt->second.TeamSet(teamId);
+      }
+      m_CurrentQuizMode->UsersChanged(m_Users);
     } else if("team-delete" == mi) {
       //get info from message
       const std::string& teamId   = GetElementString(citJsData, "teamId"  );

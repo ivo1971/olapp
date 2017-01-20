@@ -8,19 +8,26 @@
 
 //the CUser class
 class CUser {
- public:
-                     CUser(const std::string& name);
-                     CUser(const CUser& ref);
-                     ~CUser(void) throw();
-  CUser&             operator=(const CUser& ref);
+  public:
+                        CUser(const std::string& id, const std::string& name, const bool connected);
+                        CUser(const CUser& ref);
+                        ~CUser(void) throw();
+    CUser&              operator=(const CUser& ref);
 
- public:
-  void               NameSet(const std::string& name);
-  const std::string& NameGet(void) const;
-  nlohmann::json     ToJson(void) const;
+  public:
+    void                NameSet(const std::string& name);
+    const std::string&  NameGet(void) const;
+    void                TeamSet(const std::string& team);
+    const std::string&  TeamGet(void) const;
+    void                ConnectedSet(const bool connected);
+    bool                ConnectedGet(void) const;
+    nlohmann::json      ToJson(void) const;
 
  private:
-  std::string        m_Name;
+    std::string         m_Id;
+    std::string         m_Name;
+    std::string         m_Team;
+    bool                m_Connected;
 };
 
 //typedefs around the CUser class
@@ -30,6 +37,6 @@ typedef MapUser::iterator             MapUserIt;
 typedef MapUser::const_iterator       MapUserCIt;
 
 //extra functions
-nlohmann::json MapTeamToJson(const MapUser& teams);
+nlohmann::json MapUserToJson(const MapUser& teams);
 
 #endif //__CUSER__H__

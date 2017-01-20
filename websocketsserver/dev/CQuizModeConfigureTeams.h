@@ -19,6 +19,7 @@ class CQuizModeConfigureTeams : public IQuizMode, public CQuizModeBase {
 
    private:
       MapTeam                               m_Teams;
+      MapUser                               m_Users;
 };
 
 #endif //__CQUIZMODECONFIGURETEAMS__H__
