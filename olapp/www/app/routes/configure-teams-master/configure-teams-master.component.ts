@@ -9,6 +9,30 @@ import {UserInfo}              from './../../classes/user-info.class';
 
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
+function compareString(a: string, b: string) : number {
+    //case-insensitive compare
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+
+    //compare
+    if(a === b) {
+        return 0;
+    }
+    if(a < b) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+function compareTeamInfo(a: TeamInfo, b: TeamInfo) : number {
+    return compareString(a.name, b.name);
+}
+
+function compareUserInfo(a: UserInfo, b: UserInfo) : number {
+    return compareString(a.name, b.name);
+}
+
 @Component({
     moduleId   : module.id,
     selector   : 'configure-teams-master',
@@ -41,28 +65,30 @@ export class ConfigureTeamsMasterComponent extends ComponentBase implements OnIn
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
-        //register routing MI
+        //register routing MI for team-lists
         this.observableTeamInfo = this._websocketUserService
                                       .register("team-list")
         this.observableTeamInfoSubscription = this.observableTeamInfo.subscribe(data => {
-            console.log(data);
             if(data && data["teams"]) {
-                this.teamsInfo = data["teams"];
+                let teamsInfo : Array<TeamInfo> = data["teams"]
+                teamsInfo.sort(compareTeamInfo);
+                this.teamsInfo = teamsInfo;
             } else {
                 this.teamsInfo = [];
             }
-            console.log(this.teamsInfo);
         });
+
+        //register routing MI for user-lists
         this.observableUserInfo = this._websocketUserService
                                       .register("user-list")
         this.observableUserInfoSubscription = this.observableUserInfo.subscribe(data => {
-            console.log(data);
             if(data && data["users"]) {
-                this.usersInfo = data["users"];
+                let usersInfo : Array<UserInfo> = data["users"]
+                usersInfo.sort(compareUserInfo);
+                this.usersInfo = usersInfo;
             } else {
                 this.usersInfo = [];
             }
-            console.log(this.usersInfo);
         });
     }
 
