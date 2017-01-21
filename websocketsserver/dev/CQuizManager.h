@@ -25,6 +25,7 @@ class CQuizManager {
     void                                  HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
     void                                  HandleDisconnectBeamer(const std::string& id);
     void                                  SelectMode            (const std::string& mode);
+    void                                  SendTeam              (const std::string& userId);
     void                                  Save                  (void) const;
     void                                  Load                  (void);
 

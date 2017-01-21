@@ -9,6 +9,7 @@
 #include "CQuizManager.h"
 #include "CQuizModeConfigureTeams.h"
 #include "CQuizModeIgnore.h"
+#include "CQuizModeSimpleButton.h"
 #include "CQuizModeSimpleButtonTest.h"
 #include "CQuizModeTest.h"
 #include "CQuizModeWelcome.h"
@@ -62,6 +63,7 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       m_CurrentQuizMode->ReConnect(id);
       m_CurrentQuizMode->UsersChanged(m_Users);
       Save();
+      SendTeam(id);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
@@ -147,6 +149,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       }
       m_CurrentQuizMode->UsersChanged(m_Users);
       Save();
+      SendTeam(userId);
     } else if("team-delete" == mi) {
       //get info from message
       const std::string& teamId   = GetElementString(citJsData, "teamId"  );
@@ -224,11 +227,35 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else if("simple-button-demo" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
+  } else if("simple-button" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }
+}
+
+void CQuizManager::SendTeam(const std::string& userId)
+{
+  //find user
+  MapUserCIt citUser = m_Users.find(userId);
+  if(m_Users.end() == citUser) {
+    //not found
+    return;
+  }
+
+  //find team
+  MapTeamCIt citTeam = m_Teams.find(citUser->second.TeamGet());
+  if(m_Teams.end() == citTeam) {
+    //not found
+    return;
+  }
+
+  //send
+  json data;
+  data["name"] = citTeam->second.NameGet();
+  m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
 }
 
 void CQuizManager::Save(void) const
@@ -260,7 +287,11 @@ void CQuizManager::Load(void)
   if(!file.is_open()) {
     m_spLogger->error("CQuizManager [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
   }
-  file >> dataDump;
+  while(file) {
+    std::string tmp;
+    file >> tmp;
+    dataDump += tmp;
+  }
   file.close();
   m_spLogger->info("CQuizManager [%s][%u] load [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
 
