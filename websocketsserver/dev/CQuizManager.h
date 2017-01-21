@@ -14,7 +14,7 @@
 class CQuizManager {
   private:
   public:
-                                          CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler);
+                                          CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName);
                                           ~CQuizManager(void) throw();
 
   private:
@@ -25,6 +25,8 @@ class CQuizManager {
     void                                  HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
     void                                  HandleDisconnectBeamer(const std::string& id);
     void                                  SelectMode            (const std::string& mode);
+    void                                  Save                  (void) const;
+    void                                  Load                  (void);
 
   private:
     std::shared_ptr<CWsQuizHandler>       m_spWsQuizHandler;
@@ -41,6 +43,7 @@ class CQuizManager {
     MapTeam                               m_Teams;
     MapUser                               m_Users;
     std::unique_ptr<IQuizMode>            m_CurrentQuizMode;
+    std::string                           m_FileName;
 };
 
 #endif //__CQUIZMANAGER__H__

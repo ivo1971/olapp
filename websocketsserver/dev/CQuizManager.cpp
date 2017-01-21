@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include <mutex>
 #include <sstream>
 #include <unistd.h>
@@ -17,7 +19,7 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler)
+CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName)
   : m_spWsQuizHandler(spWsQuizHandler)
   , m_spWsMasterHandler(spWsMasterHandler)
   , m_spWsBeamerHandler(spWsBeamerHandler)
@@ -31,7 +33,9 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_Teams()
   , m_Users()
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Teams, m_Users))
+  , m_FileName(fileName)
 {
+  Load();
 }
 
 CQuizManager::~CQuizManager(void) throw()
@@ -57,6 +61,7 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       }
       m_CurrentQuizMode->ReConnect(id);
       m_CurrentQuizMode->UsersChanged(m_Users);
+      Save();
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
@@ -77,6 +82,7 @@ void CQuizManager::HandleDisconnectQuiz(const std::string& id)
       if(m_Users.end() != userIt) {
         userIt->second.ConnectedSet(false);
         m_CurrentQuizMode->UsersChanged(m_Users);
+        //no need to save
       }
   } catch(...) {
     m_Lock.unlock();
@@ -112,6 +118,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
         teamIt->second.NameSet(teamName);
       }
       m_CurrentQuizMode->TeamsChanged(m_Teams);
+      Save();
     } else if("team-edit" == mi) {
       //get info from message
       const std::string& teamId   = GetElementString(citJsData, "teamId"  );
@@ -127,6 +134,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
         teamIt->second.NameSet(teamName);
       }
       m_CurrentQuizMode->TeamsChanged(m_Teams);
+      Save();
     } else if("user-select-team" == mi) {
       //get info from message
       const std::string& userId   = GetElementString(citJsData, "userId"  );
@@ -138,6 +146,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
         userIt->second.TeamSet(teamId);
       }
       m_CurrentQuizMode->UsersChanged(m_Users);
+      Save();
     } else if("team-delete" == mi) {
       //get info from message
       const std::string& teamId   = GetElementString(citJsData, "teamId"  );
@@ -152,6 +161,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
         m_Teams.erase(teamIt);
       }
       m_CurrentQuizMode->TeamsChanged(m_Teams);
+      Save();
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageMaster(id, mi, citJsData);
@@ -218,5 +228,73 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
+  }
+}
+
+void CQuizManager::Save(void) const
+{
+  //generate json data
+  json data;
+  data["teams"] = MapTeamToJson(m_Teams);
+  data["users"] = MapUserToJson(m_Users);
+  const std::string dataDump = data.dump();
+  m_spLogger->info("CQuizManager [%s][%u] save [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+  //save to file
+  ofstream file;
+  file.open(m_FileName, ios::out | ios::trunc);
+  if(!file.is_open()) {
+    m_spLogger->error("CQuizManager [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+  }
+  file << dataDump;
+  file.close();
+}
+
+void CQuizManager::Load(void)
+{
+  std::string dataDump;
+
+  //read from file
+  ifstream file;
+  file.open(m_FileName, ios::in);
+  if(!file.is_open()) {
+    m_spLogger->error("CQuizManager [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+  }
+  file >> dataDump;
+  file.close();
+  m_spLogger->info("CQuizManager [%s][%u] load [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+  //string to json
+  const json data = json::parse(dataDump);  
+
+  //cleanup
+  m_Teams.clear();
+  m_Users.clear();
+
+  //from json to teams
+  try {
+    const json::const_iterator citTeams       = GetElement(data,      "teams");
+    const json::const_iterator citTeamsInner  = GetElement(*citTeams, "teams");
+    const json                 jsonTeamsInner (*citTeamsInner); //contains an array of teams
+    for(json::const_iterator citTeam = jsonTeamsInner.begin() ; jsonTeamsInner.end() != citTeam ; ++citTeam) {
+      m_spLogger->info("CQuizManager [%s][%u] test [%s].", __FUNCTION__, __LINE__, citTeam->dump().c_str());
+      CTeam tmp(*citTeam, m_Teams);
+    }
+  } catch(std::exception& ex) {
+      m_spLogger->info("CQuizManager [%s][%u] loading users from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
+  }
+
+  //from json to users
+  try {
+    const json::const_iterator citUsers       = GetElement(data,      "users");
+    const json::const_iterator citUsersInner  = GetElement(*citUsers, "users");
+    const json                 jsonUsersInner (*citUsersInner); //contains an array of users
+    m_spLogger->info("CQuizManager [%s][%u] test [%s].", __FUNCTION__, __LINE__, jsonUsersInner.dump().c_str());
+    for(json::const_iterator citUser = jsonUsersInner.begin() ; jsonUsersInner.end() != citUser ; ++citUser) {
+      m_spLogger->info("CQuizManager [%s][%u] test [%s].", __FUNCTION__, __LINE__, citUser->dump().c_str());
+      CUser tmp(*citUser, m_Users);
+    }
+  } catch(std::exception& ex) {
+      m_spLogger->info("CQuizManager [%s][%u] loading users from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
   }
 }

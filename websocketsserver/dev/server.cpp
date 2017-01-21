@@ -28,6 +28,21 @@ int main(int argc, const char* argv[]) {
          exit(-1);
       }
    }
+   std::string fileName;
+   {
+      bool fileNameIsNext = false;
+      for(int i = 0 ; i < argc ; ++i) {
+         if(fileNameIsNext) {
+	         fileName = std::string(argv[i]);
+         }
+         fileNameIsNext = (0 == strcmp("--file-name", argv[i]));
+      }
+      fprintf(stdout, "file name: %s\n", fileName.c_str());
+      if(0 == fileName.length()) {
+         fprintf(stderr, "no file name configured\n");
+         exit(-1);
+      }
+   }
 
    //construction
    shared_ptr<Logger>               spLogger             (new PrintfLogger(Logger::DEBUG));
@@ -35,7 +50,7 @@ int main(int argc, const char* argv[]) {
    shared_ptr<CWsQuizHandler>       spWsQuizHandler      (new CWsQuizHandler(spLogger, spServer));
    shared_ptr<CWsQuizHandler>       spWsMasterHandler    (new CWsQuizHandler(spLogger, spServer));
    shared_ptr<CWsQuizHandler>       spWsBeamerHandler    (new CWsQuizHandler(spLogger, spServer));
-   shared_ptr<CQuizManager>         spQuizManger         (new CQuizManager(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler));
+   shared_ptr<CQuizManager>         spQuizManger         (new CQuizManager(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, fileName));
    CConfigureServer                 configureServer      (ipAddressServer);
 
    //configuration

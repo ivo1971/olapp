@@ -23,7 +23,7 @@ json::const_iterator GetElement(const json::const_iterator citJsonData, const ch
 
 std::string GetElementString(const json& jsonData, const char* const key)
 {
-  json::const_iterator cit =GetElement(jsonData, key);
+  json::const_iterator cit = GetElement(jsonData, key);
   if(!cit->is_string()) {
     throw runtime_error(std::string("Value for key is not a string: ") + std::string(key));
   }
@@ -32,7 +32,7 @@ std::string GetElementString(const json& jsonData, const char* const key)
 
 std::string GetElementString(const json::const_iterator citJsonData, const char* const key)
 {
-  json::const_iterator cit =GetElement(citJsonData, key);
+  json::const_iterator cit = GetElement(citJsonData, key);
   if(!cit->is_string()) {
     throw runtime_error(std::string("Value for key is not a string: ") + std::string(key));
   }
