@@ -15,6 +15,7 @@ import {UserInfo}              from './../../classes/user-info.class';
 })
 export class UserInfoListComponent implements OnInit { 
     @Input() alert       : boolean         = false;
+    @Input() edit       : boolean          = true;
     @Input() team        : TeamInfo        = new TeamInfo();
     @Input() teamsInfoAll: Array<TeamInfo> = [];
     @Input() usersInfo   : Array<UserInfo> = [];

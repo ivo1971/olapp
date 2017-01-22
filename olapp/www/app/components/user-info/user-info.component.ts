@@ -16,6 +16,7 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'user-info.component.html'
 })
 export class UserInfoComponent  { 
+    @Input() edit        : boolean = true;
     @Input() user        : UserInfo;
     @Input() teamsInfoAll: Array<TeamInfo> ;
 

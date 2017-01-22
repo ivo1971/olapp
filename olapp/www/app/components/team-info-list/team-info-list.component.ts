@@ -18,7 +18,8 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
 })
 export class TeamInfoListComponent implements OnInit { 
     @Input() alert       : boolean         = false;
-    @Input() edit        : boolean         = true;
+    @Input() editTeams   : boolean         = true;
+    @Input() editUsers   : boolean         = true;
     @Input() teamsInfo   : Array<TeamInfo> = [];
     @Input() teamsInfoAll: Array<TeamInfo> = [];
     @Input() usersInfo   : Array<UserInfo> = [];

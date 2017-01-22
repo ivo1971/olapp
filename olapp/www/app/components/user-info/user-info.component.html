@@ -2,7 +2,7 @@
     {{user.name}}
 </div>    
 <div class="col-md-6">
-  <select (change)="onSelectionChange($event.target.value)">
+  <select (change)="onSelectionChange($event.target.value)" *ngIf="edit">
     <option value="">no team</option>
     <option *ngFor="let team of teamsInfoAll" [value]="team.id" [selected]="team.id == user.team">{{team.name}}</option>
   </select>

@@ -1,10 +1,10 @@
 <span *ngFor="let team of teamsInfo">
   <div class="row alert" [class.alert-success]="!alert" [class.alert-danger]="alert">
-    <team-info [edit]="edit" [team]="team"></team-info>
+    <team-info [edit]="editTeams" [team]="team"></team-info>
   </div>
-  <user-info-list [teamsInfoAll]="teamsInfoAll" [usersInfo]="usersInfo" [team]="team" [alert]="alert"></user-info-list>
+  <user-info-list [teamsInfoAll]="teamsInfoAll" [usersInfo]="usersInfo" [team]="team" [alert]="alert" [edit]="editUsers"></user-info-list>
 </span>
-<span *ngIf="edit">
+<span *ngIf="editTeams">
   <div class="row alert alert-info">
     <div class="col-md-7">
       <input #textbox type="text" [(ngModel)]="newTeamName" required> 

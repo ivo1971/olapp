@@ -8,13 +8,13 @@
   <div class="row">
     <div class="col-md-5">
       <h3 class="text-center"><b><u>Teams</u></b></h3>
-      <team-info-list [teamsInfo]="teamsInfo"></team-info-list>
+      <team-info-list [teamsInfo]="observableTeamInfo | async"></team-info-list>
     </div>
     <div class="col-md-2">
     </div>
     <div class="col-md-5">
       <h3 class="text-center"><b><u>Uses</u></b></h3>
-      <team-info-list [teamsInfo]="teamsInfoNone" [teamsInfoAll]="teamsInfo" [usersInfo]="usersInfo" [edit]="false" [alert]="true" ></team-info-list>
-      <team-info-list [teamsInfo]="teamsInfo"     [teamsInfoAll]="teamsInfo" [usersInfo]="usersInfo" [edit]="false" [alert]="false"></team-info-list>
+      <team-info-list [teamsInfo]="observableTeamInfoNone | async" [teamsInfoAll]="observableTeamInfo | async" [usersInfo]="observableUserInfo | async" [editTeams]="false" [alert]="true" ></team-info-list>
+      <team-info-list [teamsInfo]="observableTeamInfo     | async" [teamsInfoAll]="observableTeamInfo | async" [usersInfo]="observableUserInfo | async" [editTeams]="false" [alert]="false"></team-info-list>
     </div>
   </div>

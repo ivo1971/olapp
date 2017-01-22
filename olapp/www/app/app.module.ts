@@ -11,6 +11,7 @@ import {RouterModule}                  from '@angular/router';
 import {CloudService}                  from './services/cloud.service';
 import {LogService}                    from './services/log.service';
 import {ModeService}                   from './services/mode.service';
+import {TeamsUsersService}             from './services/teams-users.service';
 import {UserService}                   from './services/user.service';
 import {WebsocketUserService}          from './services/websocket.user.service';
 
@@ -27,6 +28,7 @@ import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/con
 import {LoginComponent}                from "./routes/login/login.component";
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
+import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
 import {TestComponent}                 from "./routes/test/test.component";
 import {WelcomeComponent}              from "./routes/welcome/welcome.component";
 
@@ -73,7 +75,7 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
           },
           {
             path: 'simple-button',
-            component: SimpleButtonComponent
+            component: ModeService.SIsMaster() ? SimpleButtonMasterComponent : SimpleButtonComponent
           },
           {
             path: 'test',
@@ -119,6 +121,7 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
     CloudService,
     LogService,
     ModeService,
+    TeamsUsersService,
     UserService,
     WebsocketUserService,
     //guards
@@ -135,6 +138,7 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
     LoginComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
+    SimpleButtonMasterComponent,
     TestComponent,
     WelcomeComponent,
     //components

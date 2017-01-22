@@ -1,0 +1,16 @@
+<div class="container-fuid">
+  <div class="row">
+    <div class="col-md-4">
+      <h3 class="text-center"><b><u>Management</u></b></h3>
+    </div>
+    <div class="col-md-4">
+      <h3 class="text-center"><b><u>Beamer</u></b></h3>
+      <simple-button></simple-button>
+    </div>
+    <div class="col-md-4">
+      <h3 class="text-center"><b><u>Teams</u></b></h3>
+      <team-info-list [teamsInfo]="observableTeamInfoNone | async" [teamsInfoAll]="observableTeamInfo | async" [usersInfo]="observableUserInfo | async" [editTeams]="false" [editUsers]="false" [alert]="true" ></team-info-list>
+      <team-info-list [teamsInfo]="observableTeamInfo     | async" [teamsInfoAll]="observableTeamInfo | async" [usersInfo]="observableUserInfo | async" [editTeams]="false" [editUsers]="false" [alert]="false"></team-info-list>
+    </div>
+  </div>
+</div>
