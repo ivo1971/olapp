@@ -55,15 +55,16 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
    private:
       void                                  HandleMessageQuizPush   (const std::string& id, const nlohmann::json::const_iterator citJsData);
       void                                  HandleMessageMasterEvent(const std::string& event, const nlohmann::json::const_iterator citJsData);
-      void                                  UpdateFirstActive       (void);
+      bool                                  UpdateFirstActive       (std::string* const pTeamName = NULL);
       void                                  SendMessage             (                       const std::string& mi, const nlohmann::json::const_iterator citJsData);
       void                                  SendMessage             (                       const std::string& mi, const nlohmann::json&                data     );
       void                                  SendMessage             (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
       void                                  SendMessage             (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
       void                                  ThreadTimer             (void);
+      void                                  ThreadTimerHandle       (const STimerInfoIt& it);
 
    private:
-      std::mutex                            m_Lock;
+      std::recursive_mutex                  m_Lock;
       bool                                  m_TimerThreadStop;
       std::thread                           m_TimerThread;
       STimerInfo                            m_STimerInfo;

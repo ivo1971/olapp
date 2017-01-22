@@ -189,7 +189,7 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
     }
 }
 
-void CQuizModeSimpleButton::UpdateFirstActive()
+bool CQuizModeSimpleButton::UpdateFirstActive(std::string* const pTeamName)
 {
     //TODO: detect is this is a change or not and thus if this has to be sent or not
     CSimpleButtonTeamInfo info("dummy");
@@ -198,9 +198,20 @@ void CQuizModeSimpleButton::UpdateFirstActive()
         json data;
         data["team"] = info.GetName();
         SendMessage("simple-button-evaluate", data);
+        if(NULL != pTeamName) {
+          *pTeamName = info.GetName();
+        }
+        return true;
       }
+    } else {
+      //there is no 'first active' team
+      json data;
+      data["team"] = "";
+      SendMessage("simple-button-evaluate", data);
     }
+    return false;
 }
+
 void CQuizModeSimpleButton::SendMessage(const std::string& mi, const nlohmann::json::const_iterator citJsData)
 {
   m_spWsQuizHandler->SendMessage  (mi, citJsData);
@@ -246,20 +257,7 @@ void CQuizModeSimpleButton::ThreadTimer(void) {
         //check the sequence
         if(it->IsSequence(m_CurrentSequence)) {
           //handle it
-          switch(it->GetType()) {
-            case CQuizModeSimpleButton::ETimerTypeReset:
-              SendMessage("simple-button", m_SimpleButtonInfo.Arm());
-              break;
-            case CQuizModeSimpleButton::ETimerTypePush:
-              m_spLogger->info("CQuizManager [%s][%u] handle [%s].", __FUNCTION__, __LINE__, it->GetExtra().c_str());
-              m_SimpleButtonInfo.TeamDeactivate(it->GetExtra());              
-              SendMessage("simple-button", m_SimpleButtonInfo.ToJson());
-              UpdateFirstActive();
-              break;
-            default:
-              m_spLogger->warning("CQuizManager [%s][%u] handle [%d] UNHANDLED.", __FUNCTION__, __LINE__, it->GetType());
-              break;
-          }
+          ThreadTimerHandle(it); 
         }
 
         //remove the expired item from the list
@@ -272,4 +270,35 @@ void CQuizModeSimpleButton::ThreadTimer(void) {
     }
   }
   m_spLogger->info("CQuizManager [%s][%u] out.", __FUNCTION__, __LINE__);
+}
+
+void CQuizModeSimpleButton::ThreadTimerHandle(const STimerInfoIt& it) 
+{
+  switch(it->GetType()) {
+    case CQuizModeSimpleButton::ETimerTypeReset:
+    {
+      SendMessage("simple-button", m_SimpleButtonInfo.Arm());
+      break;
+    }
+    case CQuizModeSimpleButton::ETimerTypePush:
+    {
+      m_spLogger->info("CQuizManager [%s][%u] handle [%s].", __FUNCTION__, __LINE__, it->GetExtra().c_str());
+      m_SimpleButtonInfo.TeamDeactivate(it->GetExtra());              
+      SendMessage("simple-button", m_SimpleButtonInfo.ToJson());
+      std::string firstActiveTeamName;
+      const bool firstActiveFound = UpdateFirstActive(&firstActiveTeamName);
+
+      //check if there is again a 'first active' team and
+      //restart the timer when this is the case
+      if(firstActiveFound) {
+        m_STimerInfo.insert(CTimerInfo(m_IntervalPushMilliSec, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, firstActiveTeamName));
+      }
+      break;
+    }
+    default:
+    {
+      m_spLogger->warning("CQuizManager [%s][%u] handle [%d] UNHANDLED.", __FUNCTION__, __LINE__, it->GetType());
+      break;
+    }
+  }
 }

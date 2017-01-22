@@ -5,11 +5,11 @@
 
 class CLockSmart {
     public:
-                                            CLockSmart(std::mutex* pMutex);
+                                            CLockSmart(std::recursive_mutex* pMutex);
                                             ~CLockSmart(void) throw();
 
     private:
-      std::mutex* const                     m_pLock;
+      std::recursive_mutex* const           m_pLock;
 };
 
 #endif //__LOCKSMART__H__
