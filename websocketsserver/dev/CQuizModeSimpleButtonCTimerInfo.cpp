@@ -4,10 +4,11 @@
 #include "JsonHelpers.h"
 #include "Typedefs.h"
 
-CQuizModeSimpleButton::CTimerInfo::CTimerInfo(const unsigned int runTimeMilliSec, const ETimerType type, unsigned long long int& sequence)
+CQuizModeSimpleButton::CTimerInfo::CTimerInfo(const unsigned int runTimeMilliSec, const ETimerType type, unsigned long long int& sequence, const std::string& extra)
   : m_Expiry(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) + std::chrono::milliseconds(runTimeMilliSec))
   , m_Sequence(++sequence)
   , m_Type(type)
+  , m_Extra(extra)
 {
 }
 
@@ -15,6 +16,7 @@ CQuizModeSimpleButton::CTimerInfo::CTimerInfo(const CTimerInfo& ref)
   : m_Expiry(ref.m_Expiry)
   , m_Sequence(ref.m_Sequence)
   , m_Type(ref.m_Type)
+  , m_Extra(ref.m_Extra)
 {
 }
 
@@ -24,6 +26,7 @@ CQuizModeSimpleButton::CTimerInfo& CQuizModeSimpleButton::CTimerInfo::operator=(
     m_Expiry   = ref.m_Expiry;
     m_Sequence = ref.m_Sequence;
     m_Type     = ref.m_Type;
+    m_Extra    = ref.m_Extra;
     return *this;
 }
 
@@ -45,4 +48,9 @@ bool CQuizModeSimpleButton::CTimerInfo::IsSequence(const unsigned long long int 
 CQuizModeSimpleButton::ETimerType CQuizModeSimpleButton::CTimerInfo::GetType(void) const
 {
   return m_Type;
+}
+
+std::string CQuizModeSimpleButton::CTimerInfo::GetExtra(void) const
+{
+  return m_Extra;
 }

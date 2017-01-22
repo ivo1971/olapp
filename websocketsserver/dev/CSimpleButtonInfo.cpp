@@ -26,17 +26,24 @@ json CSimpleButtonInfo::Arm(void)
   return ToJson();
 }
 
-void CSimpleButtonInfo::TeamAdd(const std::string& team)
+bool CSimpleButtonInfo::TeamAdd(const std::string& team)
 {
+  bool hasActiveTeams = false;
   for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
     if(it->IsName(team)) {
       //team already on the list
-      return;
+      return false;
+    }
+    if(it->IsActive()) {
+      hasActiveTeams = true;
     }
   }
 
   //new team: add it to the list
   m_Teams.push_back(CSimpleButtonTeamInfo(team));
+
+  //return true when this is the first active team on the list
+  return !hasActiveTeams;
 }
 
 void CSimpleButtonInfo::TeamDeactivate(const std::string& team)

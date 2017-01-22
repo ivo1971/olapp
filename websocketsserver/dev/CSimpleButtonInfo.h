@@ -16,7 +16,7 @@ class CSimpleButtonInfo {
  public:
   nlohmann::json                   Reset(void);
   nlohmann::json                   Arm(void);
-  void                             TeamAdd(const std::string& team);
+  bool                             TeamAdd(const std::string& team);
   void                             TeamDeactivate(const std::string& team);
   void                             TeamGood(const std::string& team);
   void                             TeamRemove(const std::string& team);

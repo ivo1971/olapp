@@ -19,7 +19,7 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
    private:
       class CTimerInfo {
             public:
-                                            CTimerInfo(const unsigned int runTimeMilliSec, const ETimerType type, unsigned long long int& sequence);
+                                            CTimerInfo(const unsigned int runTimeMilliSec, const ETimerType type, unsigned long long int& sequence, const std::string& extra = std::string());
                                             CTimerInfo(const CTimerInfo& ref);
                 CTimerInfo&                 operator=(const CTimerInfo& ref);
 
@@ -28,11 +28,13 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
                 bool                        IsExpired(const std::chrono::milliseconds& now) const;
                 bool                        IsSequence(const unsigned long long int sequence) const;
                 ETimerType                  GetType(void) const;
+                std::string                 GetExtra(void) const;
 
             private:
                 std::chrono::milliseconds   m_Expiry;
                 unsigned long long int      m_Sequence;
                 ETimerType                  m_Type;
+                std::string                 m_Extra;
       };
       typedef std::set<CTimerInfo>          STimerInfo;
       typedef STimerInfo::iterator          STimerInfoIt;
@@ -72,6 +74,7 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
       CSimpleButtonInfo                     m_SimpleButtonInfo;
       bool                                  m_Stopped;
       unsigned long long int                m_CurrentSequence;
+      unsigned int                          m_IntervalPushMilliSec;
 };
 
 #endif //__CQUIZMODESSIMPLEBUTTON__H__

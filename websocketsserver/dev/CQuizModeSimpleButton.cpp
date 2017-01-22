@@ -22,6 +22,7 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
     , m_SimpleButtonInfo()
     , m_Stopped(false)
     , m_CurrentSequence(0)
+    , m_IntervalPushMilliSec(5000) //TODO: default to 0, make configurable from master
 {
     //client initialisation
     TeamsChanged(m_Teams);
@@ -129,11 +130,16 @@ void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const n
     }
 
     //update status
-    m_SimpleButtonInfo.TeamAdd       (citTeam->second.NameGet());
-    m_SimpleButtonInfo.TeamMembersAdd(citTeam->second.NameGet(), citUser->second.NameGet());
+    {
+        const std::string teamName = citTeam->second.NameGet();
+        if((m_SimpleButtonInfo.TeamAdd(teamName)) && (0 != m_IntervalPushMilliSec)) {
+            //added team is currently the first active team
+            m_STimerInfo.insert(CTimerInfo(m_IntervalPushMilliSec, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, teamName));
+        }      
+        m_SimpleButtonInfo.TeamMembersAdd(teamName, citUser->second.NameGet());
+    }
 
     //inform clients
-    m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
     SendMessage("simple-button", m_SimpleButtonInfo.ToJson());
     UpdateFirstActive();
 }
@@ -160,6 +166,7 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
         const bool         evaluationGood = "good" == evaluation;
 
         //evaluate
+        ++m_CurrentSequence;
         if(evaluationGood) {
           m_SimpleButtonInfo.TeamGood(team);
           m_Stopped = true;
@@ -225,9 +232,10 @@ void CQuizModeSimpleButton::SendMessage(const std::string& id, const std::string
 void CQuizModeSimpleButton::ThreadTimer(void) {
   m_spLogger->info("CQuizManager [%s][%u] in.", __FUNCTION__, __LINE__);
   while(!m_TimerThreadStop) {
-    usleep(1000 * 1000);
+    usleep(100 * 1000);
     {
       CLockSmart lockSmart(&m_Lock);
+      //m_spLogger->debug("CQuizManager [%s][%u] timer check [%d].", __FUNCTION__, __LINE__, m_STimerInfo.size());
       const std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
       for(STimerInfoIt it = m_STimerInfo.begin() ; m_STimerInfo.end() != it ; it = m_STimerInfo.begin()) {
         //check expiry
@@ -238,12 +246,15 @@ void CQuizModeSimpleButton::ThreadTimer(void) {
         //check the sequence
         if(it->IsSequence(m_CurrentSequence)) {
           //handle it
-          m_spLogger->info("CQuizManager [%s][%u] handle [%d].", __FUNCTION__, __LINE__, it->GetType());
           switch(it->GetType()) {
             case CQuizModeSimpleButton::ETimerTypeReset:
               SendMessage("simple-button", m_SimpleButtonInfo.Arm());
               break;
             case CQuizModeSimpleButton::ETimerTypePush:
+              m_spLogger->info("CQuizManager [%s][%u] handle [%s].", __FUNCTION__, __LINE__, it->GetExtra().c_str());
+              m_SimpleButtonInfo.TeamDeactivate(it->GetExtra());              
+              SendMessage("simple-button", m_SimpleButtonInfo.ToJson());
+              UpdateFirstActive();
               break;
             default:
               m_spLogger->warning("CQuizManager [%s][%u] handle [%d] UNHANDLED.", __FUNCTION__, __LINE__, it->GetType());
@@ -257,6 +268,7 @@ void CQuizModeSimpleButton::ThreadTimer(void) {
       if(0 == m_STimerInfo.size()) {
         m_CurrentSequence = 0;
       }
+      //m_spLogger->debug("CQuizManager [%s][%u] timer check done.", __FUNCTION__, __LINE__);
     }
   }
   m_spLogger->info("CQuizManager [%s][%u] out.", __FUNCTION__, __LINE__);
