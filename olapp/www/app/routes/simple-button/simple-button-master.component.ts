@@ -30,6 +30,8 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'simple-button-master.component.html'
 })
 export class SimpleButtonMasterComponent extends ComponentBase implements OnInit, OnDestroy { 
+    private teamNameEvaluate : string = "";
+
     /* Construction
      */
     public constructor(
@@ -46,9 +48,46 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
+        //register routing MI
+        this.observableEvaluate = this._websocketService
+                                      .register("simple-button-evaluate")
+        this.observableEvaluateSubscription = this.observableEvaluate.subscribe(
+          data => {
+            this.teamNameEvaluate = data["team"];
+          });
     }
 
     public ngOnDestroy() : void {
+    }
+
+    /* Template event handlers
+     */
+    public onClickReset() : void {
+        this._websocketService.sendMsg("simple-button-event", {
+            event: "reset"
+        });        
+    }
+
+    public onClickArm() : void {
+        this._websocketService.sendMsg("simple-button-event", {
+            event: "arm"
+        });        
+    }
+
+    public onClickEvaluateBad() : void {
+        this.evaluate("bad");
+    }
+
+    public onClickEvaluateGood() : void {
+        this.evaluate("good");
+    }
+
+    private evaluate(evaluation: string) : void {
+        this._websocketService.sendMsg("simple-button-event", {
+            event: "evaluate",
+            team: this.teamNameEvaluate,
+            evaluation: evaluation
+        });        
     }
 
     /* Private members
@@ -56,4 +95,6 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
     private observableTeamInfo             : Observable<Array<TeamInfo>>;
     private observableTeamInfoNone         : Observable<Array<TeamInfo>>;
     private observableUserInfo             : Observable<Array<UserInfo>>;
+    private observableEvaluate             : Observable<any>;
+    private observableEvaluateSubscription : Subscription                ;
 }
