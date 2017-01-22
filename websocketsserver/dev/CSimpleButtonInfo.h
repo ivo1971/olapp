@@ -22,6 +22,7 @@ class CSimpleButtonInfo {
   void                             TeamRemove(const std::string& team);
   void                             TeamMembersAdd(const std::string& team, const std::string& name);
   nlohmann::json                   ToJson(const bool noSequenceIncrement = false) const;
+  bool                             GetFirstActive(CSimpleButtonTeamInfo& info) const;
 
  private:
   mutable unsigned int             m_SequenceNbr;

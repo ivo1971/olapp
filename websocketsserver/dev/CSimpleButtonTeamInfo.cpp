@@ -11,8 +11,41 @@ CSimpleButtonTeamInfo::CSimpleButtonTeamInfo(const std::string& name)
 {
 }
 
+CSimpleButtonTeamInfo::CSimpleButtonTeamInfo(const CSimpleButtonTeamInfo& ref)
+  : m_Name(ref.m_Name)
+  , m_Members(ref.m_Members)
+  , m_Active(ref.m_Active)
+  , m_Good(ref.m_Good)
+{
+}
+
 CSimpleButtonTeamInfo::~CSimpleButtonTeamInfo(void) throw()
 {
+}
+
+CSimpleButtonTeamInfo& CSimpleButtonTeamInfo::operator=(const CSimpleButtonTeamInfo& ref)
+{
+  if(this == &ref) return *this;
+  m_Name    = ref.m_Name;
+  m_Members = ref.m_Members;
+  m_Active  = ref.m_Active;
+  m_Good    = ref.m_Good;
+  return *this;
+}
+
+bool CSimpleButtonTeamInfo::IsName(const std::string& name) const
+{
+  return name == m_Name;
+}
+
+bool CSimpleButtonTeamInfo::IsActive(void) const
+{
+  return m_Active;
+}
+
+std::string CSimpleButtonTeamInfo::GetName(void) const
+{
+  return m_Name;
 }
 
 void CSimpleButtonTeamInfo::Deactivate(void)

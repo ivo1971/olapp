@@ -28,6 +28,14 @@ json CSimpleButtonInfo::Arm(void)
 
 void CSimpleButtonInfo::TeamAdd(const std::string& team)
 {
+  for(std::list<CSimpleButtonTeamInfo>::iterator it = m_Teams.begin() ; m_Teams.end() != it ; ++it) {
+    if(it->IsName(team)) {
+      //team already on the list
+      return;
+    }
+  }
+
+  //new team: add it to the list
   m_Teams.push_back(CSimpleButtonTeamInfo(team));
 }
 
@@ -91,3 +99,13 @@ json CSimpleButtonInfo::ToJson(const bool noSequenceIncrement /* = false */) con
   return data;
 }
 
+bool CSimpleButtonInfo::GetFirstActive(CSimpleButtonTeamInfo& info) const
+{
+  for(std::list<CSimpleButtonTeamInfo>::const_iterator cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+    if(cit->IsActive()) {
+      info = *cit;
+      return true;
+    }
+  }
+  return false;
+}

@@ -53,17 +53,27 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       const std::string& name = GetElementString(citJsData, "name");
 
       //new or existing user?
+      bool changed = false;
       MapUserIt userIt = m_Users.find(id);
       if(m_Users.end() == userIt) {
         m_Users.insert(PairUser(id, CUser(id, name, true)));
+        changed = true;
       } else {
-        userIt->second.NameSet(name);
-        userIt->second.ConnectedSet(true);
+        if(name != userIt->second.NameGet()) {        
+          userIt->second.NameSet(name);
+          changed = true;
+        }
+        if(!userIt->second.ConnectedGet()) {
+          userIt->second.ConnectedSet(true);
+          changed = true;
+        }
       }
-      m_CurrentQuizMode->ReConnect(id);
-      m_CurrentQuizMode->UsersChanged(m_Users);
-      Save();
-      SendTeam(id);
+      if(changed) {
+        m_CurrentQuizMode->ReConnect(id);
+        m_CurrentQuizMode->UsersChanged(m_Users);
+        Save();
+        SendTeam(id);
+      }
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);

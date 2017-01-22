@@ -8,10 +8,15 @@
 
 class CSimpleButtonTeamInfo {
  public:
-  CSimpleButtonTeamInfo(const std::string& name);
-  ~CSimpleButtonTeamInfo(void) throw();
+                         CSimpleButtonTeamInfo(const std::string& name);
+                         CSimpleButtonTeamInfo(const CSimpleButtonTeamInfo& ref);
+                         ~CSimpleButtonTeamInfo(void) throw();
+  CSimpleButtonTeamInfo& operator=(const CSimpleButtonTeamInfo& ref);
 
  public:
+  bool                   IsName(const std::string& name) const;
+  bool                   IsActive(void) const;
+  std::string            GetName(void) const;
   void                   Deactivate(void);
   void                   Good(void);
   bool                   HasName(const std::string& name);
