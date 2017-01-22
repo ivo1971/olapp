@@ -83,9 +83,11 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
     }
 
     private evaluate(evaluation: string) : void {
+        let teamNameEvaluate = this.teamNameEvaluate;
+        this.teamNameEvaluate = ""; //avoid double click on the same team
         this._websocketService.sendMsg("simple-button-event", {
             event: "evaluate",
-            team: this.teamNameEvaluate,
+            team: teamNameEvaluate,
             evaluation: evaluation
         });        
     }
