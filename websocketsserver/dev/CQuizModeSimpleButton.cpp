@@ -153,9 +153,11 @@ void CQuizModeSimpleButton::UpdateFirstActive()
     //TODO: detect is this is a change or not and thus if this has to be sent or not
     CSimpleButtonTeamInfo info("dummy");
     if(m_SimpleButtonInfo.GetFirstActive(info)) {
-      json data;
-      data["team"] = info.GetName();
-      SendMessage("simple-button-evaluate", data);
+      if(!info.IsGood()) { //evaluation no required when team is already 'good'
+        json data;
+        data["team"] = info.GetName();
+        SendMessage("simple-button-evaluate", data);
+      }
     }
 }
 void CQuizModeSimpleButton::SendMessage(const std::string& mi, const nlohmann::json::const_iterator citJsData)

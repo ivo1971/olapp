@@ -43,6 +43,11 @@ bool CSimpleButtonTeamInfo::IsActive(void) const
   return m_Active;
 }
 
+bool CSimpleButtonTeamInfo::IsGood(void) const
+{
+  return m_Good;
+}
+
 std::string CSimpleButtonTeamInfo::GetName(void) const
 {
   return m_Name;

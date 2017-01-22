@@ -16,6 +16,7 @@ class CSimpleButtonTeamInfo {
  public:
   bool                   IsName(const std::string& name) const;
   bool                   IsActive(void) const;
+  bool                   IsGood(void) const;
   std::string            GetName(void) const;
   void                   Deactivate(void);
   void                   Good(void);
