@@ -14,6 +14,8 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
    , m_Users(users)
    , m_UsersNew(users)
 {
+  TeamsChanged(m_Teams);
+  UsersChanged(m_Users);
 }
 
 CQuizModeSimpleButton::~CQuizModeSimpleButton(void) throw()
@@ -39,17 +41,21 @@ void CQuizModeSimpleButton::TeamsChanged(const MapTeam& teams)
 {
     m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
     m_TeamsNew = teams;
+    m_spWsMasterHandler->SendMessage("team-list", MapTeamToJson(m_TeamsNew));
 }
 
 void CQuizModeSimpleButton::UsersChanged(const MapUser& users)
 {
     m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
     m_UsersNew = users;
+    m_spWsMasterHandler->SendMessage("user-list", MapUserToJson(m_UsersNew));
 }
 
 void CQuizModeSimpleButton::ReConnect(const std::string& id)
 {
     CQuizModeBase::ReConnect(id);
+    TeamsChanged(m_TeamsNew);        //send current teams
+    UsersChanged(m_UsersNew);        //send current users
 }
 
 void CQuizModeSimpleButton::SendMessage(const std::string& mi, const nlohmann::json::const_iterator citJsData)
