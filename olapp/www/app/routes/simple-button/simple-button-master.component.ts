@@ -63,12 +63,14 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
     /* Template event handlers
      */
     public onClickReset() : void {
+        this.teamNameEvaluate = "";
         this._websocketService.sendMsg("simple-button-event", {
             event: "reset"
         });        
     }
 
     public onClickArm() : void {
+        this.teamNameEvaluate = "";
         this._websocketService.sendMsg("simple-button-event", {
             event: "arm"
         });        
