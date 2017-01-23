@@ -41,27 +41,48 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
       typedef STimerInfo::const_pointer     STimerInfoCIt;
 
    public:
+      class CConfig {
+            public:
+                                            CConfig(void);
+                                            CConfig(const CConfig& ref);
+                                            CConfig(const nlohmann::json& jsonData);
+                                            ~CConfig(void);
+
+            public:
+                CConfig&                    operator=(const CConfig& ref);
+                nlohmann::json              ToJson(void) const;
+
+            public:
+                int                         m_Delay;
+                int                         m_PointsGoodThis;
+                int                         m_PointsGoodOther;
+                int                         m_PointsBadThis;
+                int                         m_PointsBadOther;
+      };
+
+   public:
                                             CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapTeam& teams, const MapUser& users);
       virtual                               ~CQuizModeSimpleButton(void) throw();
 
    public:
-      virtual void                          HandleMessageQuiz       (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                          HandleMessageMaster     (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                          HandleMessageBeamer     (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                          TeamsChanged            (const MapTeam& teams);
-      virtual void                          UsersChanged            (const MapUser& users);
-      virtual void                          ReConnect               (const std::string& id);
+      virtual void                          HandleMessageQuiz        (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                          HandleMessageMaster      (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                          HandleMessageBeamer      (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                          TeamsChanged             (const MapTeam& teams);
+      virtual void                          UsersChanged             (const MapUser& users);
+      virtual void                          ReConnect                (const std::string& id);
 
    private:
-      void                                  HandleMessageQuizPush   (const std::string& id, const nlohmann::json::const_iterator citJsData);
-      void                                  HandleMessageMasterEvent(const std::string& event, const nlohmann::json::const_iterator citJsData);
-      bool                                  UpdateFirstActive       (std::string* const pTeamName = NULL);
-      void                                  SendMessage             (                       const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      void                                  SendMessage             (                       const std::string& mi, const nlohmann::json&                data     );
-      void                                  SendMessage             (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      void                                  SendMessage             (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
-      void                                  ThreadTimer             (void);
-      void                                  ThreadTimerHandle       (const STimerInfoIt& it);
+      void                                  HandleMessageQuizPush    (const std::string& id, const nlohmann::json::const_iterator citJsData);
+      void                                  HandleMessageMasterEvent (const std::string& event, const nlohmann::json::const_iterator citJsData);
+      void                                  HandleMessageMasterConfig(const nlohmann::json::const_iterator citJsData);
+      bool                                  UpdateFirstActive        (std::string* const pTeamName = NULL);
+      void                                  SendMessage              (                       const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      void                                  SendMessage              (                       const std::string& mi, const nlohmann::json&                data     );
+      void                                  SendMessage              (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      void                                  SendMessage              (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
+      void                                  ThreadTimer              (void);
+      void                                  ThreadTimerHandle        (const STimerInfoIt& it);
 
    private:
       std::recursive_mutex                  m_Lock;
@@ -75,7 +96,7 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
       CSimpleButtonInfo                     m_SimpleButtonInfo;
       bool                                  m_Stopped;
       unsigned long long int                m_CurrentSequence;
-      unsigned int                          m_IntervalPushMilliSec;
+      CConfig                               m_Config;
 };
 
 #endif //__CQUIZMODESSIMPLEBUTTON__H__

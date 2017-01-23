@@ -38,3 +38,21 @@ std::string GetElementString(const json::const_iterator citJsonData, const char*
   }
   return cit->get<string>();
 }
+
+int GetElementInt(const json& jsonData, const char* const key)
+{
+  json::const_iterator cit = GetElement(jsonData, key);
+  if(!cit->is_number_integer()) {
+    throw runtime_error(std::string("Value for key is not an integral: ") + std::string(key));
+  }
+  return cit->get<int>();
+}
+
+int GetElementInt(const json::const_iterator citJsonData, const char* const key)
+{
+  json::const_iterator cit = GetElement(citJsonData, key);
+  if(!cit->is_number_integer()) {
+    throw runtime_error(std::string("Value for key is not an integral: ") + std::string(key));
+  }
+  return cit->get<int>();
+}

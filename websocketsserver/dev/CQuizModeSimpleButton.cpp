@@ -22,7 +22,7 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
     , m_SimpleButtonInfo()
     , m_Stopped(false)
     , m_CurrentSequence(0)
-    , m_IntervalPushMilliSec(5000) //TODO: default to 0, make configurable from master
+    , m_Config()
 {
     //client initialisation
     TeamsChanged(m_Teams);
@@ -63,6 +63,9 @@ void CQuizModeSimpleButton::HandleMessageMaster(const std::string& /* id */, con
         const std::string& event = GetElementString(citJsData, "event");
         m_spLogger->info("CQuizModeSimpleButton [%s][%u] MI [%s] handle event [%s].", __FUNCTION__, __LINE__, mi.c_str(), event.c_str());
         HandleMessageMasterEvent(event, citJsData);
+    } else if("simple-button-config" == mi) {
+        m_spLogger->info("CQuizModeSimpleButton [%s][%u] MI [%s] handle config.", __FUNCTION__, __LINE__, mi.c_str());
+        HandleMessageMasterConfig(citJsData);
     } else {
         m_spLogger->warning("CQuizModeSimpleButton [%s][%u] MI [%s] UNHANDLED.", __FUNCTION__, __LINE__, mi.c_str());
     }
@@ -132,9 +135,9 @@ void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const n
     //update status
     {
         const std::string teamName = citTeam->second.NameGet();
-        if((m_SimpleButtonInfo.TeamAdd(teamName)) && (0 != m_IntervalPushMilliSec)) {
+        if((m_SimpleButtonInfo.TeamAdd(teamName)) && (0 < m_Config.m_Delay)) {
             //added team is currently the first active team
-            m_STimerInfo.insert(CTimerInfo(m_IntervalPushMilliSec, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, teamName));
+            m_STimerInfo.insert(CTimerInfo(m_Config.m_Delay * 1000, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, teamName));
         }      
         m_SimpleButtonInfo.TeamMembersAdd(teamName, citUser->second.NameGet());
     }
@@ -187,6 +190,16 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
       m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
       SendMessage("simple-button", jsonData);
     }
+}
+
+void CQuizModeSimpleButton::HandleMessageMasterConfig(const nlohmann::json::const_iterator citJsData)
+{
+  m_Config.m_Delay           = GetElementInt(citJsData, "configDelay"          );
+  m_Config.m_PointsGoodThis  = GetElementInt(citJsData, "configPointsGoodThis" );
+  m_Config.m_PointsGoodOther = GetElementInt(citJsData, "configPointsGoodOther");
+  m_Config.m_PointsBadThis   = GetElementInt(citJsData, "configPointsBadThis"  );
+  m_Config.m_PointsBadOther  = GetElementInt(citJsData, "configPointsBadOther" );
+  m_spLogger->info("CQuizModeSimpleButton [%s][%u] [%d][%d][%d][%d][%d].", __FUNCTION__, __LINE__, m_Config.m_Delay, m_Config.m_PointsGoodThis, m_Config.m_PointsGoodOther, m_Config.m_PointsBadThis, m_Config.m_PointsBadOther);
 }
 
 bool CQuizModeSimpleButton::UpdateFirstActive(std::string* const pTeamName)
@@ -290,8 +303,8 @@ void CQuizModeSimpleButton::ThreadTimerHandle(const STimerInfoIt& it)
 
       //check if there is again a 'first active' team and
       //restart the timer when this is the case
-      if(firstActiveFound) {
-        m_STimerInfo.insert(CTimerInfo(m_IntervalPushMilliSec, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, firstActiveTeamName));
+      if((firstActiveFound) && (0 < m_Config.m_Delay)) {
+        m_STimerInfo.insert(CTimerInfo(m_Config.m_Delay * 1000, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, firstActiveTeamName));
       }
       break;
     }
