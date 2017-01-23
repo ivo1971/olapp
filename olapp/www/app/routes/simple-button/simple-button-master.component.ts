@@ -30,7 +30,12 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'simple-button-master.component.html'
 })
 export class SimpleButtonMasterComponent extends ComponentBase implements OnInit, OnDestroy { 
-    private teamNameEvaluate : string = "";
+    private teamNameEvaluate      : string = "";
+    private configDelay           : number = 5;
+    private configPointsGoodThis  : number = 5;
+    private configPointsGoodOther : number = 0;
+    private configPointsBadThis   : number = 0;
+    private configPointsBadOther  : number = 3;
 
     /* Construction
      */
@@ -43,6 +48,29 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
         this.observableTeamInfo     = this.teamsUsersService.getObservableTeamsInfo    ();
         this.observableTeamInfoNone = this.teamsUsersService.getObservableTeamsInfoNone();
         this.observableUserInfo     = this.teamsUsersService.getObservableUsersInfo    ();
+
+        this.observableConfig       = this._websocketService
+                                          .register("simple-button-config")
+        this.observableConfigSubscription = this.observableConfig.subscribe(data => {
+            if(!data) {
+                return;
+            } 
+            if(data["configDelay"]) {
+                this.configDelay = data["configDelay"];
+            }
+            if(data["configPointsGoodThis"]) {
+                this.configDelay = data["configPointsGoodThis"];
+            }
+            if(data["configPointsGoodOther"]) {
+                this.configDelay = data["configPointsGoodOther"];
+            }
+            if(data["configPointsBadThis"]) {
+                this.configDelay = data["configPointsBadThis"];
+            }
+            if(data["configPointsBadOther"]) {
+                this.configDelay = data["configPointsBadOther"];
+            }
+        }
     }
 
     /* Life-cycle hooks
@@ -84,6 +112,16 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
         this.evaluate("good");
     }
 
+    public onClickConfig() : void {
+        this._websocketService.sendMsg("simple-button-config", {
+            configDelay           : parseInt(this.configDelay.toString()),
+            configPointsGoodThis  : parseInt(this.configPointsGoodThis.toString()),
+            configPointsGoodOther : parseInt(this.configPointsGoodOther.toString()),
+            configPointsBadThis   : parseInt(this.configPointsBadThis.toString()),
+            configPointsBadOther  : parseInt(this.configPointsBadOther.toString())
+        });        
+    }
+
     private evaluate(evaluation: string) : void {
         let teamNameEvaluate = this.teamNameEvaluate;
         this.teamNameEvaluate = ""; //avoid double click on the same team
@@ -100,5 +138,7 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
     private observableTeamInfoNone         : Observable<Array<TeamInfo>>;
     private observableUserInfo             : Observable<Array<UserInfo>>;
     private observableEvaluate             : Observable<any>;
-    private observableEvaluateSubscription : Subscription                ;
+    private observableEvaluateSubscription : Subscription;
+    private observableConfig               : Observable<any>;
+    private observableConfigSubscription   : Subscription;
 }
