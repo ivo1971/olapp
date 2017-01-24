@@ -4,7 +4,8 @@
 using namespace nlohmann;
 
 CQuizModeSimpleButton::CConfig::CConfig(void)
-    : m_Delay(5)
+    : m_Dirty(false)
+    , m_Delay(5)
     , m_PointsGoodThis(2)
     , m_PointsGoodOther(0)
     , m_PointsBadThis(0)
@@ -13,7 +14,8 @@ CQuizModeSimpleButton::CConfig::CConfig(void)
 }
 
 CQuizModeSimpleButton::CConfig::CConfig(const CConfig& ref)
-    : m_Delay(ref.m_Delay)
+    : m_Dirty(false)
+    , m_Delay(ref.m_Delay)
     , m_PointsGoodThis(ref.m_PointsGoodThis)
     , m_PointsGoodOther(ref.m_PointsGoodOther)
     , m_PointsBadThis(ref.m_PointsBadThis)
@@ -22,7 +24,8 @@ CQuizModeSimpleButton::CConfig::CConfig(const CConfig& ref)
 }
 
 CQuizModeSimpleButton::CConfig::CConfig(const nlohmann::json& jsonData)
-    : m_Delay(GetElementInt(jsonData, "delay"))
+    : m_Dirty(false)
+    , m_Delay(GetElementInt(jsonData, "delay"))
     , m_PointsGoodThis(GetElementInt(jsonData, "pointsGoodThis"))
     , m_PointsGoodOther(GetElementInt(jsonData, "pointsGoodOther"))
     , m_PointsBadThis(GetElementInt(jsonData, "pointsBadThis"))
@@ -37,6 +40,7 @@ CQuizModeSimpleButton::CConfig::~CConfig(void)
 CQuizModeSimpleButton::CConfig& CQuizModeSimpleButton::CConfig::operator=(const CConfig& ref)
 {
     if(this == &ref) return *this;
+    m_Dirty           = true;
     m_Delay           = ref.m_Delay;
     m_PointsGoodThis  = ref.m_PointsGoodThis;
     m_PointsGoodOther = ref.m_PointsGoodOther;
@@ -54,4 +58,69 @@ nlohmann::json CQuizModeSimpleButton::CConfig::ToJson(void) const
   data["pointsBadThis"]   = m_PointsBadThis;
   data["pointsBadOther"]  = m_PointsBadOther;
   return data;
+}
+
+bool CQuizModeSimpleButton::CConfig::IsDirty(void) const
+{
+    return m_Dirty;
+}
+
+void CQuizModeSimpleButton::CConfig::Clean(void)
+{
+    m_Dirty = false;
+}
+
+int  CQuizModeSimpleButton::CConfig::GetDelay(void) const
+{
+    return m_Delay;
+}
+
+int  CQuizModeSimpleButton::CConfig::GetPointsGoodThis(void) const
+{
+    return m_PointsGoodThis;
+}
+
+int  CQuizModeSimpleButton::CConfig::GetPointsGoodOther(void) const
+{
+    return m_PointsGoodOther;
+}
+
+int  CQuizModeSimpleButton::CConfig::GetPointsBadThis(void) const
+{
+    return m_PointsBadThis;
+}
+
+int  CQuizModeSimpleButton::CConfig::GetPointsBadOther(void) const
+{
+    return m_PointsBadOther;
+}
+
+void CQuizModeSimpleButton::CConfig::SetDelay(const int delay)
+{
+    m_Dirty = true;
+    m_Delay = delay;
+}
+
+void CQuizModeSimpleButton::CConfig::SetPointsGoodThis(const int pointsGoodThis)
+{
+    m_Dirty           = true;
+    m_PointsGoodThis  = pointsGoodThis;
+}
+
+void CQuizModeSimpleButton::CConfig::SetPointsGoodOther(const int pointsGoodOther)
+{
+    m_Dirty           = true;
+    m_PointsGoodOther = pointsGoodOther;
+}
+
+void CQuizModeSimpleButton::CConfig::SetPointsBadThis(const int pointsBadThis)
+{
+    m_Dirty           = true;
+    m_PointsBadThis   = pointsBadThis;
+}
+
+void CQuizModeSimpleButton::CConfig::SetPointsBadOther(const int pointsBadOther)
+{
+    m_Dirty          = true;
+    m_PointsBadOther = pointsBadOther;
 }
