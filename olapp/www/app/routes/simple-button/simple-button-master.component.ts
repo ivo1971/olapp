@@ -55,20 +55,21 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
             if(!data) {
                 return;
             } 
-            if(data["configDelay"]) {
-                this.configDelay = data["configDelay"];
+            console.log(data);
+            if(data["delay"]) {
+                this.configDelay           = data["delay"];
             }
-            if(data["configPointsGoodThis"]) {
-                this.configDelay = data["configPointsGoodThis"];
+            if(data["pointsGoodThis"]) {
+                this.configPointsGoodThis  = data["pointsGoodThis"];
             }
-            if(data["configPointsGoodOther"]) {
-                this.configDelay = data["configPointsGoodOther"];
+            if(data["pointsGoodOther"]) {
+                this.configPointsGoodOther = data["pointsGoodOther"];
             }
-            if(data["configPointsBadThis"]) {
-                this.configDelay = data["configPointsBadThis"];
+            if(data["pointsBadThis"]) {
+                this.configPointsBadThis   = data["pointsBadThis"];
             }
-            if(data["configPointsBadOther"]) {
-                this.configDelay = data["configPointsBadOther"];
+            if(data["pointsBadOther"]) {
+                this.configPointsBadOther  = data["pointsBadOther"];
             }
         }
     }
@@ -114,11 +115,11 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
 
     public onClickConfig() : void {
         this._websocketService.sendMsg("simple-button-config", {
-            configDelay           : parseInt(this.configDelay.toString()),
-            configPointsGoodThis  : parseInt(this.configPointsGoodThis.toString()),
-            configPointsGoodOther : parseInt(this.configPointsGoodOther.toString()),
-            configPointsBadThis   : parseInt(this.configPointsBadThis.toString()),
-            configPointsBadOther  : parseInt(this.configPointsBadOther.toString())
+            delay           : parseInt(this.configDelay.toString()),
+            pointsGoodThis  : parseInt(this.configPointsGoodThis.toString()),
+            pointsGoodOther : parseInt(this.configPointsGoodOther.toString()),
+            pointsBadThis   : parseInt(this.configPointsBadThis.toString()),
+            pointsBadOther  : parseInt(this.configPointsBadOther.toString())
         });        
     }
 
