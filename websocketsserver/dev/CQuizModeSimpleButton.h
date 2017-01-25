@@ -42,11 +42,12 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
       typedef STimerInfo::const_pointer               STimerInfoCIt;
 
    public:
+      typedef std::function<void(void)>               FuncDirty;
       class CConfig {
             public:
-                                                      CConfig(std::function<void(void)> funcDirty);
+                                                      CConfig(FuncDirty funcDirty);
                                                       CConfig(const CConfig& ref);
-                                                      CConfig(const nlohmann::json& jsonData, std::function<void(void)> funcDirty);
+                                                      CConfig(const nlohmann::json& jsonData, FuncDirty funcDirty);
                                                       ~CConfig(void);
 
             public:
@@ -65,7 +66,7 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
                 void                                  SetAll(const int delay, const int pointsGoodThis, const int pointsGoodOther, const int pointsBadThis, const int pointsBadOther);
 
             private:
-                std::function<void(void)>             m_FuncDirty;
+                FuncDirty                             m_FuncDirty;
                 int                                   m_Delay;
                 int                                   m_PointsGoodThis;
                 int                                   m_PointsGoodOther;

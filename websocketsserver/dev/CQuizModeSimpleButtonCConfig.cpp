@@ -3,7 +3,7 @@
 
 using namespace nlohmann;
 
-CQuizModeSimpleButton::CConfig::CConfig(std::function<void(void)> funcDirty)
+CQuizModeSimpleButton::CConfig::CConfig(FuncDirty funcDirty)
     : m_FuncDirty(funcDirty)
     , m_Delay(5)
     , m_PointsGoodThis(2)
@@ -23,7 +23,7 @@ CQuizModeSimpleButton::CConfig::CConfig(const CConfig& ref)
 {
 }
 
-CQuizModeSimpleButton::CConfig::CConfig(const nlohmann::json& jsonData, std::function<void(void)> funcDirty)
+CQuizModeSimpleButton::CConfig::CConfig(const nlohmann::json& jsonData, FuncDirty funcDirty)
     : m_FuncDirty(funcDirty)
     , m_Delay(GetElementInt(jsonData, "delay"))
     , m_PointsGoodThis(GetElementInt(jsonData, "pointsGoodThis"))
