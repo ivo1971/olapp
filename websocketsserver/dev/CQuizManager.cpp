@@ -35,7 +35,8 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_Users()
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Teams, m_Users))
   , m_FileName(fileName)
-  , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig())
+  , m_RequestSave([this](){Save();})
+  , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_RequestSave))
 {
   Load();
 }
@@ -233,13 +234,6 @@ void CQuizManager::SelectMode(const std::string& mode)
 {
   m_spLogger->info("CQuizManager [%s][%u] switching to mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
 
-  //save dirty data
-  //TODO: bind to an event of the current mode to let the mode emit an event when a safe is required
-  if(m_spSimpleButtonConfig->IsDirty()) {
-    m_spLogger->info("CQuizManager [%s][%u] saving dirty data.", __FUNCTION__, __LINE__);
-    Save();
-  }
-
   //switch
   if("welcome" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
@@ -354,7 +348,7 @@ void CQuizManager::Load(void)
   //from json to users
   try {
       const json::const_iterator citSimpleButtonConfig = GetElement(data,      "simple-button-config");
-      m_spSimpleButtonConfig.reset(new CQuizModeSimpleButton::CConfig(*citSimpleButtonConfig));
+      m_spSimpleButtonConfig.reset(new CQuizModeSimpleButton::CConfig(*citSimpleButtonConfig, m_RequestSave));
   } catch(std::exception& ex) {
       m_spLogger->info("CQuizManager [%s][%u] loading simple-button config from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
   }

@@ -3,8 +3,8 @@
 
 using namespace nlohmann;
 
-CQuizModeSimpleButton::CConfig::CConfig(void)
-    : m_Dirty(false)
+CQuizModeSimpleButton::CConfig::CConfig(std::function<void(void)> funcDirty)
+    : m_FuncDirty(funcDirty)
     , m_Delay(5)
     , m_PointsGoodThis(2)
     , m_PointsGoodOther(0)
@@ -14,7 +14,7 @@ CQuizModeSimpleButton::CConfig::CConfig(void)
 }
 
 CQuizModeSimpleButton::CConfig::CConfig(const CConfig& ref)
-    : m_Dirty(false)
+    : m_FuncDirty(ref.m_FuncDirty)
     , m_Delay(ref.m_Delay)
     , m_PointsGoodThis(ref.m_PointsGoodThis)
     , m_PointsGoodOther(ref.m_PointsGoodOther)
@@ -23,8 +23,8 @@ CQuizModeSimpleButton::CConfig::CConfig(const CConfig& ref)
 {
 }
 
-CQuizModeSimpleButton::CConfig::CConfig(const nlohmann::json& jsonData)
-    : m_Dirty(false)
+CQuizModeSimpleButton::CConfig::CConfig(const nlohmann::json& jsonData, std::function<void(void)> funcDirty)
+    : m_FuncDirty(funcDirty)
     , m_Delay(GetElementInt(jsonData, "delay"))
     , m_PointsGoodThis(GetElementInt(jsonData, "pointsGoodThis"))
     , m_PointsGoodOther(GetElementInt(jsonData, "pointsGoodOther"))
@@ -40,7 +40,7 @@ CQuizModeSimpleButton::CConfig::~CConfig(void)
 CQuizModeSimpleButton::CConfig& CQuizModeSimpleButton::CConfig::operator=(const CConfig& ref)
 {
     if(this == &ref) return *this;
-    m_Dirty           = true;
+    m_FuncDirty       = ref.m_FuncDirty;
     m_Delay           = ref.m_Delay;
     m_PointsGoodThis  = ref.m_PointsGoodThis;
     m_PointsGoodOther = ref.m_PointsGoodOther;
@@ -58,16 +58,6 @@ nlohmann::json CQuizModeSimpleButton::CConfig::ToJson(void) const
   data["pointsBadThis"]   = m_PointsBadThis;
   data["pointsBadOther"]  = m_PointsBadOther;
   return data;
-}
-
-bool CQuizModeSimpleButton::CConfig::IsDirty(void) const
-{
-    return m_Dirty;
-}
-
-void CQuizModeSimpleButton::CConfig::Clean(void)
-{
-    m_Dirty = false;
 }
 
 int  CQuizModeSimpleButton::CConfig::GetDelay(void) const
@@ -97,30 +87,41 @@ int  CQuizModeSimpleButton::CConfig::GetPointsBadOther(void) const
 
 void CQuizModeSimpleButton::CConfig::SetDelay(const int delay)
 {
-    m_Dirty = true;
     m_Delay = delay;
+    m_FuncDirty();
 }
 
 void CQuizModeSimpleButton::CConfig::SetPointsGoodThis(const int pointsGoodThis)
 {
-    m_Dirty           = true;
     m_PointsGoodThis  = pointsGoodThis;
+    m_FuncDirty();
 }
 
 void CQuizModeSimpleButton::CConfig::SetPointsGoodOther(const int pointsGoodOther)
 {
-    m_Dirty           = true;
     m_PointsGoodOther = pointsGoodOther;
+    m_FuncDirty();
 }
 
 void CQuizModeSimpleButton::CConfig::SetPointsBadThis(const int pointsBadThis)
 {
-    m_Dirty           = true;
     m_PointsBadThis   = pointsBadThis;
+    m_FuncDirty();
 }
 
 void CQuizModeSimpleButton::CConfig::SetPointsBadOther(const int pointsBadOther)
 {
-    m_Dirty          = true;
-    m_PointsBadOther = pointsBadOther;
+    m_PointsBadOther  = pointsBadOther;
+    m_FuncDirty();
 }
+
+void CQuizModeSimpleButton::CConfig::SetAll(const int delay, const int pointsGoodThis, const int pointsGoodOther, const int pointsBadThis, const int pointsBadOther)
+{
+    m_Delay           = delay;
+    m_PointsGoodThis  = pointsGoodThis;
+    m_PointsGoodOther = pointsGoodOther;
+    m_PointsBadThis   = pointsBadThis;
+    m_PointsBadOther  = pointsBadOther;
+    m_FuncDirty();
+}
+

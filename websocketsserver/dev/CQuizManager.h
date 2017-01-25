@@ -46,6 +46,7 @@ class CQuizManager {
     MapUser                                         m_Users;
     std::unique_ptr<IQuizMode>                      m_CurrentQuizMode;
     std::string                                     m_FileName;
+    std::function<void(void)>                       m_RequestSave;
     std::shared_ptr<CQuizModeSimpleButton::CConfig> m_spSimpleButtonConfig;
 };
 

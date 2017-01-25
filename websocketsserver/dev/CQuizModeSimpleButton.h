@@ -2,6 +2,7 @@
 #define __CQUIZMODESSIMPLEBUTTON__H__
 
 #include <chrono>
+#include <functional>
 #include <mutex>
 #include <set>
 
@@ -43,16 +44,14 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
    public:
       class CConfig {
             public:
-                                                      CConfig(void);
+                                                      CConfig(std::function<void(void)> funcDirty);
                                                       CConfig(const CConfig& ref);
-                                                      CConfig(const nlohmann::json& jsonData);
+                                                      CConfig(const nlohmann::json& jsonData, std::function<void(void)> funcDirty);
                                                       ~CConfig(void);
 
             public:
                 CConfig&                              operator=(const CConfig& ref);
                 nlohmann::json                        ToJson(void) const;
-                bool                                  IsDirty(void) const;
-                void                                  Clean(void);
                 int                                   GetDelay(void) const;
                 int                                   GetPointsGoodThis(void) const;
                 int                                   GetPointsGoodOther(void) const;
@@ -63,9 +62,10 @@ class CQuizModeSimpleButton : public IQuizMode, public CQuizModeBase {
                 void                                  SetPointsGoodOther(const int pointsGoodOther);
                 void                                  SetPointsBadThis(const int pointsBadThis);
                 void                                  SetPointsBadOther(const int pointsBadOther);
+                void                                  SetAll(const int delay, const int pointsGoodThis, const int pointsGoodOther, const int pointsBadThis, const int pointsBadOther);
 
             private:
-                bool                                  m_Dirty;
+                std::function<void(void)>             m_FuncDirty;
                 int                                   m_Delay;
                 int                                   m_PointsGoodThis;
                 int                                   m_PointsGoodOther;

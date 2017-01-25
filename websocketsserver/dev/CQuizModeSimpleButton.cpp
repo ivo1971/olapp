@@ -201,11 +201,12 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
 
 void CQuizModeSimpleButton::HandleMessageMasterConfig(const nlohmann::json::const_iterator citJsData)
 {
-  m_spSimpleButtonConfig->SetDelay           (GetElementInt(citJsData, "configDelay"          ));
-  m_spSimpleButtonConfig->SetPointsGoodThis  (GetElementInt(citJsData, "configPointsGoodThis" ));
-  m_spSimpleButtonConfig->SetPointsGoodOther (GetElementInt(citJsData, "configPointsGoodOther"));
-  m_spSimpleButtonConfig->SetPointsBadThis   (GetElementInt(citJsData, "configPointsBadThis"  ));
-  m_spSimpleButtonConfig->SetPointsBadOther  (GetElementInt(citJsData, "configPointsBadOther" ));
+  m_spSimpleButtonConfig->SetAll(GetElementInt(citJsData, "delay"          ),
+                                 GetElementInt(citJsData, "pointsGoodThis" ),
+                                 GetElementInt(citJsData, "pointsGoodOther"),
+                                 GetElementInt(citJsData, "pointsBadThis"  ),
+                                 GetElementInt(citJsData, "pointsBadOther" )
+                                 );
   m_spLogger->info("CQuizModeSimpleButton [%s][%u] [%d][%d][%d][%d][%d].", __FUNCTION__, __LINE__, m_spSimpleButtonConfig->GetDelay(), m_spSimpleButtonConfig->GetPointsGoodThis(), m_spSimpleButtonConfig->GetPointsGoodOther(), m_spSimpleButtonConfig->GetPointsBadThis(), m_spSimpleButtonConfig->GetPointsBadOther());
 }
 
