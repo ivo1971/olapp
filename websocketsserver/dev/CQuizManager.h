@@ -31,10 +31,10 @@ class CQuizManager {
     void                                            Load                  (void);
 
   private:
+    std::shared_ptr<seasocks::Logger>               m_spLogger;
     std::shared_ptr<CWsQuizHandler>                 m_spWsQuizHandler;
     std::shared_ptr<CWsQuizHandler>                 m_spWsMasterHandler;
     std::shared_ptr<CWsQuizHandler>                 m_spWsBeamerHandler;
-    std::shared_ptr<seasocks::Logger>               m_spLogger;
     boost::signals2::connection                     m_WsQuizHandlerMessageConnection;
     boost::signals2::connection                     m_WsQuizHandlerDisconnectConnection;
     boost::signals2::connection                     m_WsMasterHandlerMessageConnection;

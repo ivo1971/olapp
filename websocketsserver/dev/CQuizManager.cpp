@@ -21,16 +21,17 @@ using namespace nlohmann;
 using namespace seasocks;
 
 CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName)
-  : m_spWsQuizHandler(spWsQuizHandler)
+  : m_spLogger(spLogger)
+  , m_spWsQuizHandler(spWsQuizHandler)
   , m_spWsMasterHandler(spWsMasterHandler)
   , m_spWsBeamerHandler(spWsBeamerHandler)
-  , m_spLogger(spLogger)
   , m_WsQuizHandlerMessageConnection     (m_spWsQuizHandler->ConnectSignalMessage     (boost::bind(&CQuizManager::HandleMessageQuiz,      this, _1, _2, _3)))
   , m_WsQuizHandlerDisconnectConnection  (m_spWsQuizHandler->ConnectSignalDisconnect  (boost::bind(&CQuizManager::HandleDisconnectQuiz,   this, _1)))
   , m_WsMasterHandlerMessageConnection   (m_spWsMasterHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageMaster,    this, _1, _2, _3)))
   , m_WsMasterHandlerDisconnectConnection(m_spWsMasterHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectMaster, this, _1)))
   , m_WsBeamerHandlerMessageConnection   (m_spWsBeamerHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageBeamer,    this, _1, _2, _3)))
   , m_WsBeamerHandlerDisconnectConnection(m_spWsBeamerHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectBeamer, this, _1)))
+  , m_Lock()
   , m_Users()
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
@@ -38,6 +39,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_RequestSave))
   , m_spTeamManager(new CTeamManager(m_spLogger, m_RequestSave))
 {
+  //try to load the configuration from file
   Load();
 }
 
@@ -232,6 +234,7 @@ void CQuizManager::Save(void) const
   data["users"]                = MapUserToJson(m_Users);
   data["simple-button-config"] = m_spSimpleButtonConfig->ToJson(); 
 
+  //trace
   const std::string dataDump = data.dump();
   m_spLogger->info("CQuizManager [%s][%u] save [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
 
@@ -266,9 +269,6 @@ void CQuizManager::Load(void)
   //string to json
   const json data = json::parse(dataDump);  
 
-  //cleanup
-  m_Users.clear();
-
   //from json to teams
   {
     const json::const_iterator citTeams = GetElement(data,      "teams");
@@ -277,6 +277,7 @@ void CQuizManager::Load(void)
   }
 
   //from json to users
+  m_Users.clear();
   try {
     const json::const_iterator citUsers       = GetElement(data,      "users");
     const json::const_iterator citUsersInner  = GetElement(*citUsers, "users");
@@ -297,4 +298,8 @@ void CQuizManager::Load(void)
   } catch(std::exception& ex) {
       m_spLogger->info("CQuizManager [%s][%u] loading simple-button config from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
   }
+
+  //TODO: consitency check:
+  //- check that the teams of all users exist,
+  //  clear the none-existing teams
 }
