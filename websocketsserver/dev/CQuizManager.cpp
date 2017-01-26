@@ -31,12 +31,12 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_WsMasterHandlerDisconnectConnection(m_spWsMasterHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectMaster, this, _1)))
   , m_WsBeamerHandlerMessageConnection   (m_spWsBeamerHandler->ConnectSignalMessage   (boost::bind(&CQuizManager::HandleMessageBeamer,    this, _1, _2, _3)))
   , m_WsBeamerHandlerDisconnectConnection(m_spWsBeamerHandler->ConnectSignalDisconnect(boost::bind(&CQuizManager::HandleDisconnectBeamer, this, _1)))
-  , m_Teams()
   , m_Users()
-  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, m_Teams, m_Users))
+  , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
   , m_RequestSave([this](){Save();})
   , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_RequestSave))
+  , m_spTeamManager(new CTeamManager(m_spLogger, m_RequestSave))
 {
   Load();
 }
@@ -116,39 +116,6 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       //get info from message
       const std::string& mode = GetElementString(citJsData, "mode");
       SelectMode(mode);
-    } else if("team-add" == mi) {
-      //get info from message
-      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
-      const std::string& teamName = GetElementString(citJsData, "teamName");
-
-      //new or existing team?
-      MapTeamIt teamIt = m_Teams.find(teamId);
-      if(m_Teams.end() == teamIt) {
-        //new --> add it
-        m_Teams.insert(PairTeam(teamId, CTeam(teamId, teamName)));
-      } else {
-        //existing --> error
-        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] already exists.", __FUNCTION__, __LINE__, teamId.c_str());
-        teamIt->second.NameSet(teamName);
-      }
-      m_CurrentQuizMode->TeamsChanged(m_Teams);
-      Save();
-    } else if("team-edit" == mi) {
-      //get info from message
-      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
-      const std::string& teamName = GetElementString(citJsData, "teamName");
-
-      //new or existing team?
-      MapTeamIt teamIt = m_Teams.find(teamId);
-      if(m_Teams.end() == teamIt) {
-        //new --> error
-        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] does not yet exists.", __FUNCTION__, __LINE__, teamId.c_str());
-      } else {
-        //existing --> edit
-        teamIt->second.NameSet(teamName);
-      }
-      m_CurrentQuizMode->TeamsChanged(m_Teams);
-      Save();
     } else if("user-select-team" == mi) {
       //get info from message
       const std::string& userId   = GetElementString(citJsData, "userId"  );
@@ -162,21 +129,6 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       m_CurrentQuizMode->UsersChanged(m_Users);
       Save();
       SendTeam(userId);
-    } else if("team-delete" == mi) {
-      //get info from message
-      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
-
-      //new or existing team?
-      MapTeamIt teamIt = m_Teams.find(teamId);
-      if(m_Teams.end() == teamIt) {
-        //new --> error
-        m_spLogger->error("CQuizManager [%s][%u] team with ID [%s] does not yet exists.", __FUNCTION__, __LINE__, teamId.c_str());
-      } else {
-        //existing --> edit
-        m_Teams.erase(teamIt);
-      }
-      m_CurrentQuizMode->TeamsChanged(m_Teams);
-      Save();
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageMaster(id, mi, citJsData);
@@ -236,15 +188,15 @@ void CQuizManager::SelectMode(const std::string& mode)
 
   //switch
   if("welcome" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeWelcome         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler));
   } else if("test" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeTest            (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler));
   } else if("simple-button-demo" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
   } else if("simple-button" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users, m_spSimpleButtonConfig));
+    m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_spSimpleButtonConfig));
   } else if("configure-teams" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Teams, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }
@@ -260,15 +212,15 @@ void CQuizManager::SendTeam(const std::string& userId)
   }
 
   //find team
-  MapTeamCIt citTeam = m_Teams.find(citUser->second.TeamGet());
-  if(m_Teams.end() == citTeam) {
+  std::string teamName;
+  if(!m_spTeamManager->FindTeamName(citUser->second.TeamGet(), teamName)) {
     //not found
     return;
   }
 
   //send
   json data;
-  data["name"] = citTeam->second.NameGet();
+  data["name"] = teamName;
   m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
 }
 
@@ -276,7 +228,7 @@ void CQuizManager::Save(void) const
 {
   //generate json data
   json data;
-  data["teams"]                = MapTeamToJson(m_Teams);
+  data["teams"]                = m_spTeamManager->ToJson();
   data["users"]                = MapUserToJson(m_Users);
   data["simple-button-config"] = m_spSimpleButtonConfig->ToJson(); 
 
@@ -315,20 +267,13 @@ void CQuizManager::Load(void)
   const json data = json::parse(dataDump);  
 
   //cleanup
-  m_Teams.clear();
   m_Users.clear();
 
   //from json to teams
-  try {
-    const json::const_iterator citTeams       = GetElement(data,      "teams");
-    const json::const_iterator citTeamsInner  = GetElement(*citTeams, "teams");
-    const json                 jsonTeamsInner (*citTeamsInner); //contains an array of teams
-    for(json::const_iterator citTeam = jsonTeamsInner.begin() ; jsonTeamsInner.end() != citTeam ; ++citTeam) {
-      m_spLogger->info("CQuizManager [%s][%u] test [%s].", __FUNCTION__, __LINE__, citTeam->dump().c_str());
-      CTeam tmp(*citTeam, m_Teams);
-    }
-  } catch(std::exception& ex) {
-      m_spLogger->info("CQuizManager [%s][%u] loading users from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
+  {
+    const json::const_iterator citTeams = GetElement(data,      "teams");
+    SPTeamManager spTeamManager(new CTeamManager(m_spLogger, m_RequestSave, *citTeams));
+    m_spTeamManager = spTeamManager;
   }
 
   //from json to users
@@ -345,7 +290,7 @@ void CQuizManager::Load(void)
       m_spLogger->info("CQuizManager [%s][%u] loading users from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
   }
 
-  //from json to users
+  //from json to simple-button-config
   try {
       const json::const_iterator citSimpleButtonConfig = GetElement(data,      "simple-button-config");
       m_spSimpleButtonConfig.reset(new CQuizModeSimpleButton::CConfig(*citSimpleButtonConfig, m_RequestSave));

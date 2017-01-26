@@ -8,15 +8,14 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapTeam& teams, const MapUser& users, std::shared_ptr<CQuizModeSimpleButton::CConfig> spSimpleButtonConfig)
-    : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, teams, users)
+CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, std::shared_ptr<CQuizModeSimpleButton::CConfig> spSimpleButtonConfig)
+    : IQuizMode()
     , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "simple-button")
     , m_Lock()
     , m_TimerThreadStop(false)
     , m_TimerThread([=]{ThreadTimer();})
     , m_STimerInfo()
-    , m_Teams(teams)
-    , m_TeamsNew(teams)
+    , m_spTeamManager(spTeamManager)
     , m_Users(users)
     , m_UsersNew(users)
     , m_SimpleButtonInfo()
@@ -25,7 +24,7 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
     , m_spSimpleButtonConfig(spSimpleButtonConfig)
 {
     //client initialisation
-    TeamsChanged(m_Teams);
+    SendTeamsToMaster();
     UsersChanged(m_Users);
     m_spWsMasterHandler->SendMessage("simple-button-config", m_spSimpleButtonConfig->ToJson());
 
@@ -78,14 +77,6 @@ void CQuizModeSimpleButton::HandleMessageBeamer(const std::string& /* id */, con
     m_spLogger->info("CQuizModeSimpleButton [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeSimpleButton::TeamsChanged(const MapTeam& teams)
-{
-    CLockSmart lockSmart(&m_Lock);
-    m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
-    m_TeamsNew = teams;
-    m_spWsMasterHandler->SendMessage("team-list", MapTeamToJson(m_TeamsNew));
-}
-
 void CQuizModeSimpleButton::UsersChanged(const MapUser& users)
 {
     CLockSmart lockSmart(&m_Lock);
@@ -104,7 +95,7 @@ void CQuizModeSimpleButton::ReConnect(const std::string& id)
     CLockSmart lockSmart(&m_Lock);
     m_spLogger->info("CQuizModeSimpleButton [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
     CQuizModeBase::ReConnect(id);
-    TeamsChanged(m_TeamsNew);        //send current teams
+    SendTeamsToMaster();
     UsersChanged(m_UsersNew);        //send current users
     SendMessage(id, "simple-button", m_SimpleButtonInfo.ToJson());
     m_spWsMasterHandler->SendMessage(id, "simple-button-config", m_spSimpleButtonConfig->ToJson());
@@ -116,6 +107,12 @@ void CQuizModeSimpleButton::ReConnect(const std::string& id)
  ** only called when m_Lock is taken!
  **
  *******************************************************************************************/
+void CQuizModeSimpleButton::SendTeamsToMaster(void)
+{
+    m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
+    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
+}
+
 void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButton [%s][%u] ID [%s] [%d].", __FUNCTION__, __LINE__, id.c_str(), m_Stopped);
@@ -132,8 +129,8 @@ void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const n
     }
 
     //find the team
-    MapTeamCIt citTeam = m_Teams.find(citUser->second.TeamGet());
-    if(m_Teams.end() == citTeam) {
+    std::string teamName;
+    if(!m_spTeamManager->FindTeamName(citUser->second.TeamGet(), teamName)) {
         //not found
         m_spLogger->warning("CQuizModeSimpleButton [%s][%u] ID [%s] team id [%S] not found.", __FUNCTION__, __LINE__, id.c_str(), citUser->second.TeamGet().c_str());
         return;
@@ -141,7 +138,6 @@ void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const n
 
     //update status
     {
-        const std::string teamName = citTeam->second.NameGet();
         if((m_SimpleButtonInfo.TeamAdd(teamName)) && (0 < m_spSimpleButtonConfig->GetDelay())) {
             //added team is currently the first active team
             m_STimerInfo.insert(CTimerInfo(m_spSimpleButtonConfig->GetDelay() * 1000, CQuizModeSimpleButton::ETimerTypePush, m_CurrentSequence, teamName));
@@ -163,7 +159,6 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
     if("reset" == event) {
         jsonData    = m_SimpleButtonInfo.Reset();
         m_Stopped   = false;
-        m_Teams     = m_TeamsNew;
         m_Users     = m_UsersNew;
         m_STimerInfo.insert(CTimerInfo(2000, CQuizModeSimpleButton::ETimerTypeReset, m_CurrentSequence));
     } else if("arm" == event) {

@@ -1,16 +1,17 @@
 #include "CQuizModeConfigureTeams.h"
+#include "JsonHelpers.h"
 
 using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeConfigureTeams::CQuizModeConfigureTeams(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const MapTeam& teams, const MapUser& users)
-   : IQuizMode(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, teams, users)
+CQuizModeConfigureTeams::CQuizModeConfigureTeams(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users)
+   : IQuizMode()
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "configure-teams")
-   , m_Teams(teams)
+   , m_spTeamManager(spTeamManager)
    , m_Users(users)
 {
-    TeamsChanged(m_Teams);
+    SendTeamsToMaster();
     UsersChanged(m_Users);
 }
 
@@ -23,21 +24,32 @@ void CQuizModeConfigureTeams::HandleMessageQuiz(const std::string& /* id */, con
     m_spLogger->info("CQuizModeConfigureTeams [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
 }
 
-void CQuizModeConfigureTeams::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
+void CQuizModeConfigureTeams::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator citJsData)
 {
     m_spLogger->info("CQuizModeConfigureTeams [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    
+    if("team-add" == mi) {
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+      const std::string& teamName = GetElementString(citJsData, "teamName");
+      m_spTeamManager->Add(teamId, teamName);
+    } else if("team-edit" == mi) {
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+      const std::string& teamName = GetElementString(citJsData, "teamName");
+      m_spTeamManager->Edit(teamId, teamName);
+    } else if("team-delete" == mi) {
+      const std::string& teamId   = GetElementString(citJsData, "teamId"  );
+      m_spTeamManager->Delete(teamId);
+    } else {
+        m_spLogger->error("CQuizManager [%s][%u] unhandled MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+        return;
+    }
+
+    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
 }
 
 void CQuizModeConfigureTeams::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
 {
     m_spLogger->info("CQuizModeConfigureTeams [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
-}
-
-void CQuizModeConfigureTeams::TeamsChanged(const MapTeam& teams)
-{
-    m_spLogger->info("CQuizModeConfigureTeams [%s][%u].", __FUNCTION__, __LINE__);
-    m_Teams = teams;
-    m_spWsMasterHandler->SendMessage("team-list", MapTeamToJson(m_Teams));
 }
 
 void CQuizModeConfigureTeams::UsersChanged(const MapUser& users)
@@ -50,6 +62,12 @@ void CQuizModeConfigureTeams::UsersChanged(const MapUser& users)
 void CQuizModeConfigureTeams::ReConnect(const std::string& id)
 {
     CQuizModeBase::ReConnect(id); //route
-    TeamsChanged(m_Teams);        //send current teams
+    SendTeamsToMaster();
     UsersChanged(m_Users);        //send current users
+}
+
+void CQuizModeConfigureTeams::SendTeamsToMaster(void)
+{
+    m_spLogger->info("CQuizModeConfigureTeams [%s][%u].", __FUNCTION__, __LINE__);
+    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
 }

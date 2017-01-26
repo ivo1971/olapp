@@ -20,21 +20,21 @@ class CTeam {
   public:
                         CTeam(const std::string& id, const std::string& name);
                         CTeam(const CTeam& ref);
-                        CTeam(const nlohmann::json& jsonData, MapTeam& mapTeams);
+                        CTeam(const nlohmann::json& jsonData);
                         ~CTeam(void) throw();
     CTeam&              operator=(const CTeam& ref);
 
   public:
     void                NameSet(const std::string& name);
     const std::string&  NameGet(void) const;
+    const std::string&  IdGet(void) const;
     nlohmann::json      ToJson(void) const;
 
   private:
     std::string         m_Id;
     std::string         m_Name;
+    int                 m_PointsTotal;
+    int                 m_PointsRound;
 };
-
-//extra functions
-nlohmann::json MapTeamToJson(const MapTeam& teams);
 
 #endif //__CTEAM__H__
