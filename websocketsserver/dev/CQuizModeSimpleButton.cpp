@@ -24,7 +24,6 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
     , m_spSimpleButtonConfig(spSimpleButtonConfig)
 {
     //client initialisation
-    SendTeamsToMaster();
     UsersChanged(m_Users);
     m_spWsMasterHandler->SendMessage("simple-button-config", m_spSimpleButtonConfig->ToJson());
 
@@ -98,7 +97,6 @@ void CQuizModeSimpleButton::ReConnect(const std::string& id)
     CLockSmart lockSmart(&m_Lock);
     m_spLogger->info("CQuizModeSimpleButton [%s][%u] ID [%s].", __FUNCTION__, __LINE__, id.c_str());
     CQuizModeBase::ReConnect(id);
-    SendTeamsToMaster();
     UsersChanged(m_UsersNew);        //send current users
     SendMessage(id, "simple-button", m_SimpleButtonInfo.ToJson());
     m_spWsMasterHandler->SendMessage(id, "simple-button-config", m_spSimpleButtonConfig->ToJson());
@@ -110,12 +108,6 @@ void CQuizModeSimpleButton::ReConnect(const std::string& id)
  ** only called when m_Lock is taken!
  **
  *******************************************************************************************/
-void CQuizModeSimpleButton::SendTeamsToMaster(void)
-{
-    m_spLogger->info("CQuizModeSimpleButton [%s][%u].", __FUNCTION__, __LINE__);
-    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
-}
-
 void CQuizModeSimpleButton::HandleMessageQuizPush(const std::string& id, const nlohmann::json::const_iterator /* citJsData */)
 {
     m_spLogger->info("CQuizModeSimpleButton [%s][%u] ID [%s] [%d].", __FUNCTION__, __LINE__, id.c_str(), m_Stopped);

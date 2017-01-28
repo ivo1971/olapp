@@ -11,7 +11,6 @@ CQuizModeConfigureTeams::CQuizModeConfigureTeams(std::shared_ptr<seasocks::Logge
    , m_spTeamManager(spTeamManager)
    , m_Users(users)
 {
-    SendTeamsToMaster();
     UsersChanged(m_Users);
 }
 
@@ -43,10 +42,7 @@ void CQuizModeConfigureTeams::HandleMessageMaster(const std::string& /* id */, c
       m_spTeamManager->PointsClear();
     } else {
         m_spLogger->error("CQuizManager [%s][%u] unhandled MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
-        return;
     }
-
-    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
 }
 
 void CQuizModeConfigureTeams::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
@@ -64,12 +60,5 @@ void CQuizModeConfigureTeams::UsersChanged(const MapUser& users)
 void CQuizModeConfigureTeams::ReConnect(const std::string& id)
 {
     CQuizModeBase::ReConnect(id); //route
-    SendTeamsToMaster();
     UsersChanged(m_Users);        //send current users
-}
-
-void CQuizModeConfigureTeams::SendTeamsToMaster(void)
-{
-    m_spLogger->info("CQuizModeConfigureTeams [%s][%u].", __FUNCTION__, __LINE__);
-    m_spWsMasterHandler->SendMessage("team-list", m_spTeamManager->ToJson());
 }

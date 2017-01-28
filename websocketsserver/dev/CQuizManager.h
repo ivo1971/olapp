@@ -29,6 +29,12 @@ class CQuizManager {
     void                                            SendTeam              (const std::string& userId);
     void                                            Save                  (void) const;
     void                                            Load                  (void);
+    void                                            SendTeamsToAll        (void);
+    void                                            SendTeamsToOne        (std::shared_ptr<CWsQuizHandler> spWsHandler, const std::string& id);
+    void                                            SendMessageAll        (                       const std::string& mi, const nlohmann::json::const_iterator citJsData);
+    void                                            SendMessageAll        (                       const std::string& mi, const nlohmann::json&                data     );
+    void                                            SendMessageAll        (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+    void                                            SendMessageAll        (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
 
   private:
     std::shared_ptr<seasocks::Logger>               m_spLogger;
@@ -45,7 +51,8 @@ class CQuizManager {
     MapUser                                         m_Users;
     std::unique_ptr<IQuizMode>                      m_CurrentQuizMode;
     std::string                                     m_FileName;
-    CQuizModeSimpleButton::FuncDirty                m_RequestSave;
+    CQuizModeSimpleButton::FuncDirty                m_DirtySimpleButtonConfig;
+    CTeamManager::FuncDirty                         m_DirtyTeamManager;
     std::shared_ptr<CQuizModeSimpleButton::CConfig> m_spSimpleButtonConfig;
     SPTeamManager                                   m_spTeamManager;
 };

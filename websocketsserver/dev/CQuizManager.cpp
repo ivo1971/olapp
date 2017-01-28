@@ -35,9 +35,10 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_Users()
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
-  , m_RequestSave([this](){Save();})
-  , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_RequestSave))
-  , m_spTeamManager(new CTeamManager(m_spLogger, m_RequestSave))
+  , m_DirtySimpleButtonConfig([this](){Save();})
+  , m_DirtyTeamManager([this](){Save();SendTeamsToAll();})
+  , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_DirtySimpleButtonConfig))
+  , m_spTeamManager(new CTeamManager(m_spLogger, m_DirtyTeamManager))
 {
   //try to load the configuration from file
   Load();
@@ -76,8 +77,9 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
         m_CurrentQuizMode->ReConnect(id);
         m_CurrentQuizMode->UsersChanged(m_Users);
         Save();
-        SendTeam(id);
       }
+      SendTeam(id);
+      SendTeamsToOne(m_spWsQuizHandler, id);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
@@ -113,6 +115,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
   try {
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
+      SendTeamsToOne(m_spWsMasterHandler, id);
       m_CurrentQuizMode->ReConnect(id);
     } else if("select-mode" == mi) {
       //get info from message
@@ -160,6 +163,7 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
   try {
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
+      SendTeamsToOne(m_spWsBeamerHandler, id);
       m_CurrentQuizMode->ReConnect(id);
     } else {
       //default: forward to current node
@@ -272,7 +276,7 @@ void CQuizManager::Load(void)
   //from json to teams
   {
     const json::const_iterator citTeams = GetElement(data,      "teams");
-    SPTeamManager spTeamManager(new CTeamManager(m_spLogger, m_RequestSave, *citTeams));
+    SPTeamManager spTeamManager(new CTeamManager(m_spLogger, m_DirtyTeamManager, *citTeams));
     m_spTeamManager = spTeamManager;
   }
 
@@ -294,7 +298,7 @@ void CQuizManager::Load(void)
   //from json to simple-button-config
   try {
       const json::const_iterator citSimpleButtonConfig = GetElement(data,      "simple-button-config");
-      m_spSimpleButtonConfig.reset(new CQuizModeSimpleButton::CConfig(*citSimpleButtonConfig, m_RequestSave));
+      m_spSimpleButtonConfig.reset(new CQuizModeSimpleButton::CConfig(*citSimpleButtonConfig, m_DirtySimpleButtonConfig));
   } catch(std::exception& ex) {
       m_spLogger->info("CQuizManager [%s][%u] loading simple-button config from [%s] failed: %s.", __FUNCTION__, __LINE__, m_FileName.c_str(), ex.what());
   }
@@ -302,4 +306,44 @@ void CQuizManager::Load(void)
   //TODO: consitency check:
   //- check that the teams of all users exist,
   //  clear the none-existing teams
+}
+
+void CQuizManager::SendTeamsToAll(void)
+{
+    m_spLogger->info("CQuizManager [%s][%u].", __FUNCTION__, __LINE__);
+    SendMessageAll("team-list", m_spTeamManager->ToJson());
+}
+
+void CQuizManager::SendTeamsToOne(std::shared_ptr<CWsQuizHandler> spWsHandler, const std::string& id)
+{
+    m_spLogger->info("CQuizManager [%s][%u].", __FUNCTION__, __LINE__);
+    spWsHandler->SendMessage(id, "team-list", m_spTeamManager->ToJson());
+}
+
+void CQuizManager::SendMessageAll(const std::string& mi, const nlohmann::json::const_iterator citJsData)
+{
+  m_spWsQuizHandler->SendMessage  (mi, citJsData);
+  m_spWsMasterHandler->SendMessage(mi, citJsData);
+  m_spWsBeamerHandler->SendMessage(mi, citJsData);
+}
+
+void CQuizManager::SendMessageAll(const std::string& mi, const nlohmann::json& data)
+{
+  m_spWsQuizHandler->SendMessage  (mi, data);
+  m_spWsMasterHandler->SendMessage(mi, data);
+  m_spWsBeamerHandler->SendMessage(mi, data);
+}
+
+void CQuizManager::SendMessageAll(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
+{
+  m_spWsQuizHandler->SendMessage  (id, mi, citJsData);
+  m_spWsMasterHandler->SendMessage(id, mi, citJsData);
+  m_spWsBeamerHandler->SendMessage(id, mi, citJsData);
+}
+
+void CQuizManager::SendMessageAll(const std::string& id, const std::string& mi, const nlohmann::json& data)
+{
+  m_spWsQuizHandler->SendMessage  (id, mi, data);
+  m_spWsMasterHandler->SendMessage(id, mi, data);
+  m_spWsBeamerHandler->SendMessage(id, mi, data);
 }
