@@ -44,6 +44,7 @@ import {UserInfoListComponent}         from "./components/user-info-list/user-in
 
 //Own components: pipes
 import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
+import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-button.pipe";
 
 //Module definition
 @NgModule({
@@ -151,7 +152,8 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
     UserInfoComponent,
     UserInfoListComponent,
     //filters
-    SimpleButtonActiveFilter
+    SimpleButtonActiveFilter,
+    SimpleButtonTeamPointsSort
   ],
   //Module you need to bootstrap
   bootstrap:    [ 

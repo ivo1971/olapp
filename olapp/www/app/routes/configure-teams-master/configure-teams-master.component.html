@@ -4,11 +4,11 @@
       <h2 class="text-center"><b><u>Team configuration</u></b></h2>
     </div>
   </div>
-</div>
   <div class="row">
     <div class="col-md-5">
       <h3 class="text-center"><b><u>Teams</u></b></h3>
       <team-info-list [teamsInfo]="observableTeamInfo | async"></team-info-list>
+      <button type="button" class="btn btn-danger" (click)="onClickPointsClear()" >Clear points</button>
     </div>
     <div class="col-md-2">
     </div>
@@ -18,3 +18,4 @@
       <team-info-list [teamsInfo]="observableTeamInfo     | async" [teamsInfoAll]="observableTeamInfo | async" [usersInfo]="observableUserInfo | async" [editTeams]="false" [alert]="false"></team-info-list>
     </div>
   </div>
+</div>

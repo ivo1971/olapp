@@ -13,10 +13,12 @@ import {calculate}            from './../../classes/simple-button-info.class';
 
 import {EMedia}                from './../../classes/media-player.class';
 import {MediaPlayer}           from './../../classes/media-player.class';
+import {TeamInfo}              from './../../classes/team-info.class';
 import {User}                  from './../../classes/user.class';
 
 import {LogService }           from './../../services/log.service';
 import {ModeService, EMode}    from './../../services/mode.service';
+import {TeamsUsersService}     from './../../services/teams-users.service';
 import {UserService }          from './../../services/user.service';
 import {WebsocketUserService}  from './../../services/websocket.user.service';
 
@@ -32,6 +34,8 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private variables intended for the template
      * (hence at the top)
      */
+    private modeIsBeamer    : boolean = false;
+    private modeIsMaster    : boolean = false;
     private modeIsQuiz      : boolean = true;
     private prevSequenceNbr : number  = 0;
     private good            : boolean = false;
@@ -45,14 +49,18 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
       private userService       : UserService,
       private logService        : LogService,
       private modeService       : ModeService,
+      private teamsUsersService : TeamsUsersService,
       private _websocketService : WebsocketUserService,
       ) {
           //call base class
           super(_websocketService);
 
           //additional initialization
-          this.mediaPlayer = new MediaPlayer(logService);
-          this.modeIsQuiz  = this.modeService.IsQuiz();
+          this.mediaPlayer            = new MediaPlayer(logService);
+          this.modeIsBeamer           = this.modeService.IsBeamer();
+          this.modeIsMaster           = this.modeService.IsMaster();
+          this.modeIsQuiz             = this.modeService.IsQuiz();
+          this.observableTeamInfo     = this.teamsUsersService.getObservableTeamsInfo    ();
     }
 
     /* Life-cycle hooks
@@ -279,6 +287,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
 
     /* Private members
      */
+    private observableTeamInfo         : Observable<Array<TeamInfo>>;
     private observableInfo             : Observable<SimpleButtonInfo>;
     private observableInfoSubscription : Subscription                ;
     private userSubscription           : Subscription                ;

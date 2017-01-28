@@ -29,6 +29,13 @@ export class ConfigureTeamsMasterComponent extends ComponentBase {
         this.observableUserInfo     = this.teamsUsersService.getObservableUsersInfo    ();
     }
 
+    /* Template event handler
+     */
+    public onClickPointsClear() : void {
+        this._websocketUserService.sendMsg("team-points-clear", {
+        });        
+    }
+
     /* Private members
      */
     private observableTeamInfo             : Observable<Array<TeamInfo>>;
