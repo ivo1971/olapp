@@ -35,6 +35,9 @@ CQuizModeSimpleButton::CQuizModeSimpleButton(std::shared_ptr<seasocks::Logger> s
 
 CQuizModeSimpleButton::~CQuizModeSimpleButton(void) throw()
 {
+    //points round -> total
+    m_spTeamManager->PointsRound2Total();
+
     //stop test thread
     {
         CLockSmart lockSmart(&m_Lock);
@@ -174,9 +177,11 @@ void CQuizModeSimpleButton::HandleMessageMasterEvent(const std::string& event, c
         ++m_CurrentSequence;
         if(evaluationGood) {
           m_SimpleButtonInfo.TeamGood(team);
+          m_spTeamManager->PointsRound(team, m_spSimpleButtonConfig->GetPointsGoodThis(), m_spSimpleButtonConfig->GetPointsGoodOther());
           m_Stopped = true;
         } else {
           m_SimpleButtonInfo.TeamDeactivate(team);
+          m_spTeamManager->PointsRound(team, m_spSimpleButtonConfig->GetPointsBadThis(),  m_spSimpleButtonConfig->GetPointsBadOther() );
         }
 
         //spread the news
@@ -300,6 +305,7 @@ void CQuizModeSimpleButton::ThreadTimerHandle(const STimerInfoIt& it)
     {
       m_spLogger->info("CQuizManager [%s][%u] handle [%s].", __FUNCTION__, __LINE__, it->GetExtra().c_str());
       m_SimpleButtonInfo.TeamDeactivate(it->GetExtra());              
+      m_spTeamManager->PointsRound(it->GetExtra(), m_spSimpleButtonConfig->GetPointsBadThis(),  m_spSimpleButtonConfig->GetPointsBadOther() );
       SendMessage("simple-button", m_SimpleButtonInfo.ToJson());
       std::string firstActiveTeamName;
       const bool firstActiveFound = UpdateFirstActive(&firstActiveTeamName);

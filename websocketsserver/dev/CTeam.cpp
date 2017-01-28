@@ -65,3 +65,19 @@ json CTeam::ToJson(void) const
   data["pointsRound"] = m_PointsRound;
   return data;
 }
+
+void CTeam::PointsRound(const int points)
+{
+  m_PointsRound += points;
+}
+
+void CTeam::PointsRound2Total(void)
+{
+  m_PointsTotal += m_PointsRound;
+  m_PointsRound  = 0;
+}
+
+void  CTeam::PointsClear(void)
+{
+  m_PointsTotal = 0;
+}

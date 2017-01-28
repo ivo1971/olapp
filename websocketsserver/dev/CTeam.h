@@ -29,6 +29,9 @@ class CTeam {
     const std::string&  NameGet(void) const;
     const std::string&  IdGet(void) const;
     nlohmann::json      ToJson(void) const;
+    void                PointsRound(const int points);
+    void                PointsRound2Total(void);
+    void                PointsClear(void);
 
   private:
     std::string         m_Id;

@@ -107,3 +107,31 @@ void CTeamManager::Delete(const std::string& id)
     m_Teams.erase(teamIt);
     m_FuncDirty();
 }
+
+void CTeamManager::PointsRound(const std::string& teamId, const int teamPointsThis, const int teamPointsOther)
+{
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        if(teamId == cit->second.NameGet()) {
+            cit->second.PointsRound(teamPointsThis);
+        } else {
+            cit->second.PointsRound(teamPointsOther);
+        }
+    }    
+    m_FuncDirty();
+}
+
+void CTeamManager::PointsRound2Total(void)
+{
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        cit->second.PointsRound2Total();
+    }    
+    m_FuncDirty();
+}
+
+void CTeamManager::PointsClear(void)
+{
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        cit->second.PointsClear();
+    }    
+    m_FuncDirty();
+}

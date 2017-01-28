@@ -39,6 +39,8 @@ void CQuizModeConfigureTeams::HandleMessageMaster(const std::string& /* id */, c
     } else if("team-delete" == mi) {
       const std::string& teamId   = GetElementString(citJsData, "teamId"  );
       m_spTeamManager->Delete(teamId);
+    } else if("team-points-clear" == mi) {
+      m_spTeamManager->PointsClear();
     } else {
         m_spLogger->error("CQuizManager [%s][%u] unhandled MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
         return;

@@ -28,6 +28,9 @@ class CTeamManager {
         void                                            Add(const std::string& id, const std::string& name);
         void                                            Edit(const std::string& id, const std::string& name);
         void                                            Delete(const std::string& id);
+        void                                            PointsRound(const std::string& teamId, const int teamPointsThis, const int teamPointsOther);
+        void                                            PointsRound2Total(void);
+        void                                            PointsClear(void);
 
     private:
         MapTeam                                         m_Teams;
