@@ -1,0 +1,76 @@
+<div class="container-fuid" *ngIf="1 == nbrPerRow">
+    <span *ngFor="let team of teamsInfo">
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6 alert alert-success">
+                <div class="row">
+                    <div class="col-md-2">
+                        <h2>
+                            <!-- TODO img -->
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <h2>
+                            <b>{{team.name}}</b>
+                        </h2>
+                    </div>
+                    <div class="col-md-2">
+                        <h2>
+                            <span class="label label-primary">
+                                <span *ngIf="total">
+                                    {{team.pointsTotal}}
+                                </span>
+                                <span *ngIf="!total">
+                                    {{team.pointsRound}}
+                                </span>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </div>
+    </span>
+</div>
+
+<div class="container-fuid" *ngIf="3 == nbrPerRow">
+    <div class="row">
+        <span *ngFor="let team of teamsInfo">
+            <div class="col-md-4 alert alert-success">
+                <b>{{team.name}}</b>
+                <h2>
+                    <span class="label label-primary">
+                        <span *ngIf="total">
+                            {{team.pointsTotal}}
+                        </span>
+                        <span *ngIf="!total">
+                            {{team.pointsRound}}
+                        </span>
+                    </span>
+                </h2>
+            </div>
+        </span>
+    </div>
+</div>
+
+<div class="container-fuid" *ngIf="4 == nbrPerRow">
+    <div class="row">
+        <span *ngFor="let team of teamsInfo">
+            <div class="col-md-3 alert alert-success">
+                <b>{{team.name}}</b>
+                <h2>
+                    <span class="label label-primary">
+                        <span *ngIf="total">
+                            {{team.pointsTotal}}
+                        </span>
+                        <span *ngIf="!total">
+                            {{team.pointsRound}}
+                        </span>
+                    </span>
+                </h2>
+            </div>
+        </span>
+    </div>
+</div>

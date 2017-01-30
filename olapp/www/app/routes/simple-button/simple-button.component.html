@@ -4,21 +4,7 @@
     </span>
     <span *ngIf="prevSequenceNbr !== 0">
         <span *ngIf="modeIsBeamer || modeIsMaster">
-            Beamer<br />
-            <div class="container-fuid">
-                <div class="row">
-                    <span *ngFor="let team of observableTeamInfo | async | simpleButtonTeamPointsSort:false">
-                        <div class="col-md-4 alert alert-success">
-                            <b>{{team.name}}</b>
-                            <h2>
-                                <span class="label label-primary">
-                                    {{team.pointsRound}}
-                                </span>
-                            </h2>
-                        </div>
-                    </span>
-                </div>
-            </div>
+            <scoreboard-list [teamsInfo]="observableTeamInfo | async | simpleButtonTeamPointsSort:false" [total]="false" [nbrPerRow]="3"></scoreboard-list>
         </span>
         <span *ngIf="modeIsQuiz">
             <image-local source="push.gif"  height="150" *ngIf="!wait && !go && !wrong && !good" (click)="onPush()" ></image-local>
