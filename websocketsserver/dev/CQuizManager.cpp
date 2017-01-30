@@ -9,6 +9,7 @@
 #include "CQuizManager.h"
 #include "CQuizModeConfigureTeams.h"
 #include "CQuizModeIgnore.h"
+#include "CQuizModeScoreboard.h"
 #include "CQuizModeSimpleButton.h"
 #include "CQuizModeSimpleButtonTest.h"
 #include "CQuizModeTest.h"
@@ -201,6 +202,8 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeSimpleButtonTest(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_Users));
   } else if("simple-button" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_spSimpleButtonConfig));
+  } else if("scoreboard" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeScoreboard      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else {
