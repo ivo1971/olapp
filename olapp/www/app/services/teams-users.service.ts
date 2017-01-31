@@ -33,7 +33,9 @@ export class TeamsUsersService {
         this.teamsInfoNone = [
             {
                 id: "00000000-0000-0000-0000-000000000000",
-                name: "no team"
+                name: "no team",
+                pointsRound: 0,
+                pointsTotal: 0
             }
         ];
         this.subjectTeamsInfoNoneOut.next(this.teamsInfoNone);                            
