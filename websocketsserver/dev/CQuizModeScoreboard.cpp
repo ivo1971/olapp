@@ -36,6 +36,8 @@ void CQuizModeScoreboard::UsersChanged(const MapUser& /* users */)
     m_spLogger->info("CQuizModeScoreboard [%s][%u].", __FUNCTION__, __LINE__);
 }
 
-void CQuizModeScoreboard::ReConnect(const std::string& /* id */)
+void CQuizModeScoreboard::ReConnect(const std::string& id)
 {
+    m_spLogger->info("CQuizModeScoreboard [%s][%u].", __FUNCTION__, __LINE__);
+    CQuizModeBase::ReConnect(id);
 }
