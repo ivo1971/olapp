@@ -70,6 +70,12 @@ bool CSimpleButtonTeamInfo::HasName(const std::string& name)
 
 void CSimpleButtonTeamInfo::MembersAdd(const std::string& name)
 {
+  for(auto it : m_Members) {
+    if(0 == it.compare(name)) {
+      //already on the list
+      return;
+    }
+  }
   m_Members.push_back(name);
 }
 
