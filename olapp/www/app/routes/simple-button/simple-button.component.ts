@@ -120,8 +120,11 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Event handlers called from the template
      */
     public onPush() : void {
-        this.logService.log("on push");
+        this.logService.log("on push [" + this.pushHandled + "]");
         navigator.vibrate(300);
+        if(this.pushHandled) {
+            return;
+        }
         this._websocketService.sendMsg("simple-push", {
             push: 1
         });
@@ -220,6 +223,16 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
                         } else {
                             this.logService.log("Simple-button handling message UNHANDLED team [" + u + "][" + this.good + "][" + this.wrong + "][" + this.go + "][" + this.wait + "]");
                         }
+
+                        //check if this user's button push has been registered or not
+                        if(!this.pushHandled) {
+                            for(let v : number = 0 ; v < data.teams[u].members.length ; ++v) {
+                                if(this.user.name == data.teams[u].members[v]) {
+                                    //user is on the list
+                                    this.pushHandled = true;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -240,8 +253,12 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     }
 
     private playResult(media : EMedia) : void {
-        this.resultSoundDone    = true;
+        if(this.resultSoundDone) {
+            //play once
+            return;
+        }
         this.mediaPlayer.Play(media);
+        this.resultSoundDone    = true;
     }
 
     private reset(background : string) : void {
@@ -251,6 +268,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
         this.go                 = false;
         this.wait               = false;
         this.pushVibrateDone    = false;
+        this.pushHandled        = false;
         this.resultSoundDone    = false;
         this.backgroundSet(background);
     }
@@ -296,6 +314,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();
     private pushVibrateDone            : boolean                     = false;
+    private pushHandled                : boolean                     = false;
     private resultSoundDone            : boolean                     = false;
     private mediaPlayer                : MediaPlayer                 = null;
 }

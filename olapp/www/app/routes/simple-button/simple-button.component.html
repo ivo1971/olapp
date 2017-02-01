@@ -10,8 +10,8 @@
             <image-local source="push.gif"  height="150" *ngIf="!wait && !go && !wrong && !good" (click)="onPush()" ></image-local>
             <image-local source="good.gif"  height="150" *ngIf="good"                                               ></image-local>
             <image-local source="wrong.png" height="150" *ngIf="wrong"                                              ></image-local>
-            <image-local source="go.gif"    height="150" *ngIf="go"                                                 ></image-local>
-            <image-local source="wait.gif"  height="150" *ngIf="wait"                                               ></image-local>
+            <image-local source="go.gif"    height="150" *ngIf="go"                              (click)="onPush()" ></image-local>
+            <image-local source="wait.gif"  height="150" *ngIf="wait"                            (click)="onPush()" ></image-local>
         </span>
         <div class="text-left">
             <simple-button-data [data]="observableInfo | async"></simple-button-data>
