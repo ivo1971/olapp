@@ -30,6 +30,7 @@ import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.comp
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
 import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
+import {TeamfieComponent}              from "./routes/teamfie/teamfie.component";
 import {TestComponent}                 from "./routes/test/test.component";
 import {WelcomeComponent}              from "./routes/welcome/welcome.component";
 
@@ -83,6 +84,10 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
           {
             path: 'simple-button',
             component: ModeService.SIsMaster() ? SimpleButtonMasterComponent : SimpleButtonComponent
+          },
+          {
+            path: 'teamfie',
+            component: TeamfieComponent,
           },
           {
             path: 'test',
@@ -147,6 +152,7 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
     SimpleButtonComponent,
     SimpleButtonComponentData,
     SimpleButtonMasterComponent,
+    TeamfieComponent,
     TestComponent,
     WelcomeComponent,
     //components

@@ -21,6 +21,9 @@
         },
         "cordova-plugin-media": {
             "PACKAGE_NAME": "com.ilu.olapp"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.ilu.olapp"
         }
     },
     "dependent_plugins": {
