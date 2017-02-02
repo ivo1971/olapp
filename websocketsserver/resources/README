@@ -3,13 +3,17 @@ seasocks
 source: https://github.com/mattgodbolt/seasocks/wiki/Seasocks-quick-tutorial
 
 1. unzip seasockets zip file in this directory
-2. cd seasocks-master
-3. mkdir build
-4. cd build
-5. cmake ..
-6. make
-7. cd src/main/c/
-8. mv libseasocks.so libseasocks.org.so
+2. edit src/main/c/Connection.cpp (add '* 100'):
+   - constexpr size_t MaxBufferSize = 16 * 1024 * 1024 * 100;
+   - constexpr size_t ReadWriteBufferSize = 16 * 1024 * 100;
+   - constexpr size_t MaxWebsocketMessageSize = 16384 * 100;
+3. cd seasocks-master
+4. mkdir build
+5. cd build
+6. cmake ..
+7. make
+8. cd src/main/c/
+9. mv libseasocks.so libseasocks.org.so
 
 boost
 =====
