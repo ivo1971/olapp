@@ -1,10 +1,24 @@
-TEST teamfie<br />
-<br />
-<button type="button" class="btn btn-info" (click)="onClickTakeTeamfie()">Take a teamfie</button>
-<br />
-<br />
-<span *ngIf="imageContentValid">
-    <img [src]="'data:image/JPG;base64,'+ imageContent" width='80%'>
-</span>
-<br />
-<br />
+<div class="container-fuid text-center">
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <h2>Neem een teamfie</h2>
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-tent" aria-hidden="true"></span>
+                </span>
+                <input class="form-control" type="text" [(ngModel)]="teamName" placeholder="kies een team naam"><br />
+            </div>
+            <br />
+            <button type="button" class="btn btn-info" (click)="onClickTakeTeamfie()">Take a teamfie</button><br />
+            <br />
+            <button *ngIf="imageContentValid" type="button" class="btn btn-info" (click)="onClickSubmit()">Submit</button><br />
+            <br />
+            <img *ngIf="imageContentValid" [src]="'data:image/JPG;base64,'+ imageContent" width='80%'>
+            <br />
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+</div>
