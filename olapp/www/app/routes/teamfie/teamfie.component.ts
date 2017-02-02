@@ -63,6 +63,16 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
             name: this.teamName,
             image: this.imageContent;
         });
+
+      //idea: send as binary data (instead of string)
+      //      --> seasocks has no size limit
+      //client.on('data', function (data) {
+      //  console.log('data');
+      //  ws.send(data, { binary: true });
+      //});
+
+      //idea: compress image before sending
+      //      http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
     }
 
     private cameraSetOptions(srcType: string) {
