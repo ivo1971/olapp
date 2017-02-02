@@ -12,6 +12,7 @@
 #include "CQuizModeScoreboard.h"
 #include "CQuizModeSimpleButton.h"
 #include "CQuizModeSimpleButtonTest.h"
+#include "CQuizModeTeamfie.h"
 #include "CQuizModeTest.h"
 #include "CQuizModeWelcome.h"
 #include "JsonHelpers.h"
@@ -206,6 +207,8 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeScoreboard      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
+  } else if("teamfie" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeTeamfie         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }
