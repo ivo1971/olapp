@@ -24,31 +24,37 @@ export class TeamfieService {
             if(!data) {
                 return;
             }
+            for(let u = 0 ; u < this.teamfies.length ; ++u) {
+                if(this.teamfies[u].teamId === data["teamId"]) {
+                    //id already in the list --> update
+                    this.logService.info("Replacing [" + data["teamId"] + "] of size [" + data["image"].length + "]");
+                    this.teamfies[u].image = data["image"]
+                    this.subjectTeamfieOut.next(this.teamfies);
+                    return; 
+                }
+            }
             this.logService.info("Adding [" + data["teamId"] + "] of size [" + data["image"].length + "]");
-            this.teamfies[data["teamId"]] = data["image"];
+            this.teamfies.push(new Teamfie(data["teamId"], data["image"]));
+            this.subjectTeamfieOut.next(this.teamfies);
         });
     }
 
     /**********************************************
      * Public methods
      */
-    /*
-    public getObservableTeamfie() : Observable<Teamfie> {
+    public getObservableTeamfie() : Observable<Array<Teamfie>> {
         return this.observableTeamfieOut;
-    }
-    */
-    public getTeamfies() : {[key: string]: Teamfie} {
-        return this.teamfies;
     }
 
     /**********************************************
      * Private members
      */
     //the actual data
-    private teamfies                        : {[key: string]: Teamfie}     = {};
+    private teamfies                        : Array<Teamfie>     = new Array<Teamfie>();
     //incoming observables: getting the data
     private observableTeamfieIn              : Observable<any>;
     private observableTeamfieSubscriptionIn  : Subscription        ;
     //outgoing: spreading the data
-    //private subjectTeamfieOut                : BehaviorSubject<Teamfie>> = new BehaviorSubject<TeamInfo>>(this.teamsInfo);
+    private subjectTeamfieOut                : BehaviorSubject<Array<Teamfie>> = new BehaviorSubject<Array<Teamfie>>(this.teamfies);
+    private observableTeamfieOut             : Observable<Array<Teamfie>>      = this.subjectTeamfieOut.asObservable();
 }
