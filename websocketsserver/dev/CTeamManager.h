@@ -1,6 +1,7 @@
 #ifndef __CTEAMMANAGER__H__
 #define __CTEAMMANAGER__H__
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -31,6 +32,7 @@ class CTeamManager {
         void                                            PointsRound(const std::string& teamId, const int teamPointsThis, const int teamPointsOther);
         void                                            PointsRound2Total(void);
         void                                            PointsClear(void);
+        std::list<std::string>                          GetAllTeamIds(void);
 
     private:
         MapTeam                                         m_Teams;

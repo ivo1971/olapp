@@ -135,3 +135,12 @@ void CTeamManager::PointsClear(void)
     }    
     m_FuncDirty();
 }
+
+std::list<std::string> CTeamManager::GetAllTeamIds(void)
+{
+    std::list<std::string> list;
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        list.push_back(cit->second.IdGet());
+    }
+    return list;
+}

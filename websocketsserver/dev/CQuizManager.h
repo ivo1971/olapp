@@ -51,6 +51,7 @@ class CQuizManager {
     MapUser                                         m_Users;
     std::unique_ptr<IQuizMode>                      m_CurrentQuizMode;
     std::string                                     m_FileName;
+    std::string                                     m_TeamfieDir;
     CQuizModeSimpleButton::FuncDirty                m_DirtySimpleButtonConfig;
     CTeamManager::FuncDirty                         m_DirtyTeamManager;
     std::shared_ptr<CQuizModeSimpleButton::CConfig> m_spSimpleButtonConfig;

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "json.hpp"
@@ -37,6 +39,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_Users()
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
+  , m_TeamfieDir(fileName + std::string(".teamfies"))
   , m_DirtySimpleButtonConfig([this](){Save();})
   , m_DirtyTeamManager([this](){Save();SendTeamsToAll();})
   , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_DirtySimpleButtonConfig))
@@ -44,6 +47,9 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
 {
   //try to load the configuration from file
   Load();
+
+  //make teamfie dir
+  mkdir(m_TeamfieDir.c_str(), S_IRWXU);
 }
 
 CQuizManager::~CQuizManager(void) throw()
@@ -118,6 +124,7 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
       SendTeamsToOne(m_spWsMasterHandler, id);
+      CQuizModeTeamfie::SendAllImages(m_spWsMasterHandler, m_TeamfieDir, m_spTeamManager); //TODO: send to 1 ID
       m_CurrentQuizMode->ReConnect(id);
     } else if("select-mode" == mi) {
       //get info from message
@@ -166,6 +173,7 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
     m_spLogger->info("CQuizManager [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("id" == mi) {
       SendTeamsToOne(m_spWsBeamerHandler, id);
+      CQuizModeTeamfie::SendAllImages(m_spWsBeamerHandler, m_TeamfieDir, m_spTeamManager); //TODO: send to 1 ID
       m_CurrentQuizMode->ReConnect(id);
     } else {
       //default: forward to current node
@@ -208,7 +216,7 @@ void CQuizManager::SelectMode(const std::string& mode)
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else if("teamfie" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeTeamfie         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler));
+    m_CurrentQuizMode.reset(new CQuizModeTeamfie         (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_TeamfieDir));
   } else {
     m_spLogger->error("CQuizManager [%s][%u] unhandled mode [%s].", __FUNCTION__, __LINE__, mode.c_str());
   }
