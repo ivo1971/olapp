@@ -61,7 +61,7 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
         console.log("onClickSubmit [" + this.imageContent.length + "]");
         this._websocketUserService.sendMsg("teamfie", {
             name: this.teamName,
-            image: this.imageContent;
+            image: this.imageContent,
         });
 
       //idea: send as binary data (instead of string)

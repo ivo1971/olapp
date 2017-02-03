@@ -6,6 +6,7 @@ import {Subscription}          from 'rxjs/Subscription';
 
 import {LogService }           from './services/log.service';
 import {ModeService, EMode}    from './services/mode.service';
+import {TeamfieService}        from './services/teamfie.service';
 import {TeamsUsersService}     from './services/teams-users.service';
 import {WebsocketUserService}  from './services/websocket.user.service';
 
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
       private router           : Router,
       private logService       : LogService,
       private modeService      : ModeService,
+      private teamfieService   : TeamfieService, //ensure the service is instantiated and listening for incoming messages as soon as possible
       private teamsUsersService: TeamsUsersService, //ensure the service is instantiated and listening for incoming messages as soon as possible
       private websocketService : WebsocketUserService
       ) {

@@ -11,6 +11,7 @@ import {RouterModule}                  from '@angular/router';
 import {CloudService}                  from './services/cloud.service';
 import {LogService}                    from './services/log.service';
 import {ModeService}                   from './services/mode.service';
+import {TeamfieService}                from './services/teamfie.service';
 import {TeamsUsersService}             from './services/teams-users.service';
 import {UserService}                   from './services/user.service';
 import {WebsocketUserService}          from './services/websocket.user.service';
@@ -133,6 +134,7 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
     CloudService,
     LogService,
     ModeService,
+    TeamfieService,
     TeamsUsersService,
     UserService,
     WebsocketUserService,
