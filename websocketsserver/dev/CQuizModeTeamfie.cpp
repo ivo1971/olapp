@@ -78,7 +78,6 @@ void CQuizModeTeamfie::HandleMessageQuizTeamfie(const std::string& id, const nlo
     if(0 != teamName.length()) {
         m_spLogger->info("CQuizModeTeamfie [%s][%u].", __FUNCTION__, __LINE__);
         m_spTeamManager->Edit(citUser->second.TeamGet(), teamName);
-        //TODO: send team name to all team members
     }
 
     //handle image
