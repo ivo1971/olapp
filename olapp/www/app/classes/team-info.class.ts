@@ -4,4 +4,5 @@ export class TeamInfo {
     public name       : string                 = "";
     public pointsTotal: number                 = 0;
     public pointsRound: number                 = 0;
+    public image      : string                 = "";
 }

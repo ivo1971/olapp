@@ -11,6 +11,12 @@ import {Subscription}         from 'rxjs/Subscription';
 
 import {ComponentBase}        from './../../classes/component-base.class';
 
+import {TeamInfo}             from './../../classes/team-info.class';
+import {Teamfie}              from './../../classes/teamfie.class';
+
+import {ModeService}          from './../../services/mode.service';
+import {TeamfieService}       from './../../services/teamfie.service';
+import {TeamsUsersService}    from './../../services/teams-users.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
 @Component({
@@ -22,24 +28,55 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
     templateUrl: 'teamfie.component.html'
 })
 export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy { 
+    /* Private variables intended for the template
+     * (hence at the top)
+     */
+    private modeIsBeamer      : boolean = false;
+    private modeIsMaster      : boolean = false;
+    private modeIsQuiz        : boolean = true;
     private imageContent      : string = "";
     private imageContentValid : boolean = false;
     private teamName          : string  = "";
 
+    /* Construction
+     */
     public constructor(
         private changeDetectorRef     : ChangeDetectorRef,
+        private modeService           : ModeService,
+        private teamfieService        : TeamfieService,
+        private teamsUsersService     : TeamsUsersService,
         private _websocketUserService : WebsocketUserService,
         ) { 
+        //call base class
         super(_websocketUserService);
+
+        //additional initialization
+        this.modeIsBeamer           = this.modeService.IsBeamer();
+        this.modeIsMaster           = this.modeService.IsMaster();
+        this.modeIsQuiz             = this.modeService.IsQuiz();
     }
 
+    /* Life cycle hooks
+     */
     public ngOnInit() : void {
         this.sendLocation("teamfie");
+        this.observableTeamInfo   = this.teamsUsersService.getObservableTeamsInfo();
+        this.subscriptionTeamInfo = this.observableTeamInfo.subscribe((teamInfos: Array<TeamInfo>) => {
+            this.teamInfos = teamInfos;
+            this.merge();
+        });
+        this.observableTeamfie    = this.teamfieService.getObservableTeamfie();
+        this.subscriptionTeamfie  = this.observableTeamfie.subscribe((teamfies: Array<Teamfie>) => {
+            this.teamfies = teamfies;
+            this.merge();
+        });
     }
 
     public ngOnDestroy() : void {
     }
 
+    /* Template event handlers
+     */
     private onClickTakeTeamfie() : void {
         console.log("onClickTakeTeamfie in");
         var srcType = Camera.PictureSourceType.CAMERA;
@@ -75,6 +112,8 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
       //      http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
     }
 
+    /* Help functions
+     */
     private cameraSetOptions(srcType: string) {
         var options = {
             // Some common settings are 20, 50, and 100
@@ -90,4 +129,30 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
         }
         return options;
     }
+
+    private merge() : void {
+        for(let u = 0 ; u < this.teamInfos.length ; ++u) {
+            let found : boolean = false;
+            for(let v = 0 ; v < this.teamfies.length ; ++v) {
+                if(this.teamInfos[u].id != this.teamfies[v].teamId) {
+                    continue;
+                }
+                this.teamInfos[u].image = this.teamfies[v].image;
+                found = true;
+                break;
+            }
+            if(!found) {
+                this.teamInfos[u].image = "";
+            }
+        }
+    }
+
+    /* Private members
+     */
+    private observableTeamInfo             : Observable<Array<TeamInfo>>;
+    private subscriptionTeamInfo           : Subscription;
+    private observableTeamfie              : Observable<Array<Teamfie>>;
+    private subscriptionTeamfie            : Subscription;
+    private teamInfos                      : Array<TeamInfo> = new Array<TeamInfo>();    
+    private teamfies                       : Array<Teamfie>  = new Array<Teamfie> ();    
 }
