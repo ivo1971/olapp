@@ -71,8 +71,8 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
             if(data["pointsBadOther"]) {
                 this.configPointsBadOther  = data["pointsBadOther"];
             }
-        }
-    }
+        })
+    };
 
     /* Life-cycle hooks
      */

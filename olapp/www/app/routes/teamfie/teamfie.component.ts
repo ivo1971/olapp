@@ -4,6 +4,7 @@ declare var navigator : any
 
 import {ChangeDetectorRef}    from '@angular/core';
 import {Component}            from '@angular/core';
+import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
 import {Observable}           from 'rxjs/Observable';
 import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
@@ -37,6 +38,7 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
     private imageContent      : string = "";
     private imageContentValid : boolean = false;
     private teamName          : string  = "";
+    private carouselActive    : boolean = false;
 
     /* Construction
      */
@@ -54,11 +56,13 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
         this.modeIsBeamer           = this.modeService.IsBeamer();
         this.modeIsMaster           = this.modeService.IsMaster();
         this.modeIsQuiz             = this.modeService.IsQuiz();
+        this.carouselActive         = this.modeIsMaster;
     }
 
     /* Life cycle hooks
      */
     public ngOnInit() : void {
+        //subscribe
         this.sendLocation("teamfie");
         this.observableTeamInfo   = this.teamsUsersService.getObservableTeamsInfo();
         this.subscriptionTeamInfo = this.observableTeamInfo.subscribe((teamInfos: Array<TeamInfo>) => {
@@ -70,9 +74,27 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
             this.teamfies = teamfies;
             this.merge();
         });
+        this.observableCarouselOnBeamer   = this._websocketUserService
+                                            .register("teamfie-carousel-on-beamer");
+        this.subscriptionCarouselOnBeamer = this.observableCarouselOnBeamer.subscribe((data: any) => {
+            this.carouselActive = data["enable"];
+        });
+
+        //start carousel timer
+        this.timerCarousel = IntervalObservable.create(3000);
+        this.timerCarouselSubscription = this.timerCarousel.subscribe(t => {
+            ++this.activeTeamIdx;
+            if(this.activeTeamIdx >= this.teamInfos.length) {
+                this.activeTeamIdx = 0;
+            }
+        });
     }
 
     public ngOnDestroy() : void {
+        this.timerCarouselSubscription.unsubscribe();
+        this.subscriptionCarouselOnBeamer.unsubscribe();
+        this.subscriptionTeamfie.unsubscribe();
+        this.subscriptionTeamInfo.unsubscribe();
     }
 
     /* Template event handlers
@@ -112,6 +134,17 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
       //      http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
     }
 
+    private onCheckboxCarouselOnBeamer() : void {
+        this.carouselOnBeamer = !this.carouselOnBeamer;
+        this._websocketUserService.sendMsg("teamfie-carousel-on-beamer", {
+            enable: this.carouselOnBeamer
+        });
+    }
+    
+    private isTeamActive(teamId : string) : boolean {
+        return teamId === this.teamInfos[this.activeTeamIdx].id;
+    }
+
     /* Help functions
      */
     private cameraSetOptions(srcType: string) {
@@ -131,9 +164,9 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
     }
 
     private merge() : void {
-        for(let u = 0 ; u < this.teamInfos.length ; ++u) {
+        for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
             let found : boolean = false;
-            for(let v = 0 ; v < this.teamfies.length ; ++v) {
+            for(let v : number = 0 ; v < this.teamfies.length ; ++v) {
                 if(this.teamInfos[u].id != this.teamfies[v].teamId) {
                     continue;
                 }
@@ -153,6 +186,12 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
     private subscriptionTeamInfo           : Subscription;
     private observableTeamfie              : Observable<Array<Teamfie>>;
     private subscriptionTeamfie            : Subscription;
+    private observableCarouselOnBeamer     : Observable<any>;
+    private subscriptionCarouselOnBeamer   : Subscription;
+    private timerCarousel                  : any;
+    private timerCarouselSubscription      : Subscription;
     private teamInfos                      : Array<TeamInfo> = new Array<TeamInfo>();    
     private teamfies                       : Array<Teamfie>  = new Array<Teamfie> ();    
+    private activeTeamIdx                  : number = 0;
+    private carouselOnBeamer               : boolean = false;
 }

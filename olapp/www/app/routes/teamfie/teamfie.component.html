@@ -23,21 +23,39 @@
     </div>
 </div>
 
-<div class="container-fuid text-center" *ngIf="modeIsBeamer || modeIsMaster">
-  <div class="row">
-    <div class="col-md-12">
-      <h2><b><u>Teamfies</u></b></h2>
-    </div>
+<div class="container-fuid text-center" *ngIf="modeIsMaster">
+  <div class="form-check">
+    <label class="form-check-label">
+      <input type="checkbox" class="form-check-input" (change)="onCheckboxCarouselOnBeamer()">
+      Carousel on beamer
+    </label>
   </div>
-  <div class="row" *ngFor="let team of observableTeamInfo | async">
-    <div class="col-md-1">
+</div>
+<div class="container-fuid text-center" *ngIf="(modeIsBeamer || modeIsMaster) && (!carouselActive)">
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <h2>Neem een teamfie en kies een team naam...</h2>
+            <image-native source="img/lady-taking-selfie-with-mobile-selfie-clipart_550-360.jpeg" width="100%"></image-native>
+        </div>
+        <div class="col-md-1">
+        </div>
     </div>
-    <div class="col-md-10 alert alert-info">
-        <h3>{{team.name}}</h3>
-        <img          *ngIf="0 != team.image.length" [src]="'data:image/JPG;base64,'+ team.image" width="100%">
-        <image-native *ngIf="0 == team.image.length" source="img/monkey-silhouette-clip-art-monkey-clip-art-free-downloads_310-350.jpeg" height="200"></image-native>
-    </div>
-    <div class="col-md-1">
-    </div>
-  </div>
+</div>
+<div class="container-fuid text-center" *ngIf="(modeIsBeamer || modeIsMaster) && (carouselActive)">
+    <br />
+    <span *ngFor="let team of observableTeamInfo | async">
+        <div class="row" *ngIf="isTeamActive(team.id)">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-10 alert alert-info">
+                <h3>{{team.name}}</h3>
+                <img          *ngIf="0 != team.image.length" [src]="'data:image/JPG;base64,'+ team.image" width="100%">
+                <image-native *ngIf="0 == team.image.length" source="img/monkey-silhouette-clip-art-monkey-clip-art-free-downloads_310-350.jpeg" width="100%"></image-native>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+    </span>
 </div>

@@ -30,14 +30,12 @@ export class TeamsUsersService {
         private websocketUserService : WebsocketUserService
     ) {
         //init static team-info-none
-        this.teamsInfoNone = [
-            {
-                id: "00000000-0000-0000-0000-000000000000",
-                name: "no team",
-                pointsRound: 0,
-                pointsTotal: 0
-            }
-        ];
+        let teamInfoNone = new TeamInfo();
+        teamInfoNone.id          = "00000000-0000-0000-0000-000000000000";
+        teamInfoNone.name        = "no team";
+        teamInfoNone.pointsRound = 0;
+        teamInfoNone.pointsTotal = 0;
+        this.teamsInfoNone       = [teamInfoNone]; 
         this.subjectTeamsInfoNoneOut.next(this.teamsInfoNone);                            
 
         //register routing MI for team-lists
