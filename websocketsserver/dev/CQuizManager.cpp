@@ -326,6 +326,9 @@ void CQuizManager::SendTeamsToAll(void)
 {
     m_spLogger->info("CQuizManager [%s][%u].", __FUNCTION__, __LINE__);
     SendMessageAll("team-list", m_spTeamManager->ToJson());
+    for(auto user : m_Users) {
+      SendTeam(user.first);
+    }
 }
 
 void CQuizManager::SendTeamsToOne(std::shared_ptr<CWsQuizHandler> spWsHandler, const std::string& id)
