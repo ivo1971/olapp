@@ -2,21 +2,23 @@
 declare var Camera    : any
 declare var navigator : any
 
-import {ChangeDetectorRef}    from '@angular/core';
-import {Component}            from '@angular/core';
-import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
-import {Observable}           from 'rxjs/Observable';
-import {Subscription}         from 'rxjs/Subscription';
+import {ChangeDetectorRef}     from '@angular/core';
+import {Component}             from '@angular/core';
+import {IntervalObservable}    from 'rxjs/observable/IntervalObservable';
+import {Observable}            from 'rxjs/Observable';
+import {Subscription}          from 'rxjs/Subscription';
 
-import {TeamfieBaseComponent} from './../../classes/teamfie-base.class';
+import {TeamfieBaseComponent}  from './../../classes/teamfie-base.class';
 
-import {TeamInfo}             from './../../classes/team-info.class';
-import {Teamfie}              from './../../classes/teamfie.class';
+import {TeamInfo}              from './../../classes/team-info.class';
+import {Teamfie}               from './../../classes/teamfie.class';
+import {User}                  from './../../classes/user.class';
 
-import {ModeService}          from './../../services/mode.service';
-import {TeamfieService}       from './../../services/teamfie.service';
-import {TeamsUsersService}    from './../../services/teams-users.service';
-import {WebsocketUserService} from './../../services/websocket.user.service';
+import {ModeService}           from './../../services/mode.service';
+import {TeamfieService}        from './../../services/teamfie.service';
+import {TeamsUsersService}     from './../../services/teams-users.service';
+import {UserService }          from './../../services/user.service';
+import {WebsocketUserService}  from './../../services/websocket.user.service';
 
 @Component({
     moduleId   : module.id,
@@ -41,32 +43,38 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     /* Construction
      */
     public constructor(
-        private changeDetectorRef     : ChangeDetectorRef,
-        private modeService           : ModeService,
+        private changeDetectorRef      : ChangeDetectorRef,
+        private modeService            : ModeService,
         private _teamfieService        : TeamfieService,
         private _teamsUsersService     : TeamsUsersService,
+        private userService            : UserService,
         private __websocketUserService : WebsocketUserService,
         ) { 
-        //call base class
+        /* call base class */
         super(_teamfieService, _teamsUsersService,__websocketUserService);
 
-        //additional initialization
+        /* additional initialization */
         this.modeIsBeamer           = this.modeService.IsBeamer();
         this.modeIsMaster           = this.modeService.IsMaster();
         this.modeIsQuiz             = this.modeService.IsQuiz();
         this.carouselActive         = this.modeIsMaster;
 
-        //send location
+        /* send location */
         this.sendLocation("teamfie");
 
-        //subscribe
+        /* subscribe */
+        //get team info
+        this.userSubscription = this.userService.getObservableUser().subscribe((user:User) => {
+            this.teamName = user.team;
+        });
+        //beamer: check when the carousel has to be activated/deactivated
         this.observableCarouselOnBeamer   = this.__websocketUserService
                                             .register("teamfie-carousel-on-beamer");
         this.subscriptionCarouselOnBeamer = this.observableCarouselOnBeamer.subscribe((data: any) => {
             this.carouselActive = data["enable"];
         });
 
-        //start carousel timer
+        /* start carousel timer */
         this.timerCarousel = IntervalObservable.create(3000);
         this.timerCarouselSubscription = this.timerCarousel.subscribe(t => {
             ++this.activeTeamIdx;
@@ -79,6 +87,7 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     public destructor() : void {
         this.timerCarouselSubscription.unsubscribe();
         this.subscriptionCarouselOnBeamer.unsubscribe();
+        this.userSubscription.unsubscribe();
     }
 
     /* Template event handlers
@@ -149,10 +158,12 @@ export class TeamfieComponent extends TeamfieBaseComponent {
 
     /* Private members
      */
+    private userSubscription               : Subscription;
     private observableCarouselOnBeamer     : Observable<any>;
     private subscriptionCarouselOnBeamer   : Subscription;
     private timerCarousel                  : any;
     private timerCarouselSubscription      : Subscription;
     private activeTeamIdx                  : number = 0;
     private carouselOnBeamer               : boolean = false;
+    private teamId                         : string = "";
 }

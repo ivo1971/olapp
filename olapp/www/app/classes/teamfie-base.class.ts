@@ -69,8 +69,8 @@ export class TeamfieBaseComponent extends ComponentBase {
 
     /* Private members
      */
-    private observableTeamInfo             : Observable<Array<TeamInfo>>;
-    private subscriptionTeamInfo           : Subscription;
-    private observableTeamfie              : Observable<Array<Teamfie>>;
-    private subscriptionTeamfie            : Subscription;
+    protected observableTeamInfo             : Observable<Array<TeamInfo>>;
+    private   subscriptionTeamInfo           : Subscription;
+    protected observableTeamfie              : Observable<Array<Teamfie>>;
+    private   subscriptionTeamfie            : Subscription;
 }
