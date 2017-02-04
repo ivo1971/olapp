@@ -6,11 +6,9 @@ import {ChangeDetectorRef}    from '@angular/core';
 import {Component}            from '@angular/core';
 import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
 import {Observable}           from 'rxjs/Observable';
-import {OnInit}               from '@angular/core';
-import {OnDestroy}            from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 
-import {ComponentBase}        from './../../classes/component-base.class';
+import {TeamfieBaseComponent} from './../../classes/teamfie-base.class';
 
 import {TeamInfo}             from './../../classes/team-info.class';
 import {Teamfie}              from './../../classes/teamfie.class';
@@ -28,7 +26,7 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
     ],
     templateUrl: 'teamfie.component.html'
 })
-export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy { 
+export class TeamfieComponent extends TeamfieBaseComponent { 
     /* Private variables intended for the template
      * (hence at the top)
      */
@@ -45,36 +43,24 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
     public constructor(
         private changeDetectorRef     : ChangeDetectorRef,
         private modeService           : ModeService,
-        private teamfieService        : TeamfieService,
-        private teamsUsersService     : TeamsUsersService,
-        private _websocketUserService : WebsocketUserService,
+        private _teamfieService        : TeamfieService,
+        private _teamsUsersService     : TeamsUsersService,
+        private __websocketUserService : WebsocketUserService,
         ) { 
         //call base class
-        super(_websocketUserService);
+        super(_teamfieService, _teamsUsersService,__websocketUserService);
 
         //additional initialization
         this.modeIsBeamer           = this.modeService.IsBeamer();
         this.modeIsMaster           = this.modeService.IsMaster();
         this.modeIsQuiz             = this.modeService.IsQuiz();
         this.carouselActive         = this.modeIsMaster;
-    }
 
-    /* Life cycle hooks
-     */
-    public ngOnInit() : void {
-        //subscribe
+        //send location
         this.sendLocation("teamfie");
-        this.observableTeamInfo   = this.teamsUsersService.getObservableTeamsInfo();
-        this.subscriptionTeamInfo = this.observableTeamInfo.subscribe((teamInfos: Array<TeamInfo>) => {
-            this.teamInfos = teamInfos;
-            this.merge();
-        });
-        this.observableTeamfie    = this.teamfieService.getObservableTeamfie();
-        this.subscriptionTeamfie  = this.observableTeamfie.subscribe((teamfies: Array<Teamfie>) => {
-            this.teamfies = teamfies;
-            this.merge();
-        });
-        this.observableCarouselOnBeamer   = this._websocketUserService
+
+        //subscribe
+        this.observableCarouselOnBeamer   = this.__websocketUserService
                                             .register("teamfie-carousel-on-beamer");
         this.subscriptionCarouselOnBeamer = this.observableCarouselOnBeamer.subscribe((data: any) => {
             this.carouselActive = data["enable"];
@@ -90,11 +76,9 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
         });
     }
 
-    public ngOnDestroy() : void {
+    public destructor() : void {
         this.timerCarouselSubscription.unsubscribe();
         this.subscriptionCarouselOnBeamer.unsubscribe();
-        this.subscriptionTeamfie.unsubscribe();
-        this.subscriptionTeamInfo.unsubscribe();
     }
 
     /* Template event handlers
@@ -118,7 +102,7 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
 
     private onClickSubmit() : void {
         console.log("onClickSubmit [" + this.imageContent.length + "]");
-        this._websocketUserService.sendMsg("teamfie", {
+        this.__websocketUserService.sendMsg("teamfie", {
             name: this.teamName,
             image: this.imageContent,
         });
@@ -136,7 +120,7 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
 
     private onCheckboxCarouselOnBeamer() : void {
         this.carouselOnBeamer = !this.carouselOnBeamer;
-        this._websocketUserService.sendMsg("teamfie-carousel-on-beamer", {
+        this.__websocketUserService.sendMsg("teamfie-carousel-on-beamer", {
             enable: this.carouselOnBeamer
         });
     }
@@ -163,35 +147,12 @@ export class TeamfieComponent extends ComponentBase implements OnInit, OnDestroy
         return options;
     }
 
-    private merge() : void {
-        for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
-            let found : boolean = false;
-            for(let v : number = 0 ; v < this.teamfies.length ; ++v) {
-                if(this.teamInfos[u].id != this.teamfies[v].teamId) {
-                    continue;
-                }
-                this.teamInfos[u].image = this.teamfies[v].image;
-                found = true;
-                break;
-            }
-            if(!found) {
-                this.teamInfos[u].image = "";
-            }
-        }
-    }
-
     /* Private members
      */
-    private observableTeamInfo             : Observable<Array<TeamInfo>>;
-    private subscriptionTeamInfo           : Subscription;
-    private observableTeamfie              : Observable<Array<Teamfie>>;
-    private subscriptionTeamfie            : Subscription;
     private observableCarouselOnBeamer     : Observable<any>;
     private subscriptionCarouselOnBeamer   : Subscription;
     private timerCarousel                  : any;
     private timerCarouselSubscription      : Subscription;
-    private teamInfos                      : Array<TeamInfo> = new Array<TeamInfo>();    
-    private teamfies                       : Array<Teamfie>  = new Array<Teamfie> ();    
     private activeTeamIdx                  : number = 0;
     private carouselOnBeamer               : boolean = false;
 }

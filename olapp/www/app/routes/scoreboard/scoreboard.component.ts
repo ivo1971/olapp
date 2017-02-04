@@ -4,15 +4,16 @@ import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 
-import {ComponentBase}        from './../../classes/component-base.class';
+import {TeamfieBaseComponent} from './../../classes/teamfie-base.class';
 
-import {TeamInfo}              from './../../classes/team-info.class';
-import {User}                  from './../../classes/user.class';
+import {TeamInfo}             from './../../classes/team-info.class';
+import {User}                 from './../../classes/user.class';
 
-import {LogService }           from './../../services/log.service';
-import {ModeService, EMode}    from './../../services/mode.service';
-import {TeamsUsersService}     from './../../services/teams-users.service';
-import {WebsocketUserService}  from './../../services/websocket.user.service';
+import {LogService }          from './../../services/log.service';
+import {ModeService, EMode}   from './../../services/mode.service';
+import {TeamfieService}       from './../../services/teamfie.service';
+import {TeamsUsersService}    from './../../services/teams-users.service';
+import {WebsocketUserService} from './../../services/websocket.user.service';
 
 @Component({
     moduleId   : module.id,
@@ -22,34 +23,29 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     ],
     templateUrl: 'scoreboard.component.html'
 })
-export class ScoreboardComponent extends ComponentBase implements OnInit, OnDestroy { 
+export class ScoreboardComponent extends TeamfieBaseComponent { 
     /* Private variables intended for the template
      * (hence at the top)
      */
-
+    private showDummy : boolean = false;
     /* Construction
      */
     public constructor(
-      private logService        : LogService,
-      private modeService       : ModeService,
-      private teamsUsersService : TeamsUsersService,
-      private _websocketService : WebsocketUserService,
-      ) {
-          //call base class
-          super(_websocketService);
+        private logService             : LogService,
+        private modeService            : ModeService,
+        private _teamfieService        : TeamfieService,
+        private _teamsUsersService     : TeamsUsersService,
+        private __websocketUserService : WebsocketUserService,
+        ) { 
+        //call base class
+        super(_teamfieService, _teamsUsersService,__websocketUserService);
 
-          //additional initialization
-          this.observableTeamInfo     = this.teamsUsersService.getObservableTeamsInfo    ();
-    }
-
-    /* Life-cycle hooks
-     */
-    public ngOnInit() : void {
         //inform parent
         this.sendLocation("scoreboard");
-    }
 
-    public ngOnDestroy() {
+        //additional initialization
+        this.showDummy = !this.modeService.IsQuiz();
+
     }
 
     /* Event handlers called from the template
@@ -60,5 +56,4 @@ export class ScoreboardComponent extends ComponentBase implements OnInit, OnDest
 
     /* Private members
      */
-    private observableTeamInfo         : Observable<Array<TeamInfo>>;
 }

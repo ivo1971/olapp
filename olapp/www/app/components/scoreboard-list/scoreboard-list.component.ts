@@ -14,6 +14,7 @@ import {TeamInfo}              from './../../classes/team-info.class';
 })
 export class ScoreboardListComponent implements OnInit { 
     @Input() nbrPerRow   : number          = 1;
+    @Input() showDummy   : boolean         = false;
     @Input() total       : boolean         = true;
     @Input() teamsInfo   : Array<TeamInfo> = [];
     

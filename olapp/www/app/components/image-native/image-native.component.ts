@@ -14,6 +14,7 @@ import {IsCordova}             from './../../help/cordova';
 })
 export class ImageNativeComponent implements OnInit { 
     @Input()  source   : string;
+    @Input()  width    : string = "100%";
     public    fullSrc  : string = "";
 
     public constructor() {
