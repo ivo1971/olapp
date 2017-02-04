@@ -30,9 +30,14 @@ void CQuizModeTeamfie::HandleMessageQuiz(const std::string& id, const std::strin
     }
 }
 
-void CQuizModeTeamfie::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
+void CQuizModeTeamfie::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator citJsData)
 {
     m_spLogger->info("CQuizModeTeamfie [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    if("teamfie-carousel-on-beamer" == mi) {
+        m_spWsBeamerHandler->SendMessage(mi, citJsData);
+    } else {
+        m_spLogger->info("CQuizModeTeamfie [%s][%u] MI [%s] unhandled.", __FUNCTION__, __LINE__, mi.c_str());        
+    }
 }
 
 void CQuizModeTeamfie::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
