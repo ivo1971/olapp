@@ -24,7 +24,7 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName)
+CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName, const std::string& httpDir)
   : m_spLogger(spLogger)
   , m_spWsQuizHandler(spWsQuizHandler)
   , m_spWsMasterHandler(spWsMasterHandler)
@@ -40,6 +40,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
   , m_TeamfieDir(fileName + std::string(".teamfies"))
+  , m_HttpDir(httpDir + std::string("/"))
   , m_DirtySimpleButtonConfig([this](){Save();})
   , m_DirtyTeamManager([this](){Save();SendTeamsToAll();})
   , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_DirtySimpleButtonConfig))
@@ -88,6 +89,8 @@ void CQuizManager::HandleMessageQuiz(const std::string& id, const std::string& m
       }
       SendTeam(id);
       SendTeamsToOne(m_spWsQuizHandler, id);
+    } else if("load-img-base64" == mi) {
+      HandleMiLoadImgBase64(m_spWsQuizHandler, id, citJsData);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageQuiz(id, mi, citJsData);
@@ -143,6 +146,8 @@ void CQuizManager::HandleMessageMaster(const std::string& id, const std::string&
       m_CurrentQuizMode->UsersChanged(m_Users);
       Save();
       SendTeam(userId);
+    } else if("load-img-base64" == mi) {
+      HandleMiLoadImgBase64(m_spWsMasterHandler, id, citJsData);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageMaster(id, mi, citJsData);
@@ -175,6 +180,8 @@ void CQuizManager::HandleMessageBeamer(const std::string& id, const std::string&
       SendTeamsToOne(m_spWsBeamerHandler, id);
       CQuizModeTeamfie::SendAllImages(m_spWsBeamerHandler, m_TeamfieDir, m_spTeamManager); //TODO: send to 1 ID
       m_CurrentQuizMode->ReConnect(id);
+    } else if("load-img-base64" == mi) {
+      HandleMiLoadImgBase64(m_spWsBeamerHandler, id, citJsData);
     } else {
       //default: forward to current node
       m_CurrentQuizMode->HandleMessageBeamer(id, mi, citJsData);
@@ -196,6 +203,45 @@ void CQuizManager::HandleDisconnectBeamer(const std::string& id)
     throw;
   }
   m_Lock.unlock();
+}
+
+void CQuizManager::HandleMiLoadImgBase64(std::shared_ptr<CWsQuizHandler> spWsQuizHandler, const std::string& id, const nlohmann::json::const_iterator citJsData)
+{
+  //image path postfix
+  static std::string base64 = std::string(".base64");
+
+  //get image name from request
+  const std::string imageName = GetElementString(citJsData, "image-name");
+  const std::string imagePath = m_HttpDir + imageName + base64;
+  m_spLogger->info("CQuizManager [%s][%u] name [%s] --> [%s]", __FUNCTION__, __LINE__, imageName.c_str(), imagePath.c_str());
+
+  //read from file
+  std::string image;
+  ifstream file;
+  file.open(imagePath, ios::in);
+  if(!file.is_open()) {
+    m_spLogger->error("CQuizManager [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, imagePath.c_str());
+    //TODO: send an error response?
+    return;
+  }
+  while(file) {
+    std::string tmp;
+    file >> tmp;
+    image += tmp;
+  }
+  file.close();
+  if(file.bad()) {
+    m_spLogger->error("CQuizManager [%s][%u] could not read file [%s]: %m", __FUNCTION__, __LINE__, imagePath.c_str());
+    //TODO: send an error response?
+    return;
+  }
+
+  //compose response data
+  json data;
+  data["image"]  = image; 
+
+  //send
+  spWsQuizHandler->SendMessage(id, "load-img-base64", data);
 }
 
 void CQuizManager::SelectMode(const std::string& mode)

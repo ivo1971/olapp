@@ -15,7 +15,7 @@
 class CQuizManager {
   private:
   public:
-                                                    CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName);
+                                                    CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& fileName, const std::string& httpDir);
                                                     ~CQuizManager(void) throw();
 
   private:
@@ -25,6 +25,7 @@ class CQuizManager {
     void                                            HandleDisconnectMaster(const std::string& id);
     void                                            HandleMessageBeamer   (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
     void                                            HandleDisconnectBeamer(const std::string& id);
+    void                                            HandleMiLoadImgBase64 (std::shared_ptr<CWsQuizHandler> spWsQuizHandler, const std::string& id, const nlohmann::json::const_iterator citJsData);
     void                                            SelectMode            (const std::string& mode);
     void                                            SendTeam              (const std::string& userId);
     void                                            Save                  (void) const;
@@ -52,6 +53,7 @@ class CQuizManager {
     std::unique_ptr<IQuizMode>                      m_CurrentQuizMode;
     std::string                                     m_FileName;
     std::string                                     m_TeamfieDir;
+    std::string                                     m_HttpDir;
     CQuizModeSimpleButton::FuncDirty                m_DirtySimpleButtonConfig;
     CTeamManager::FuncDirty                         m_DirtyTeamManager;
     std::shared_ptr<CQuizModeSimpleButton::CConfig> m_spSimpleButtonConfig;

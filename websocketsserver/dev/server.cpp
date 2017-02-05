@@ -44,13 +44,16 @@ int main(int argc, const char* argv[]) {
       }
    }
 
+   //config 
+   const std::string httpDir("./resources/http");
+
    //construction
    shared_ptr<Logger>               spLogger             (new PrintfLogger(Logger::DEBUG));
    shared_ptr<Server>               spServer             (new Server(spLogger));
    shared_ptr<CWsQuizHandler>       spWsQuizHandler      (new CWsQuizHandler(spLogger, spServer));
    shared_ptr<CWsQuizHandler>       spWsMasterHandler    (new CWsQuizHandler(spLogger, spServer));
    shared_ptr<CWsQuizHandler>       spWsBeamerHandler    (new CWsQuizHandler(spLogger, spServer));
-   shared_ptr<CQuizManager>         spQuizManger         (new CQuizManager(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, fileName));
+   shared_ptr<CQuizManager>         spQuizManger         (new CQuizManager(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, fileName, httpDir));
    CConfigureServer                 configureServer      (ipAddressServer);
 
    //configuration
@@ -62,7 +65,7 @@ int main(int argc, const char* argv[]) {
    spServer->addWebSocketHandler("/beamer",     spWsBeamerHandler    );
 
    //run server
-   spServer->serve("./resources/http", 8000);
+   spServer->serve(httpDir.c_str(), 8000);
 
    //cleanup
    configureServer.Stop();
