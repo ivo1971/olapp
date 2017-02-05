@@ -67,7 +67,6 @@ export class TeamfieBaseComponent extends ComponentBase {
                 this.teamInfos[u].imageEncoded = remainder.substr(endPosHeight + 1);
                 this.teamInfos[u].imageWidth   = parseInt(strWidth);
                 this.teamInfos[u].imageHeight  = parseInt(strHeight);
-                console.log("size [" + this.teamInfos[u].imageWidth + "][" + this.teamInfos[u].imageHeight + "]");
                 found = true;
                 break;
             }

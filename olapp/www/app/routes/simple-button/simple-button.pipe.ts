@@ -104,7 +104,7 @@ export class SimpleButtonTeamAlphabeticSort implements PipeTransform {
             if(team1.name === team2.name) {
                 return 0;
             }
-            return team1.name < team2.name ? 1 : -1;
+            return team1.name < team2.name ? -1 : 1;
         })
     }
 
