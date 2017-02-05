@@ -51,8 +51,8 @@
             </div>
             <div class="col-md-10 alert alert-info">
                 <h3>{{team.name}}</h3>
-                <image-teamfie *ngIf="0 != team.imageEncoded.length" [image]="team.imageEncoded"                                                            [imageWidth]="team.imageWidth" [imageHeight]="team.imageHeight" [viewMaxWidth]="1400" [viewMaxHeight]="600"></image-teamfie>
-                <image-teamfie *ngIf="0 == team.imageEncoded.length" [image]="'img/monkey-silhouette-clip-art-monkey-clip-art-free-downloads_310-350.jpeg'" [imageWidth]="310"             [imageHeight]="350"              [viewMaxWidth]="1400" [viewMaxHeight]="600"></image-teamfie>
+                <image-teamfie *ngIf="0 != team.imageEncoded.length" [image]="team.imageEncoded"                                                            [imageWidth]="team.imageWidth" [imageHeight]="team.imageHeight" [viewWidth]="1400" [viewHeight]="600"></image-teamfie>
+                <image-teamfie *ngIf="0 == team.imageEncoded.length" [image]="'img/monkey-silhouette-clip-art-monkey-clip-art-free-downloads_310-350.jpeg'" [imageWidth]="310"             [imageHeight]="350"              [viewWidth]="1400" [viewHeight]="600"></image-teamfie>
             </div>
             <div class="col-md-1">
             </div>

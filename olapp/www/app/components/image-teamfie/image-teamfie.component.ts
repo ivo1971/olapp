@@ -4,6 +4,8 @@ import {OnInit}                from '@angular/core';
 
 import {IsCordova}             from './../../help/cordova';
 
+import {LogService }           from './../../services/log.service';
+
 @Component({
   moduleId   : module.id,
   selector   : 'image-teamfie',
@@ -15,15 +17,17 @@ export class ImageTeamfieComponent implements OnInit {
     @Input()  image          : string = "";
     @Input()  imageWidth     : number = -1;
     @Input()  imageHeight    : number = -1;
-    @Input()  viewMaxWidth   : number = -1;
-    @Input()  viewMaxHeight  : number = -1;
+    @Input()  viewWidth      : number = -1;
+    @Input()  viewHeight     : number = -1;
     private   calcImage      : string = "";
     private   calcWidth      : number = -1;
     private   calcHeight     : number = -1;
 
     /* Construction
      */
-    public constructor() {
+    public constructor(
+        private logService             : LogService
+        ) {
     }
 
     /* Life-cycle hooks
@@ -44,162 +48,175 @@ export class ImageTeamfieComponent implements OnInit {
             this.calcImage = this.image;
         }
         //scale
-        if((-1 == this.viewMaxWidth) && (-1 == this.viewMaxHeight)) {
-            this.initViewMaxNone();
-        } else if((-1 != this.viewMaxWidth) && (-1 == this.viewMaxHeight)) {
-            this.initViewMaxWidthOnly();
-        } else if((-1 == this.viewMaxWidth) && (-1 != this.viewMaxHeight)) {
-            this.initViewMaxHeightOnly();
+        if((-1 == this.viewWidth) && (-1 == this.viewHeight)) {
+            this.initViewNone();
+        } else if((-1 != this.viewWidth) && (-1 == this.viewHeight)) {
+            this.initViewWidthOnly();
+        } else if((-1 == this.viewWidth) && (-1 != this.viewHeight)) {
+            this.initViewHeightOnly();
         } else {
-            this.initViewMaxWidthAndHeight();
+            this.initViewWidthAndHeight();
         }
     }
 
     /* Help functions
      */
-    private initViewMaxNone() : void {
+    private initViewNone() : void {
         if((-1 == this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxNoneImageNone();
+            this.initViewNoneImageNone();
         } else if((-1 != this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxNoneImageHeightOnly();
+            this.initViewNoneImageHeightOnly();
         } else if((-1 == this.imageWidth) && (-1 != this.imageHeight)) {
-            this.initViewMaxNoneImageWidthOnly();
+            this.initViewNoneImageWidthOnly();
         } else {
-            this.initViewMaxNoneImageWidthAndHeigth();
+            this.initViewNoneImageWidthAndHeigth();
         }
     }
 
-    private initViewMaxWidthOnly() : void {
+    private initViewWidthOnly() : void {
         if((-1 == this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxWidthOnlyImageNone();
+            this.initViewWidthOnlyImageNone();
         } else if((-1 != this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxWidthOnlyImageHeightOnly();
+            this.initViewWidthOnlyImageHeightOnly();
         } else if((-1 == this.imageWidth) && (-1 != this.imageHeight)) {
-            this.initViewMaxWidthOnlyImageWidthOnly();
+            this.initViewWidthOnlyImageWidthOnly();
         } else {
-            this.initViewMaxWidthOnlyImageWidthAndHeigth();
+            this.initViewWidthOnlyImageWidthAndHeigth();
         }
     }
 
-    private initViewMaxHeightOnly() : void {
+    private initViewHeightOnly() : void {
         if((-1 == this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxHeightOnlyImageNone();
+            this.initViewHeightOnlyImageNone();
         } else if((-1 != this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxHeightOnlyImageHeightOnly();
+            this.initViewHeightOnlyImageHeightOnly();
         } else if((-1 == this.imageWidth) && (-1 != this.imageHeight)) {
-            this.initViewMaxHeightOnlyImageWidthOnly();
+            this.initViewHeightOnlyImageWidthOnly();
         } else {
-            this.initViewMaxHeightOnlyImageWidthAndHeigth();
+            this.initViewHeightOnlyImageWidthAndHeigth();
         }
     }
 
-    private initViewMaxWidthAndHeight() : void {
+    private initViewWidthAndHeight() : void {
         if((-1 == this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxWidthAndHeightImageNone();
+            this.initViewWidthAndHeightImageNone();
         } else if((-1 != this.imageWidth) && (-1 == this.imageHeight)) {
-            this.initViewMaxWidthAndHeightImageHeightOnly();
+            this.initViewWidthAndHeightImageHeightOnly();
         } else if((-1 == this.imageWidth) && (-1 != this.imageHeight)) {
-            this.initViewMaxWidthAndHeightImageWidthOnly();
+            this.initViewWidthAndHeightImageWidthOnly();
         } else {
-            this.initViewMaxWidthAndHeightImageWidthAndHeigth();
+            this.initViewWidthAndHeightImageWidthAndHeigth();
         }
     }
 
-    private initViewMaxNoneImageNone() : void {
-        this.calcWidth  = -1;
-        this.calcHeight = -1;
+    private initViewNoneImageNone() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxNoneImageWidthOnly() : void {
-        this.calcWidth  = this.imageWidth;
-        this.calcHeight = -1;
+    private initViewNoneImageWidthOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxNoneImageHeightOnly() : void {
-        this.calcWidth  = -1;
-        this.calcHeight = this.imageHeight;
+    private initViewNoneImageHeightOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxNoneImageWidthAndHeigth() : void {
-        this.calcWidth  = this.imageWidth;
-        this.calcHeight = this.imageHeight;
+    private initViewNoneImageWidthAndHeigth() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthOnlyImageNone() : void {
-        this.calcWidth  = this.viewMaxWidth;
-        this.calcHeight = -1; //html will keep the ratio
+    private initViewWidthOnlyImageNone() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthOnlyImageWidthOnly() : void {
-        this.calcWidth  = this.min(this.imageWidth, this.viewMaxWidth);
-        this.calcHeight = -1; //html will keep the ratio
+    private initViewWidthOnlyImageWidthOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthOnlyImageHeightOnly() : void {
-        this.calcWidth  = this.viewMaxWidth;
-        this.calcHeight = -1; //html will keep the ratio
+    private initViewWidthOnlyImageHeightOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthOnlyImageWidthAndHeigth() : void {
-        this.calcWidth  = this.min(this.imageWidth, this.viewMaxWidth);
-        this.calcHeight = -1; //html will keep the ratio
+    private initViewWidthOnlyImageWidthAndHeigth() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxHeightOnlyImageNone() : void {
-        this.calcWidth  = -1; //html will keep the ratio
-        this.calcHeight = this.viewMaxHeight;
+    private initViewHeightOnlyImageNone() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxHeightOnlyImageWidthOnly() : void {
-        this.calcWidth  = -1; //html will keep the ratio
-        this.calcHeight = this.viewMaxHeight;
+    private initViewHeightOnlyImageWidthOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxHeightOnlyImageHeightOnly() : void {
-        this.calcWidth  = -1; //html will keep the ratio
-        this.calcHeight = this.min(this.imageHeight, this.viewMaxHeight);
+    private initViewHeightOnlyImageHeightOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxHeightOnlyImageWidthAndHeigth() : void {
-        this.calcWidth  = -1; //html will keep the ratio
-        this.calcHeight = this.min(this.imageHeight, this.viewMaxHeight);
+    private initViewHeightOnlyImageWidthAndHeigth() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthAndHeightImageNone() : void {
+    private initViewWidthAndHeightImageNone() : void {
         //cannot respect ratio
-        this.calcWidth  = this.viewMaxWidth;
-        this.calcHeight = this.viewMaxHeight;
+        this.calcWidth  = this.viewWidth;
+        this.calcHeight = this.viewHeight;
     }
 
-    private initViewMaxWidthAndHeightImageWidthOnly() : void {
+    private initViewWidthAndHeightImageWidthOnly() : void {
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
+    }
+
+    private initViewWidthAndHeightImageHeightOnly() : void {
         //not implemented
-        this.calcWidth  = -1;
-        this.calcHeight = -1;
+        this.logService.error("not implemented");
+        this.calcWidth  = 0;
+        this.calcHeight = 0;
     }
 
-    private initViewMaxWidthAndHeightImageHeightOnly() : void {
-        //not implemented
-        this.calcWidth  = -1;
-        this.calcHeight = -1;
-    }
-
-    private initViewMaxWidthAndHeightImageWidthAndHeigth() : void {
-        //console.log("imput [" + this.viewMaxWidth + "][" + this.imageWidth + "]  [" + this.viewMaxHeight + "][" + this.imageHeight + "]");
-        let ratioWidth  : number = this.viewMaxWidth  / this.imageWidth ;
-        let ratioHeight : number = this.viewMaxHeight / this.imageHeight;
+    private initViewWidthAndHeightImageWidthAndHeigth() : void {
+        //this.logService.log("imput [" + this.viewWidth + "][" + this.imageWidth + "]  [" + this.viewHeight + "][" + this.imageHeight + "]");
+        let ratioWidth  : number = this.viewWidth  / this.imageWidth ;
+        let ratioHeight : number = this.viewHeight / this.imageHeight;
         let ratio       : number = 1;
         if(ratioWidth < ratioHeight) {
             ratio = ratioWidth;
         } else {
             ratio = ratioHeight;
         }
-        //console.log("rescale ratio [" + ratioWidth + "][" + ratioHeight + "] [" + ratio + "]");
+        //this.logService.log("rescale ratio [" + ratioWidth + "][" + ratioHeight + "] [" + ratio + "]");
         this.calcWidth  = this.imageWidth  * ratio;
         this.calcHeight = this.imageHeight * ratio;
-        //console.log("rescale size [" + this.calcWidth + "][" + this.calcHeight + "]");
+        //this.logService.log("rescale size [" + this.calcWidth + "][" + this.calcHeight + "]");
     }
 
-    private max(val1 : number, val2 : number) {
+    private (val1 : number, val2 : number) {
         if(val1 > val2) {
             return val1;
         } else {
