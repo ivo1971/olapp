@@ -40,7 +40,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
   , m_TeamfieDir(fileName + std::string(".teamfies"))
-  , m_HttpDir(httpDir + std::string("/"))
+  , m_HttpImagesDir(httpDir + std::string("/images/"))
   , m_DirtySimpleButtonConfig([this](){Save();})
   , m_DirtyTeamManager([this](){Save();SendTeamsToAll();})
   , m_spSimpleButtonConfig(new CQuizModeSimpleButton::CConfig(m_DirtySimpleButtonConfig))
@@ -211,12 +211,12 @@ void CQuizManager::HandleMiLoadImgBase64(std::shared_ptr<CWsQuizHandler> spWsQui
   static std::string base64 = std::string(".base64");
 
   //get image name from request
-  const std::string imageName = GetElementString(citJsData, "image-name");
-  const std::string imagePath = m_HttpDir + imageName + base64;
+  const std::string imageName = GetElementString(citJsData, "imageName");
+  const std::string imagePath = m_HttpImagesDir + imageName + base64;
   m_spLogger->info("CQuizManager [%s][%u] name [%s] --> [%s]", __FUNCTION__, __LINE__, imageName.c_str(), imagePath.c_str());
 
   //read from file
-  std::string image;
+  std::string imageData;
   ifstream file;
   file.open(imagePath, ios::in);
   if(!file.is_open()) {
@@ -227,7 +227,7 @@ void CQuizManager::HandleMiLoadImgBase64(std::shared_ptr<CWsQuizHandler> spWsQui
   while(file) {
     std::string tmp;
     file >> tmp;
-    image += tmp;
+    imageData += tmp;
   }
   file.close();
   if(file.bad()) {
@@ -238,7 +238,8 @@ void CQuizManager::HandleMiLoadImgBase64(std::shared_ptr<CWsQuizHandler> spWsQui
 
   //compose response data
   json data;
-  data["image"]  = image; 
+  data["imageName"]  = imageName; 
+  data["imageData"]  = imageData; 
 
   //send
   spWsQuizHandler->SendMessage(id, "load-img-base64", data);
