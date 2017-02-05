@@ -82,6 +82,7 @@ void CQuizModeTeamfie::HandleMessageQuizTeamfie(const std::string& id, const nlo
 
     //handle image
     m_spLogger->info("CQuizModeTeamfie [%s][%u] [%u].", __FUNCTION__, __LINE__, teamImage.length());
+    bool ok = false;
     if(0 != teamImage.length()) {
         //write to file
         const std::string teamId   = citUser->second.TeamGet();
@@ -95,12 +96,17 @@ void CQuizModeTeamfie::HandleMessageQuizTeamfie(const std::string& id, const nlo
             f.close();
             if(f.bad()) {
                 m_spLogger->error("CQuizModeTeamfie [%s][%u] write file [%s] error: .", __FUNCTION__, __LINE__, fileName.c_str());            
+            } else {
+                ok = true;
             }
         }
 
         //inform beamer and master
-        SendImage(m_spWsMasterHandler, m_TeamfieDir, teamId);
-        SendImage(m_spWsBeamerHandler, m_TeamfieDir, teamId);
+        if(ok) {
+            SendImage(m_spWsMasterHandler, m_TeamfieDir, teamId);
+            SendImage(m_spWsBeamerHandler, m_TeamfieDir, teamId);
+            m_spWsQuizHandler->SendMessage(id,"teamfie-received", json());
+        }
     }
 }
 
