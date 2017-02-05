@@ -14,6 +14,7 @@ import {TeamInfo}              from './../../classes/team-info.class';
 import {Teamfie}               from './../../classes/teamfie.class';
 import {User}                  from './../../classes/user.class';
 
+import {LogService }           from './../../services/log.service';
 import {ModeService}           from './../../services/mode.service';
 import {TeamfieService}        from './../../services/teamfie.service';
 import {TeamsUsersService}     from './../../services/teams-users.service';
@@ -44,6 +45,7 @@ export class TeamfieComponent extends TeamfieBaseComponent {
      */
     public constructor(
         private changeDetectorRef      : ChangeDetectorRef,
+        private logService             : LogService,
         private modeService            : ModeService,
         private _teamfieService        : TeamfieService,
         private _teamsUsersService     : TeamsUsersService,
@@ -92,41 +94,68 @@ export class TeamfieComponent extends TeamfieBaseComponent {
 
     /* Template event handlers
      */
+    //app function: the button to capture a teamfie has been clicked
     private onClickTakeTeamfie() : void {
-        console.log("onClickTakeTeamfie in");
+        this.logService.log("onClickTakeTeamfie in");
         var srcType = Camera.PictureSourceType.CAMERA;
         var options = this.cameraSetOptions(srcType);
         navigator.camera.getPicture(image => {
-            console.log("onClickTakeTeamfie OK [" + image.length + "]");
+            this.logService.log("onClickTakeTeamfie OK [" + image.length + "]");
             this.imageContent      = image;
             this.imageContentValid = true;
             this.changeDetectorRef.detectChanges(); //trigger Angular digest cycle manually
         }, function cameraError(error) {
-            console.log("onClickTakeTeamfie failed: " + error);
+            this.logService.log("onClickTakeTeamfie failed: " + error);
             this.imageContentValid = false;
             this.changeDetectorRef.detectChanges(); //trigger Angular digest cycle manually
         }, options);
-        console.log("onClickTakeTeamfie out");
     }
 
+    //app function: the button to send the teamfie to the server has been clicked
     private onClickSubmit() : void {
-        console.log("onClickSubmit [" + this.imageContent.length + "]");
-        this.__websocketUserService.sendMsg("teamfie", {
-            name: this.teamName,
-            image: this.imageContent,
-        });
+        this.logService.log("onClickSubmit capture size: [" + this.imageContent.length + "]");
 
-      //idea: send as binary data (instead of string)
-      //      --> seasocks has no size limit
-      //client.on('data', function (data) {
-      //  console.log('data');
-      //  ws.send(data, { binary: true });
-      //});
+        //compress the image before sending (seasockets limitation,  or at least: my understanding of it after testing...)
+        //(according to http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas)
+        let img = document.createElement('img');
+        let __this = this;
+        img.onload = function() {
+            //create an off-screen canvas
+            let canvas     : HTMLCanvasElement        = document.createElement('canvas');
+            let ctx        : CanvasRenderingContext2D = canvas.getContext('2d');
+            let compressed : string                   = "";
 
-      //idea: compress image before sending
-      //      http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas
+            //iterate untill the compressed image is small enough
+            for(let factor : number = 1 ; factor > 0 ; factor -= 0.05) {
+                //set its dimension to target size
+                canvas.width = img.naturalWidth * factor;
+                canvas.height = img.naturalHeight * factor;
+
+                //draw source image into the off-screen canvas:
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                //encode image to data-uri with base64 version of compressed image
+                compressed = canvas.width + "," + canvas.height + "," + canvas.toDataURL('image/jpeg', factor);
+
+                //target size reached?
+                if(100000 >= compressed.length) {
+                    //yes
+                    __this.logService.log("onClickSubmit compressed size: [" + compressed.length + "]");
+                    break;
+                }
+            }
+
+            //send
+            __this.__websocketUserService.sendMsg("teamfie", {
+                name: __this.teamName,
+                image: compressed
+            });
+        }
+        img.src = 'data:image/png;base64,' + this.imageContent;
     }
 
+    //master function: the checkbox to show teamfies on the beamer or not
+    //                 has toggled.
     private onCheckboxCarouselOnBeamer() : void {
         this.carouselOnBeamer = !this.carouselOnBeamer;
         this.__websocketUserService.sendMsg("teamfie-carousel-on-beamer", {
@@ -134,24 +163,25 @@ export class TeamfieComponent extends TeamfieBaseComponent {
         });
     }
     
+    //master & beamer carousel: select the current image which is visible
+    //                          ('active') in the carousel.
     private isTeamActive(teamId : string) : boolean {
         return teamId === this.teamInfos[this.activeTeamIdx].id;
     }
 
     /* Help functions
      */
+    //app function: set the camera options to capture a teamfie
     private cameraSetOptions(srcType: string) {
         var options = {
-            // Some common settings are 20, 50, and 100
-            quality: 20,
+            quality: 50,
             destinationType: Camera.DestinationType.DATA_URL,
-            // In this app, dynamically set the picture source, Camera or photo gallery
-            sourceType: srcType,
-            encodingType: Camera.EncodingType.JPEG,
+            sourceType: srcType, //camera or photo gallery
+            encodingType: Camera.EncodingType.JPG,
             mediaType: Camera.MediaType.PICTURE,
             allowEdit: true,
             cameraDirection: Camera.Direction.BACK,
-            correctOrientation: true  //Corrects Android orientation quirks
+            correctOrientation: true  //corrects Android orientation quirks
         }
         return options;
     }

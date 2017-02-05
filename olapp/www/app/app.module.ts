@@ -38,6 +38,7 @@ import {WelcomeComponent}              from "./routes/welcome/welcome.component"
 //Own components: components
 import {ImageLocalComponent}           from "./components/image-local/image-local.component";
 import {ImageNativeComponent}          from "./components/image-native/image-native.component";
+import {ImageTeamfieComponent}         from "./components/image-teamfie/image-teamfie.component";
 import {MenuComponent}                 from "./components/menu/menu.component";
 import {ScoreboardListComponent}       from "./components/scoreboard-list/scoreboard-list.component";
 import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
@@ -160,6 +161,7 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
     //components
     ImageLocalComponent,
     ImageNativeComponent,
+    ImageTeamfieComponent,
     MenuComponent,
     ScoreboardListComponent,
     StatusBarComponent,

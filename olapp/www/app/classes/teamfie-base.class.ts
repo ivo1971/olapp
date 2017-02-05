@@ -57,12 +57,24 @@ export class TeamfieBaseComponent extends ComponentBase {
                 if(this.teamInfos[u].id != this.teamfies[v].teamId) {
                     continue;
                 }
-                this.teamInfos[u].image = this.teamfies[v].image;
+
+                //decode the image info
+                let endPosWidth  : number = this.teamfies[v].image.indexOf(",");
+                let strWidth     : string = this.teamfies[v].image.substr(0, endPosWidth);
+                let remainder    : string = this.teamfies[v].image.substr(endPosWidth + 1);
+                let endPosHeight : number = remainder.indexOf(",");
+                let strHeight    : string = remainder.substr(0, endPosHeight);
+                this.teamInfos[u].imageEncoded = remainder.substr(endPosHeight + 1);
+                this.teamInfos[u].imageWidth   = parseInt(strWidth);
+                this.teamInfos[u].imageHeight  = parseInt(strHeight);
+                console.log("size [" + this.teamInfos[u].imageWidth + "][" + this.teamInfos[u].imageHeight + "]");
                 found = true;
                 break;
             }
             if(!found) {
-                this.teamInfos[u].image = "";
+                this.teamInfos[u].imageEncoded = "";
+                this.teamInfos[u].imageWidth   = -1;
+                this.teamInfos[u].imageHeight  = -1;
             }
         }
     }

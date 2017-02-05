@@ -1,0 +1,12 @@
+<span *ngIf="(-1 == calcWidth) && (-1 == calcHeight)">
+    <img [src]="calcImage" />
+</span>
+<span *ngIf="(-1 != calcWidth) && (-1 == calcHeight)">
+    <img [src]="calcImage" [attr.width]="calcWidth" />
+</span>
+<span *ngIf="(-1 == calcWidth) && (-1 != calcHeight)">
+    <img [src]="calcImage" [attr.height]="calcHeight" />
+</span>
+<span *ngIf="(-1 != calcWidth) && (-1 != calcHeight)">
+    <img [src]="calcImage" [attr.width]="calcWidth" [attr.height]="calcHeight" />
+</span>
