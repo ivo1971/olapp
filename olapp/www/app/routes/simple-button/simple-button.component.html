@@ -7,26 +7,14 @@
             <scoreboard-list [teamsInfo]="observableTeamInfo | async | simpleButtonTeamPointsSort:false" [total]="false" [nbrPerRow]="3"></scoreboard-list>
         </span>
         <span *ngIf="modeIsQuiz">
-            <image-local source="push.gif"  height="150" *ngIf="!wait && !go && !wrong && !good" (click)="onPush()" ></image-local>
-            <image-local source="good.gif"  height="150" *ngIf="good"                                               ></image-local>
-            <image-local source="wrong.png" height="150" *ngIf="wrong"                                              ></image-local>
-            <image-local source="go.gif"    height="150" *ngIf="go"                              (click)="onPush()" ></image-local>
-            <image-local source="wait.gif"  height="150" *ngIf="wait"                            (click)="onPush()" ></image-local>
+            <img [src]="imgPush"  height="150" *ngIf="!wait && !go && !wrong && !good" (click)="onPush()" alt="" />
+            <img [src]="imgGood"  height="150" *ngIf="good"                                               alt="" />
+            <img [src]="imgWrong" height="150" *ngIf="wrong"                                              alt="" />
+            <img [src]="imgGo"    height="150" *ngIf="go"                              (click)="onPush()" alt="" />
+            <img [src]="imgWait"  height="150" *ngIf="wait"                            (click)="onPush()" alt="" />
         </span>
         <div class="text-left">
             <simple-button-data [data]="observableInfo | async"></simple-button-data>
         </div>
     </span>
 </div>
-
-<!-- ensure images are always in the DOM to avoid loading them over and over again
-     (wich seems to be happening in FireFox otherwise)
-     -->
-<div class="preload">
-    <image-local source="loading.gif" ></image-local>
-    <image-local source="push.gif"    ></image-local>
-    <image-local source="good.gif"    ></image-local>
-    <image-local source="wrong.png"   ></image-local>
-    <image-local source="go.gif"      ></image-local>
-    <image-local source="wait.gif"    ></image-local>
-</div>    

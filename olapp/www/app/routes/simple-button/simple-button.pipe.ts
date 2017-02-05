@@ -84,3 +84,29 @@ export class SimpleButtonTeamPointsSort implements PipeTransform {
 
     private modeIsQuiz : boolean = true;
 }
+
+@Pipe({
+    name: 'simpleButtonTeamAlphabeticSort',
+    pure: false
+})
+export class SimpleButtonTeamAlphabeticSort implements PipeTransform {
+    /* Construction
+     */
+    public constructor(
+      ) {
+    }
+
+    /* Transform
+     */
+    transform(items: Array<TeamInfo>): Array<TeamInfo> {
+        if(!items) return [];
+        return items.sort((team1, team2) => {
+            if(team1.name === team2.name) {
+                return 0;
+            }
+            return team1.name < team2.name ? 1 : -1;
+        })
+    }
+
+    private modeIsQuiz : boolean = true;
+}

@@ -110,9 +110,8 @@ export class ImageTeamfieComponent implements OnInit {
     }
 
     private initViewNoneImageNone() : void {
-        this.logService.error("not implemented");
-        this.calcWidth  = 0;
-        this.calcHeight = 0;
+        this.calcWidth  = -1;
+        this.calcHeight = -1;
     }
 
     private initViewNoneImageWidthOnly() : void {
@@ -134,9 +133,8 @@ export class ImageTeamfieComponent implements OnInit {
     }
 
     private initViewWidthOnlyImageNone() : void {
-        this.logService.error("not implemented");
-        this.calcWidth  = 0;
-        this.calcHeight = 0;
+        this.calcWidth  = this.viewWidth;
+        this.calcHeight = -1;
     }
 
     private initViewWidthOnlyImageWidthOnly() : void {
@@ -158,9 +156,8 @@ export class ImageTeamfieComponent implements OnInit {
     }
 
     private initViewHeightOnlyImageNone() : void {
-        this.logService.error("not implemented");
-        this.calcWidth  = 0;
-        this.calcHeight = 0;
+        this.calcWidth  = -1;
+        this.calcHeight = this.viewHeight;
     }
 
     private initViewHeightOnlyImageWidthOnly() : void {
