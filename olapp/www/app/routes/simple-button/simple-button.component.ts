@@ -16,6 +16,7 @@ import {MediaPlayer}           from './../../classes/media-player.class';
 import {TeamInfo}              from './../../classes/team-info.class';
 import {User}                  from './../../classes/user.class';
 
+import {ImgBase64Service}      from './../../services/img-base64.service';
 import {LogService }           from './../../services/log.service';
 import {ModeService, EMode}    from './../../services/mode.service';
 import {TeamsUsersService}     from './../../services/teams-users.service';
@@ -34,22 +35,28 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private modeIsBeamer    : boolean = false;
-    private modeIsMaster    : boolean = false;
-    private modeIsQuiz      : boolean = true;
-    private prevSequenceNbr : number  = 0;
-    private good            : boolean = false;
-    private wrong           : boolean = false;
-    private go              : boolean = false;
-    private wait            : boolean = false;
+    private modeIsBeamer    : boolean                 = false;
+    private modeIsMaster    : boolean                 = false;
+    private modeIsQuiz      : boolean                 = true;
+    private prevSequenceNbr : number                  = 0;
+    private good            : boolean                 = false;
+    private wrong           : boolean                 = false;
+    private go              : boolean                 = false;
+    private wait            : boolean                 = false;
+    private imgGo           : string                  = "";
+    private imgGood         : string                  = "";
+    private imgPush         : string                  = "";
+    private imgWait         : string                  = "";
+    private imgWrong        : string                  = "";
 
     /* Construction
      */
     public constructor(
-      private userService       : UserService,
+      private imgBase64Service  : ImgBase64Service,
       private logService        : LogService,
       private modeService       : ModeService,
       private teamsUsersService : TeamsUsersService,
+      private userService       : UserService,
       private _websocketService : WebsocketUserService,
       ) {
           //call base class
@@ -61,6 +68,22 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
           this.modeIsMaster           = this.modeService.IsMaster();
           this.modeIsQuiz             = this.modeService.IsQuiz();
           this.observableTeamInfo     = this.teamsUsersService.getObservableTeamsInfo    ();
+
+          //pre-load all images
+          this.imgBase64Service.getImage(  "go.gif");
+          this.imgBase64Service.getImage( "good.gif");
+          this.imgBase64Service.getImage( "push.gif");
+          this.imgBase64Service.getImage( "wait.gif");
+          this.imgBase64Service.getImage("wrong.gif");
+
+          //subscribe to image service
+          this.imgBase64Subscription = this.imgBase64Service.getObservableImgBase64().subscribe((imgBase64Map : Map<string, string>) => {
+              this.imgGo    = imgBase64Map[   "go.gif"];
+              this.imgGood  = imgBase64Map[ "good.gif"];
+              this.imgPush  = imgBase64Map[ "push.gif"];
+              this.imgWait  = imgBase64Map[ "wait.gif"];
+              this.imgWrong = imgBase64Map["wrong.gif"];
+          });
     }
 
     /* Life-cycle hooks
@@ -310,6 +333,7 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     private observableInfoSubscription : Subscription                ;
     private userSubscription           : Subscription                ;
     private connectedSubscription      : Subscription                ;
+    private imgBase64Subscription      : Subscription                ;
     private bodyLastClass              : string                      = "";
     private bodyElement                : any                         = document.getElementsByTagName('body')[0];
     private user                       : User                        = new User();

@@ -9,6 +9,7 @@ import {RouterModule}                  from '@angular/router';
 
 //Own services
 import {CloudService}                  from './services/cloud.service';
+import {ImgBase64Service}              from './services/img-base64.service';
 import {LogService}                    from './services/log.service';
 import {ModeService}                   from './services/mode.service';
 import {TeamfieService}                from './services/teamfie.service';
@@ -50,6 +51,7 @@ import {UserInfoListComponent}         from "./components/user-info-list/user-in
 //Own components: pipes
 import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
 import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-button.pipe";
+import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-button.pipe";
 
 //Module definition
 @NgModule({
@@ -133,6 +135,7 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
   providers: [
     //services
     CloudService,
+    ImgBase64Service,
     LogService,
     ModeService,
     TeamfieService,
@@ -171,7 +174,8 @@ import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-butto
     UserInfoListComponent,
     //filters
     SimpleButtonActiveFilter,
-    SimpleButtonTeamPointsSort
+    SimpleButtonTeamPointsSort,
+    SimpleButtonTeamAlphabeticSort
   ],
   //Module you need to bootstrap
   bootstrap:    [ 

@@ -3,10 +3,10 @@
         <table>
             <tr>
                 <td>
-                    <image-local source="good.gif"  height="35" *ngIf="team.good" ></image-local>
-                    <image-local source="wrong.png" height="35" *ngIf="team.wrong"></image-local>
-                    <image-local source="go.gif"    height="35" *ngIf="team.go"   ></image-local>
-                    <image-local source="wait.gif"  height="35" *ngIf="team.wait" ></image-local>
+                    <img [src]="imgGood"  height="35" *ngIf="team.good"  alt="" />
+                    <img [src]="imgWrong" height="35" *ngIf="team.wrong" alt="" />
+                    <img [src]="imgGo"    height="35" *ngIf="team.go"    alt="" />
+                    <img [src]="imgWait"  height="35" *ngIf="team.wait"  alt="" />
                 </td>
                 <td>
                     <b>{{team.name}}</b><br />
@@ -16,13 +16,3 @@
         </table>
     </div>
 </div>
-
-<!-- ensure images are always in the DOM to avoid loading them over and over again
-     (wich seems to be happening in FireFox otherwise)
-     -->
-<div class="preload">
-    <image-local source="good.gif"  ></image-local>
-    <image-local source="wrong.png" ></image-local>
-    <image-local source="go.gif"    ></image-local>
-    <image-local source="wait.gif"  ></image-local>
-</div>    
