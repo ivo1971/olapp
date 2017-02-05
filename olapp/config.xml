@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.ilu.olapp" version="0.0.8" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>olapp</name>
+    <name>ol-app</name>
     <description>
         An application to use on the yearly OLENG weekend.
     </description>
-    <author email="ivo.ivo@olapp.comm" href="http://olapp.com">
+    <author email="ivo.ivo@olapp.comm" href="https://github.com/ivo1971/olapp/">
         Ivo
     </author>
     <content src="index.html" />

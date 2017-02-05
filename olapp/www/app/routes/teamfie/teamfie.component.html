@@ -13,10 +13,24 @@
             <br />
             <button type="button" class="btn btn-info" (click)="onClickTakeTeamfie()">Take a teamfie</button><br />
             <br />
-            <button *ngIf="imageContentValid" type="button" class="btn btn-info" (click)="onClickSubmit()">Submit</button><br />
-            <br />
-            <img *ngIf="imageContentValid" [src]="'data:image/JPG;base64,'+ imageContent" width='80%'>
-            <br />
+            <div *ngIf="imageContentValid">
+                <div>
+                    <button *ngIf="!sendingFailed && !sendingOk" type="button" class="btn btn-info" [class.disabled]="sending" (click)="onClickSubmit()">
+                        <span         *ngIf="!sending">Submit</span>
+                        <image-native *ngIf="sending"  source="img/loader.svg" width="16px"></image-native>
+                    </button>
+                    <button *ngIf="sendingFailed" type="button" class="btn btn-danger">
+                        Doorsturen teamfie is mislukt. Probeer opnieuw a.u.b.
+                    </button>
+                    <button *ngIf="sendingOk" type="button" class="btn btn-success">
+                        Doorsturen teamfie is gelukt.
+                    </button>
+                </div>
+                <br />
+                <div>
+                    <img [src]="'data:image/JPG;base64,'+ imageContent" width='80%'>
+                </div>
+            </div>
         </div>
         <div class="col-md-1">
         </div>

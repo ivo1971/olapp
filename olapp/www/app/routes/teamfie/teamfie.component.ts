@@ -40,6 +40,9 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     private imageContentValid : boolean = false;
     private teamName          : string  = "";
     private carouselActive    : boolean = false;
+    private sending           : boolean = false;
+    private sendingFailed     : boolean = false;
+    private sendingOk         : boolean = false;
 
     /* Construction
      */
@@ -75,6 +78,24 @@ export class TeamfieComponent extends TeamfieBaseComponent {
         this.subscriptionCarouselOnBeamer = this.observableCarouselOnBeamer.subscribe((data: any) => {
             this.carouselActive = data["enable"];
         });
+        //app: handle teamfie-received
+        this.observableTeamfieReceived   = this.__websocketUserService
+                                            .register("teamfie-received");
+        this.subscriptionTeamfieReceived = this.observableTeamfieReceived.subscribe((data: any) => {
+            this.sending   = false;
+            this.sendingOk = true;
+            if(this.timerSendingFailedSubscription) {
+                this.timerSendingFailedSubscription.unsubscribe();
+            }
+            if(this.timerSendingSubscription) {
+                this.timerSendingSubscription.unsubscribe();
+            }
+            this.timerSendingOk = IntervalObservable.create(2000);
+            this.timerSendingOkSubscription = this.timerSendingOk.subscribe(t => {
+                this.timerSendingOkSubscription.unsubscribe();
+                this.sendingOk = false;
+            });
+        });
 
         /* start carousel timer */
         this.timerCarousel = IntervalObservable.create(3000);
@@ -87,9 +108,27 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     }
 
     public destructor() : void {
-        this.timerCarouselSubscription.unsubscribe();
-        this.subscriptionCarouselOnBeamer.unsubscribe();
-        this.userSubscription.unsubscribe();
+        if(this.timerSendingOkSubscription) {
+            this.timerSendingOkSubscription.unsubscribe();
+        }
+        if(this.timerSendingFailedSubscription) {
+            this.timerSendingFailedSubscription.unsubscribe();
+        }
+        if(this.timerSendingStartSubscription) {
+            this.timerSendingStartSubscription.unsubscribe();
+        }
+        if(this.timerSendingSubscription) {
+            this.timerSendingSubscription.unsubscribe();
+        }
+        if(this.timerCarouselSubscription) {
+            this.timerCarouselSubscription.unsubscribe();
+        }
+        if(this.subscriptionCarouselOnBeamer) {
+            this.subscriptionCarouselOnBeamer.unsubscribe();
+        }
+        if(this.userSubscription) {
+            this.userSubscription.unsubscribe();
+        }
     }
 
     /* Template event handlers
@@ -114,44 +153,69 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     //app function: the button to send the teamfie to the server has been clicked
     private onClickSubmit() : void {
         this.logService.log("onClickSubmit capture size: [" + this.imageContent.length + "]");
+        this.sending = true;
 
-        //compress the image before sending (seasockets limitation,  or at least: my understanding of it after testing...)
-        //(according to http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas)
-        let img = document.createElement('img');
-        let __this = this;
-        img.onload = function() {
-            //create an off-screen canvas
-            let canvas     : HTMLCanvasElement        = document.createElement('canvas');
-            let ctx        : CanvasRenderingContext2D = canvas.getContext('2d');
-            let compressed : string                   = "";
+        this.timerSendingStart = IntervalObservable.create(100);
+        this.timerSendingStartSubscription = this.timerSendingStart.subscribe(t => {
+            //one-shot
+            this.timerSendingStartSubscription.unsubscribe();
 
-            //iterate untill the compressed image is small enough
-            for(let factor : number = 1 ; factor > 0 ; factor -= 0.05) {
-                //set its dimension to target size
-                canvas.width = img.naturalWidth * factor;
-                canvas.height = img.naturalHeight * factor;
+            //compress the image before sending (seasockets limitation,  or at least: my understanding of it after testing...)
+            //(according to http://stackoverflow.com/questions/20958078/resize-a-base-64-image-in-javascript-without-using-canvas)
+            let img = document.createElement('img');
+            img.onload = () => {
+                //create an off-screen canvas
+                let canvas     : HTMLCanvasElement        = document.createElement('canvas');
+                let ctx        : CanvasRenderingContext2D = canvas.getContext('2d');
+                let compressed : string                   = "";
 
-                //draw source image into the off-screen canvas:
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                //iterate untill the compressed image is small enough
+                for(let factor : number = 1 ; factor > 0 ; factor -= 0.05) {
+                    //set its dimension to target size
+                    canvas.width = img.naturalWidth * factor;
+                    canvas.height = img.naturalHeight * factor;
 
-                //encode image to data-uri with base64 version of compressed image
-                compressed = canvas.width + "," + canvas.height + "," + canvas.toDataURL('image/jpeg', factor);
+                    //draw source image into the off-screen canvas:
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                //target size reached?
-                if(100000 >= compressed.length) {
-                    //yes
-                    __this.logService.log("onClickSubmit compressed size: [" + compressed.length + "]");
-                    break;
+                    //encode image to data-uri with base64 version of compressed image
+                    compressed = canvas.width + "," + canvas.height + "," + canvas.toDataURL('image/jpeg', factor);
+
+                    //target size reached?
+                    if(100000 >= compressed.length) {
+                        //yes
+                        this.logService.log("onClickSubmit compressed size: [" + compressed.length + "]");
+                        break;
+                    }
                 }
-            }
 
-            //send
-            __this.__websocketUserService.sendMsg("teamfie", {
-                name: __this.teamName,
-                image: compressed
-            });
-        }
-        img.src = 'data:image/png;base64,' + this.imageContent;
+                //send
+                this.__websocketUserService.sendMsg("teamfie", {
+                    name:  this.teamName,
+                    image: compressed
+                });
+
+                //start sending timers
+                this.timerSending = IntervalObservable.create(5000);
+                this.timerSendingSubscription = this.timerSending.subscribe(t => {
+                    this.timerSendingSubscription.unsubscribe();
+                    if(this.timerSendingOkSubscription) {
+                        this.timerSendingOkSubscription.unsubscribe();
+                    }
+                    this.sendingFailed = true;
+                });
+                this.timerSendingFailed = IntervalObservable.create(7100);
+                this.timerSendingFailedSubscription = this.timerSendingFailed.subscribe(t => {
+                    this.timerSendingFailedSubscription.unsubscribe();
+                    if(this.timerSendingOkSubscription) {
+                        this.timerSendingOkSubscription.unsubscribe();
+                    }
+                    this.sending       = false;
+                    this.sendingFailed = false;
+                });
+            }
+            img.src = 'data:image/png;base64,' + this.imageContent;
+        });
     }
 
     //master function: the checkbox to show teamfies on the beamer or not
@@ -191,8 +255,18 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     private userSubscription               : Subscription;
     private observableCarouselOnBeamer     : Observable<any>;
     private subscriptionCarouselOnBeamer   : Subscription;
+    private observableTeamfieReceived      : Observable<any>;
+    private subscriptionTeamfieReceived   : Subscription;
     private timerCarousel                  : any;
     private timerCarouselSubscription      : Subscription;
+    private timerSending                   : any;
+    private timerSendingSubscription       : Subscription;
+    private timerSendingStart              : any;
+    private timerSendingStartSubscription  : Subscription;
+    private timerSendingFailed             : any;
+    private timerSendingFailedSubscription : Subscription;
+    private timerSendingOk                 : any;
+    private timerSendingOkSubscription     : Subscription;
     private activeTeamIdx                  : number = 0;
     private carouselOnBeamer               : boolean = false;
     private teamId                         : string = "";
