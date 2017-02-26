@@ -9,12 +9,12 @@
                         <image-teamfie *ngIf="0 != team.imageEncoded.length"              [image]="team.imageEncoded"                                                            [imageWidth]="team.imageWidth" [imageHeight]="team.imageHeight" [viewWidth]="100" [viewHeight]="100"></image-teamfie>
                         <image-teamfie *ngIf="0 == team.imageEncoded.length && showDummy" [image]="'img/monkey-silhouette-clip-art-monkey-clip-art-free-downloads_310-350.jpeg'" [imageWidth]="310"             [imageHeight]="350"              [viewWidth]="100" [viewHeight]="100"></image-teamfie>
                     </div>
-                    <div class="col-md-8 col-sm-8 col-xs-8">
+                    <div class="col-md-7 col-sm-7 col-xs-7">
                         <h2>
                             <b>{{team.name}}</b>
                         </h2>
                     </div>
-                    <div class="col-md-2 col-sm-2 col-xs-2">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
                         <h2>
                             <span class="label label-primary">
                                 <span *ngIf="total">

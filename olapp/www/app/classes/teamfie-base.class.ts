@@ -52,6 +52,10 @@ export class TeamfieBaseComponent extends ComponentBase {
      */
     private merge() : void {
         for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
+            if('undefined' === typeof(this.teamInfos[u].tmpPointsRound)) {
+                this.teamInfos[u].tmpPointsRound = this.teamInfos[u].pointsRound;
+            }
+
             let found : boolean = false;
             for(let v : number = 0 ; v < this.teamfies.length ; ++v) {
                 if(this.teamInfos[u].id != this.teamfies[v].teamId) {

@@ -1,4 +1,8 @@
 <div class="text-center">
-    <h2>Scorebord</h2>
-    <scoreboard-list [teamsInfo]="observableTeamInfo | async | simpleButtonTeamPointsSort:true" [showDummy]="showDummy"></scoreboard-list>
+    <h2>
+        Scorebord: 
+        <span *ngIf="total" >totaal</span>
+        <span *ngIf="!total">deze ronde</span>
+    </h2>
+    <scoreboard-list [teamsInfo]="observableTeamInfo | async | simpleButtonTeamPointsSort:total" [showDummy]="showDummy" [total]="total"></scoreboard-list>
 </div>

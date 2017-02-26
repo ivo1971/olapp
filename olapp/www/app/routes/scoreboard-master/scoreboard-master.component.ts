@@ -17,18 +17,16 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
 
 @Component({
     moduleId   : module.id,
-    selector   : 'scoreboard',
+    selector   : 'scoreboard-master',
     styleUrls  : [
-        'scoreboard.component.css'
+        'scoreboard-master.component.css'
     ],
-    templateUrl: 'scoreboard.component.html'
+    templateUrl: 'scoreboard-master.component.html'
 })
-export class ScoreboardComponent extends TeamfieBaseComponent implements OnInit, OnDestroy { 
+export class ScoreboardMasterComponent extends TeamfieBaseComponent { 
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private showDummy : boolean = false;
-    private total     : boolean = true;
 
     /* Construction
      */
@@ -44,36 +42,69 @@ export class ScoreboardComponent extends TeamfieBaseComponent implements OnInit,
 
         //inform parent
         this.sendLocation("scoreboard");
-
-        //additional initialization
-        this.showDummy = !this.modeService.IsQuiz();
-
     }
 
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
-        //register routing MI
-        this.observableScoreboardTotal = this.__websocketUserService
-                                             .register("scoreboard-total")
-        this.observableScoreboardTotalSubscription = this.observableScoreboardTotal.subscribe(
-          data => {
-              this.total = data["total"];
-          });
-    }
-
-    public ngOnDestroy() : void {
-        this.observableScoreboardTotalSubscription.unsubscribe();
+        for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
+            this.teamInfos[u].tmpPointsRound = this.teamInfos[u].pointsRound;
+        }
     }
 
     /* Event handlers called from the template
      */
+    private onClickRadioTotal(total : boolean) : void {
+        this.__websocketUserService.sendMsg("scoreboard-total", {
+            total: total
+        });        
+    }
+
+    private onClickClear() : void {
+        this.clearTmpRoundPoints();
+    }
+
+    private onClickSetPointsRound() : void {
+        class TeamMap {
+            [teamId: string]: number;
+        }
+
+        //switch to round-mode in any case
+        this.onClickRadioTotal(false);
+        
+        //compose info
+        let data : TeamMap = new TeamMap();
+        for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
+            data[this.teamInfos[u].id]       = this.teamInfos[u].tmpPointsRound;
+        }
+
+        //send
+        this.__websocketUserService.sendMsg("scoreboard-set-points-round", {
+            round: data
+        });    
+    }
+
+    private onClickPointsRound2Total() : void {
+        //send
+        this.__websocketUserService.sendMsg("scoreboard-points-round-2-total", {
+        });    
+
+        //clear
+        this.clearTmpRoundPoints();
+
+        //switch to total-mode in any case
+        this.onClickRadioTotal(true);
+        
+    }
 
     /* Private functions
      */
+    private clearTmpRoundPoints() : void {
+        for(let u : number = 0 ; u < this.teamInfos.length ; ++u) {
+            this.teamInfos[u].tmpPointsRound = 0;
+        }
+    }
 
     /* Private members
      */
-    private observableScoreboardTotal               : Observable<any>;
-    private observableScoreboardTotalSubscription   : Subscription;
 }

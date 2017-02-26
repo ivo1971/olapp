@@ -29,6 +29,7 @@ import {ConfigurationComponent}        from "./routes/configuration/configuratio
 import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/configure-teams-master.component";
 import {LoginComponent}                from "./routes/login/login.component";
 import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.component";
+import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboard-master.component";
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
 import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
@@ -83,7 +84,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
           },
           {
             path: 'scoreboard',
-            component: ScoreboardComponent
+            component: ModeService.SIsMaster() ? ScoreboardMasterComponent : ScoreboardComponent
           },
           {
             path: 'simple-button',
@@ -155,6 +156,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     ConfigureTeamsMasterComponent,
     LoginComponent,
     ScoreboardComponent,
+    ScoreboardMasterComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
     SimpleButtonMasterComponent,
