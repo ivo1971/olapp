@@ -33,6 +33,7 @@ import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboa
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
 import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
+import {SortImagesComponent}           from "./routes/sort-images/sort-images.component";
 import {TeamfieComponent}              from "./routes/teamfie/teamfie.component";
 import {TestComponent}                 from "./routes/test/test.component";
 import {WelcomeComponent}              from "./routes/welcome/welcome.component";
@@ -53,6 +54,10 @@ import {UserInfoListComponent}         from "./components/user-info-list/user-in
 import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
 import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-button.pipe";
 import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-button.pipe";
+
+//Own components: directives
+import {MakeDraggable}                 from "./routes/sort-images/make-draggable.directive";
+import {MakeDroppable}                 from "./routes/sort-images/make-droppable.directive";
 
 //Module definition
 @NgModule({
@@ -89,6 +94,10 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
           {
             path: 'simple-button',
             component: ModeService.SIsMaster() ? SimpleButtonMasterComponent : SimpleButtonComponent
+          },
+          {
+            path: 'sort-images',
+            component: SortImagesComponent,
           },
           {
             path: 'teamfie',
@@ -160,6 +169,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     SimpleButtonComponent,
     SimpleButtonComponentData,
     SimpleButtonMasterComponent,
+    SortImagesComponent,
     TeamfieComponent,
     TestComponent,
     WelcomeComponent,
@@ -177,7 +187,10 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     //filters
     SimpleButtonActiveFilter,
     SimpleButtonTeamPointsSort,
-    SimpleButtonTeamAlphabeticSort
+    SimpleButtonTeamAlphabeticSort,
+    //directives
+    MakeDraggable,
+    MakeDroppable
   ],
   //Module you need to bootstrap
   bootstrap:    [ 

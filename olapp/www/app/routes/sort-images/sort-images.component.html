@@ -1,0 +1,5 @@
+SORT IMAGES 
+
+<div id="elements">
+  <div *ngFor="let image of images; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)" class="element-dragable"><header>{{image}}</header></div>
+</div>
