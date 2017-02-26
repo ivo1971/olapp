@@ -29,10 +29,13 @@ class CTeamManager {
         void                                            Add(const std::string& id, const std::string& name);
         void                                            Edit(const std::string& id, const std::string& name);
         void                                            Delete(const std::string& id);
-        void                                            PointsRound(const std::string& teamId, const int teamPointsThis, const int teamPointsOther);
+        void                                            PointsRoundId  (const std::string& teamId,   const int teamPointsThis, const int teamPointsOther, const bool intermediate = false);
+        void                                            PointsRoundName(const std::string& teamName, const int teamPointsThis, const int teamPointsOther, const bool intermediate = false);
         void                                            PointsRound2Total(void);
+        void                                            PointsRoundClear(const bool intermediate = false);
         void                                            PointsClear(void);
         std::list<std::string>                          GetAllTeamIds(void);
+        void                                            CallDirty(void);
 
     private:
         MapTeam                                         m_Teams;

@@ -77,7 +77,13 @@ void CTeam::PointsRound2Total(void)
   m_PointsRound  = 0;
 }
 
+void  CTeam::PointsRoundClear(void)
+{
+  m_PointsRound  = 0;
+}
+
 void  CTeam::PointsClear(void)
 {
-  m_PointsTotal = 0;
+  m_PointsRound  = 0;
+  m_PointsTotal  = 0;
 }

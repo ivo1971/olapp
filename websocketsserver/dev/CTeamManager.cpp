@@ -108,16 +108,32 @@ void CTeamManager::Delete(const std::string& id)
     m_FuncDirty();
 }
 
-void CTeamManager::PointsRound(const std::string& teamId, const int teamPointsThis, const int teamPointsOther)
+void CTeamManager::PointsRoundId(const std::string& teamId, const int teamPointsThis, const int teamPointsOther, const bool intermediate)
 {
     for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
-        if(teamId == cit->second.NameGet()) {
+        if(teamId == cit->second.IdGet()) {
             cit->second.PointsRound(teamPointsThis);
         } else {
             cit->second.PointsRound(teamPointsOther);
         }
     }    
-    m_FuncDirty();
+    if(!intermediate) {
+        m_FuncDirty();
+    }
+}
+
+void CTeamManager::PointsRoundName(const std::string& teamName, const int teamPointsThis, const int teamPointsOther, const bool intermediate)
+{
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        if(teamName == cit->second.NameGet()) {
+            cit->second.PointsRound(teamPointsThis);
+        } else {
+            cit->second.PointsRound(teamPointsOther);
+        }
+    }    
+    if(!intermediate) {
+        m_FuncDirty();
+    }
 }
 
 void CTeamManager::PointsRound2Total(void)
@@ -126,6 +142,16 @@ void CTeamManager::PointsRound2Total(void)
         cit->second.PointsRound2Total();
     }    
     m_FuncDirty();
+}
+
+void CTeamManager::PointsRoundClear(const bool intermediate)
+{
+    for(auto cit = m_Teams.begin() ; m_Teams.end() != cit ; ++cit) {
+        cit->second.PointsRoundClear();
+    }    
+    if(!intermediate) {
+        m_FuncDirty();
+    }
 }
 
 void CTeamManager::PointsClear(void)
@@ -143,4 +169,9 @@ std::list<std::string> CTeamManager::GetAllTeamIds(void)
         list.push_back(cit->second.IdGet());
     }
     return list;
+}
+
+void CTeamManager::CallDirty(void)
+{
+    m_FuncDirty();
 }

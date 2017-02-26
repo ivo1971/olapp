@@ -31,6 +31,7 @@ class CTeam {
     nlohmann::json      ToJson(void) const;
     void                PointsRound(const int points);
     void                PointsRound2Total(void);
+    void                PointsRoundClear(void);
     void                PointsClear(void);
 
   private:
