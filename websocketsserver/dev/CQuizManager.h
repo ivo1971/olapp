@@ -53,6 +53,7 @@ class CQuizManager {
     std::unique_ptr<IQuizMode>                      m_CurrentQuizMode;
     std::string                                     m_FileName;
     std::string                                     m_TeamfieDir;
+    std::string                                     m_HttpDir;
     std::string                                     m_HttpImagesDir;
     CQuizModeSimpleButton::FuncDirty                m_DirtySimpleButtonConfig;
     CTeamManager::FuncDirty                         m_DirtyTeamManager;

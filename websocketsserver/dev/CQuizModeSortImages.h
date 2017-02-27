@@ -9,7 +9,7 @@
 
 class CQuizModeSortImages : public IQuizMode, public CQuizModeBase {
    public:
-                                            CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager);
+                                            CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const std::string& httpDir, const std::string& httpImagesDir);
       virtual                               ~CQuizModeSortImages(void) throw();
 
    public:
@@ -20,7 +20,13 @@ class CQuizModeSortImages : public IQuizMode, public CQuizModeBase {
       virtual void                          ReConnect             (const std::string& id);
 
     private:
+      void                                  LoadImages            (void);
+
+    private:
       SPTeamManager                         m_spTeamManager;
+      std::string                           m_HttpDir;
+      std::string                           m_HttpImagesDir;
+      std::vector<std::string>              m_Images;
 };
 
 #endif //__CQUIZMODESORTIMAGES__H__

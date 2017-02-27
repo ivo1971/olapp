@@ -41,6 +41,7 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
   , m_CurrentQuizMode(new CQuizModeIgnore(spLogger))
   , m_FileName(fileName)
   , m_TeamfieDir(fileName + std::string(".teamfies"))
+  , m_HttpDir(httpDir)
   , m_HttpImagesDir(httpDir + std::string("/images/"))
   , m_DirtySimpleButtonConfig([this](){Save();})
   , m_DirtyTeamManager([this](){Save();SendTeamsToAll();})
@@ -262,7 +263,7 @@ void CQuizManager::SelectMode(const std::string& mode)
   } else if("simple-button" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_spSimpleButtonConfig));
   } else if("sort-images" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeSortImages      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager));
+    m_CurrentQuizMode.reset(new CQuizModeSortImages      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_HttpDir, m_HttpImagesDir));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else if("teamfie" == mode) {
