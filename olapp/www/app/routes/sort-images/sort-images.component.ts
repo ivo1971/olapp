@@ -50,6 +50,17 @@ export class SortImagesComponent extends ComponentBase {
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
+        //register routing MI
+        this.observableImagesListRandom = this._websocketUserService
+                                             .register("sort-images-list-random")
+        this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
+          data => {
+              console.log(data);
+          });
+    }
+
+    public ngOnDestroy() : void {
+        this.observableImagesListRandomSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -74,4 +85,6 @@ export class SortImagesComponent extends ComponentBase {
 
     /* Private members
      */
+    private observableImagesListRandom               : Observable<any>;
+    private observableImagesListRandomSubscription   : Subscription;
 }
