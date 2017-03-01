@@ -25,6 +25,7 @@ class CUser {
     CUser&              operator=(const CUser& ref);
 
   public:
+    const std::string&  IdGet(void) const;
     void                NameSet(const std::string& name);
     const std::string&  NameGet(void) const;
     void                TeamSet(const std::string& team);

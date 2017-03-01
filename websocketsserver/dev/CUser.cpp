@@ -42,6 +42,11 @@ CUser& CUser::operator=(const CUser& ref)
   return *this;
 }
 
+const std::string& CUser::IdGet(void) const
+{
+  return m_Id;
+}
+
 void CUser::NameSet(const std::string& name)
 {
   m_Name = name;
