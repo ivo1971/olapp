@@ -26,12 +26,7 @@ export class SortImagesComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private images : string[] = [
-        "image 1",
-        "image 2",
-        "image 3",
-        "image 4",
-    ];
+    private images : string[] = [];
 
     /* Construction
      */
@@ -55,7 +50,21 @@ export class SortImagesComponent extends ComponentBase {
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
           data => {
-              console.log(data);
+              if(0 == this.images.length) {
+                //initialization
+                for(let u : number = 0 ; u < data.images.length ; ++u) {
+                    this.images.push(data.images[u]);
+                }
+              } else {
+                //other team member changed the order
+                //(assume there is no change in the size of the list)
+                //(this is an update --> change as little as possible in the array)
+                for(let u : number = 0 ; u < data.images.length ; ++u) {
+                    if(this.images[u] !== data.images[u]) {
+                        this.images[u] = data.images[u];
+                    }
+                }
+              }
           });
     }
 
@@ -66,18 +75,23 @@ export class SortImagesComponent extends ComponentBase {
     /* Event handlers called from the template
      */
     private onDrop(event: any, idxTrg : number) : void {
-        console.log("onDrop [" + event + "][" + idxTrg + "]");
+        //handle UI
         let idxSrc : number = parseInt(event);
         if(idxSrc == idxTrg) {
             return;
         }
         if(idxSrc < idxTrg) {
-            this.images.splice(idxTrg, 0, this.images[parseInt(event)]);
+            this.images.splice(idxTrg + 1, 0, this.images[parseInt(event)]);
             this.images.splice(idxSrc, 1);
         } else {
             this.images.splice(idxTrg, 0, this.images[parseInt(event)]);
             this.images.splice(idxSrc + 1, 1);
         }
+
+        //inform host
+        this._websocketUserService.sendMsg("sort-images-list-team", {
+            images: this.images
+        });
     }
 
     /* Private functions

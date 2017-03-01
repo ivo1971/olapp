@@ -1,5 +1,18 @@
-SORT IMAGES 
-
-<div id="elements">
-  <div *ngFor="let image of images; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)" class="element-dragable"><header>{{image}}</header></div>
+<div class="container-fuid">
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class="text-center"><b><u>Sorteer de afbeeldingen</u></b></h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div id="elements" class="text-center">
+        <div *ngFor="let image of images; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)">
+          <image-local source="{{image}}" width="-2" height="200"></image-local>
+          <br />
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

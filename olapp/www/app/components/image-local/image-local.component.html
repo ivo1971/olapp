@@ -1,1 +1,12 @@
-<img [src]="fullSrc" [height]="height" [width]="width" />
+<span *ngIf="(-2 != height) && (-2 != width)">
+    <img [src]="fullSrc" [height]="height" [width]="width" />
+</span>
+<span *ngIf="(-2 == height) && (-2 != width)">
+    <img [src]="fullSrc"                   [width]="width" />
+</span>
+<span *ngIf="(-2 != height) && (-2 == width)">
+    <img [src]="fullSrc" [height]="height"                 />
+</span>
+<span *ngIf="(-2 == height) && (-2 == width)">
+    <img [src]="fullSrc"                                   />
+</span>
