@@ -14,22 +14,33 @@ export class ModeService {
     constructor(
     ) {
         this.mode = ModeService.SGetMode();
-        console.log("Running in mode [" + this.GetMode() + "]");
     } 
 
     public GetMode() : EMode {
+        if(!this.initDone) {
+            this.mode = ModeService.SGetMode();
+        }
         return this.mode;
     }
 
     public IsQuiz() : boolean {
+        if(!this.initDone) {
+            this.mode = ModeService.SGetMode();
+        }
         return EMode.Quiz == this.mode;
     }
 
     public IsBeamer() : boolean {
+        if(!this.initDone) {
+            this.mode = ModeService.SGetMode();
+        }
         return EMode.Beamer == this.mode;
     }
 
     public IsMaster() : boolean {
+        if(!this.initDone) {
+            this.mode = ModeService.SGetMode();
+        }
         return EMode.Master == this.mode;
     }
 
@@ -40,9 +51,9 @@ export class ModeService {
      */
     public static SGetMode() : EMode {
         let mode : EMode;
-        if(-1 !== document.URL.indexOf('beamer')) {
+        if((-1 !== document.URL.indexOf('beamer')) || (-1 !== document.URL.indexOf(':5002/'))) {
             mode = EMode.Beamer;
-        } else if(-1 !== document.URL.indexOf('quizmaster')) {
+        } else if((-1 !== document.URL.indexOf('quizmaster')) || (-1 !== document.URL.indexOf(':5003/'))) {
             mode = EMode.Master;
         } else {
             //default
@@ -68,5 +79,6 @@ export class ModeService {
         return isMaster;
     }
 
-    private mode : EMode = EMode.Quiz;
+    private mode     : EMode   = EMode.Quiz;
+    private initDone : boolean = false;
 }
