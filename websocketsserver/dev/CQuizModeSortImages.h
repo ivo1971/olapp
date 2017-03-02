@@ -22,6 +22,7 @@ class CQuizModeSortImages : public IQuizMode, public CQuizModeBase {
     private:
       void                                  LoadImages               (void);
       void                                  HandleMessageQuizListTeam(const std::string& id, const nlohmann::json::const_iterator citJsData);
+      void                                  HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData);
 
     private:
       MapUser                               m_Users;

@@ -8,6 +8,7 @@
 #include <dirent.h>
 
 #include "CQuizModeSortImages.h"
+#include "JsonHelpers.h"
 
 using namespace std;
 using namespace nlohmann;
@@ -56,9 +57,12 @@ void CQuizModeSortImages::HandleMessageQuiz(const std::string& id, const std::st
     }
 }
 
-void CQuizModeSortImages::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
+void CQuizModeSortImages::HandleMessageMaster(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator citJsData)
 {
     m_spLogger->info("CQuizModeSortImages [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    if("sort-images-action" == mi) {
+        HandleMessageMasterAction(citJsData);
+    }
 }
 
 void CQuizModeSortImages::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator /* citJsData */)
@@ -107,6 +111,12 @@ void CQuizModeSortImages::LoadImages(void)
       if(0 == strcmp("..", pDirent->d_name)) {
           continue;
       }
+      if(0 == strcmp(".gitignore", pDirent->d_name)) {
+          continue;
+      }
+      if(0 == strcmp(".gitignore~", pDirent->d_name)) {
+          continue;
+      }
       const std::string imageAbs = ss.str() + std::string("/") + std::string(pDirent->d_name);
       const std::string imageRel = sortImages + std::string("/") + std::string(pDirent->d_name); 
       m_Images.push_back(imageRel);
@@ -127,7 +137,7 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
     MapUserCIt citUser = m_Users.find(id);
     if(m_Users.end() == citUser) {
         //not found
-        m_spLogger->warning("CQuizModeSimpleButton [%s][%u] ID [%s] not found.", __FUNCTION__, __LINE__, id.c_str());
+        m_spLogger->warning("CQuizModeSortImages [%s][%u] ID [%s] not found.", __FUNCTION__, __LINE__, id.c_str());
         return;
     }
     const std::string teamId(citUser->second.TeamGet());
@@ -140,6 +150,7 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
             m_MapTeamImageLists.erase(teamImageListItem);
         }
         m_MapTeamImageLists.insert(std::pair<std::string, nlohmann::json>(teamId, *citJsData));
+        m_spLogger->info("CQuizModeSortImages [%s][%u] [%s].", __FUNCTION__, __LINE__, teamId.c_str());
     }
 
     //send the new list to all other user's in this team
@@ -159,4 +170,33 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
         m_spLogger->warning("CQuizModeSimpleButton [%s][%u] incoming ID [%s] to ID [%s].", __FUNCTION__, __LINE__, id.c_str(), userId.c_str());
         m_spWsQuizHandler->SendMessage(userId, "sort-images-list-random", citJsData);
     }
+}
+
+void CQuizModeSortImages::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
+{
+    const bool sort = GetElementBoolean(citJsData, "sort");
+    m_spLogger->info("CQuizModeSortImages [%s][%u] [%d].", __FUNCTION__, __LINE__, sort);
+    json jsonData; 
+    jsonData["sort"] = sort;
+    if(sort) {
+        //send an empty result list
+    } else {
+        //send all results
+        for(const auto teamImageListItem : m_MapTeamImageLists) {
+            std::string teamName;
+            m_spTeamManager->FindTeamName(teamImageListItem.first, teamName);
+
+            json jsonDataTeam; 
+            jsonDataTeam["teamId"]   = teamImageListItem.first;
+            jsonDataTeam["teamName"] = teamName;
+            m_spLogger->info("CQuizModeSortImages [%s][%u] [%s][%d].", __FUNCTION__, __LINE__, teamImageListItem.first.c_str(), teamImageListItem.second.size());
+            for(const auto imagesListItem : teamImageListItem.second) {
+                jsonDataTeam["images"].push_back(imagesListItem);
+            }
+            jsonData["teams"].push_back(jsonDataTeam);
+        }    
+    }
+    m_spWsBeamerHandler->SendMessage("sort-images-list-result", jsonData);
+    m_spWsMasterHandler->SendMessage("sort-images-list-result", jsonData);
+    m_spWsQuizHandler->SendMessage  ("sort-images-list-result", jsonData);
 }

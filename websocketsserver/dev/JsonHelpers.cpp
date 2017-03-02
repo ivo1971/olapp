@@ -56,3 +56,21 @@ int GetElementInt(const json::const_iterator citJsonData, const char* const key)
   }
   return cit->get<int>();
 }
+
+bool GetElementBoolean(const json& jsonData, const char* const key)
+{
+  json::const_iterator cit = GetElement(jsonData, key);
+  if(!cit->is_boolean()) {
+    throw runtime_error(std::string("Value for key is not a boolean: ") + std::string(key));
+  }
+  return cit->get<bool>();
+}
+
+bool GetElementBoolean(const json::const_iterator citJsonData, const char* const key)
+{
+  json::const_iterator cit = GetElement(citJsonData, key);
+  if(!cit->is_boolean()) {
+    throw runtime_error(std::string("Value for key is not a boolean: ") + std::string(key));
+  }
+  return cit->get<bool>();
+}
