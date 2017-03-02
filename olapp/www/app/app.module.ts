@@ -35,6 +35,7 @@ import {SimpleButtonComponentData}     from "./routes/simple-button/simple-butto
 import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
 import {SortImagesComponent}           from "./routes/sort-images/sort-images.component";
 import {SortImagesBeamerComponent}     from "./routes/sort-images/sort-images-beamer.component";
+import {SortImagesMasterComponent}     from "./routes/sort-images/sort-images-master.component";
 import {TeamfieComponent}              from "./routes/teamfie/teamfie.component";
 import {TestComponent}                 from "./routes/test/test.component";
 import {WelcomeComponent}              from "./routes/welcome/welcome.component";
@@ -98,7 +99,7 @@ import {MakeDroppable}                 from "./routes/sort-images/make-droppable
           },
           {
             path: 'sort-images',
-            component: ModeService.SIsBeamer() ? SortImagesBeamerComponent : SortImagesComponent,
+            component: ModeService.SIsBeamer() ? SortImagesBeamerComponent : ModeService.SIsMaster() ? SortImagesMasterComponent : SortImagesComponent,
           },
           {
             path: 'teamfie',
@@ -172,6 +173,7 @@ import {MakeDroppable}                 from "./routes/sort-images/make-droppable
     SimpleButtonMasterComponent,
     SortImagesComponent,
     SortImagesBeamerComponent,
+    SortImagesMasterComponent,
     TeamfieComponent,
     TestComponent,
     WelcomeComponent,

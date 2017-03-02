@@ -13,18 +13,17 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
 
 @Component({
     moduleId   : module.id,
-    selector   : 'sort-images-beamer',
+    selector   : 'sort-images-master',
     styleUrls  : [
-        'sort-images-beamer.component.css'
+        'sort-images-master.component.css'
     ],
-    templateUrl: 'sort-images-beamer.component.html'
+    templateUrl: 'sort-images-master.component.html'
 })
-export class SortImagesBeamerComponent extends ComponentBase { 
+export class SortImagesMasterComponent extends ComponentBase { 
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private sortImages : boolean  = true;
-    private images     : string[] = [];
+    private images : string[] = [];
 
     /* Construction
      */
@@ -44,6 +43,7 @@ export class SortImagesBeamerComponent extends ComponentBase {
      */
     public ngOnInit() : void {
         //register routing MI
+        /*
         this.observableImagesListRandom = this._websocketUserService
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
@@ -64,63 +64,29 @@ export class SortImagesBeamerComponent extends ComponentBase {
                 }
               }
           });
-        this.observableImagesListResult = this._websocketUserService
-                                             .register("sort-images-list-result")
-        this.observableImagesListResultSubscription = this.observableImagesListResult.subscribe(
-          data => {
-              console.log(data);
-              this.sortImages = data["sort"];
-              if(this.sortImages) {
-                  //start sorting again
-                console.log("sort");
-              } else {
-                  //show the results
-                console.log("results");
-              }
-          });
-
-        this.observableTimer = IntervalObservable.create(5000);
-        this.observableTimerSubscription = this.observableTimer.subscribe(t => {
-            this.images = this.shuffle(this.images);
-        });
+          */
     }
 
     public ngOnDestroy() : void {
-        this.observableImagesListRandomSubscription.unsubscribe();
-        this.observableImagesListResultSubscription.unsubscribe();
-        this.observableTimerSubscription.unsubscribe();
+        //this.observableImagesListRandomSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
      */
+    private onClickRadioAction(sort : boolean) : void {
+        this._websocketUserService.sendMsg("sort-images-action", {
+            sort: sort
+        });        
+        
+    }
 
     /* Private functions
      */
-    //source: http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-    private shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-
-        return array;
-    }
 
     /* Private members
      */
+    /*
     private observableImagesListRandom               : Observable<any>;
     private observableImagesListRandomSubscription   : Subscription;
-    private observableImagesListResult               : Observable<any>;
-    private observableImagesListResultSubscription   : Subscription;
-    private observableTimer                          : Observable<number>;
-    private observableTimerSubscription              : Subscription;
+    */
 }
