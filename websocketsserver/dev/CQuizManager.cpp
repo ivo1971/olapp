@@ -11,6 +11,7 @@
 #include "CQuizManager.h"
 #include "CQuizModeConfigureTeams.h"
 #include "CQuizModeIgnore.h"
+#include "CQuizModeQuestions.h"
 #include "CQuizModeScoreboard.h"
 #include "CQuizModeSimpleButton.h"
 #include "CQuizModeSimpleButtonTest.h"
@@ -264,6 +265,8 @@ void CQuizManager::SelectMode(const std::string& mode)
     m_CurrentQuizMode.reset(new CQuizModeSimpleButton    (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_spSimpleButtonConfig));
   } else if("sort-images" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSortImages      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_HttpDir, m_HttpImagesDir));
+  } else if("questions" == mode) {
+    m_CurrentQuizMode.reset(new CQuizModeQuestions       (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else if("teamfie" == mode) {
