@@ -1,0 +1,30 @@
+<div class="container-fuid">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h3><b><u>Vragen</u></b></h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div id="elements" class="text-center">
+        <div *ngFor="let question of questions; let idx = index" class="row">
+          <div class="col-md-2 col-sm-2 col-xs-2">
+              Vraag {{idx + 1}}:
+          </div>
+          <div class="col-md-9 col-sm-9 col-xs-9">
+              <input class="form-control" type="text" [(ngModel)]="questions[idx]" />
+          </div>
+          <div class="col-md-1 col-sm-1 col-xs-1">
+          </div>
+          <br />
+          <br />
+        </div>
+        <h4 *ngIf="questionsNbrShow">
+            <span class="label label-primary">
+                {{questionsNbrOk}}/{{questionsNbrTotal}}
+            </span>
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>

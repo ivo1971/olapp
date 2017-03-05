@@ -28,6 +28,8 @@ import {AboutComponent}                from "./routes/about/about.component";
 import {ConfigurationComponent}        from "./routes/configuration/configuration.component";
 import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/configure-teams-master.component";
 import {LoginComponent}                from "./routes/login/login.component";
+import {QuestionsComponent}            from "./routes/questions/questions.component";
+import {QuestionsMasterComponent}      from "./routes/questions/questions-master.component";
 import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.component";
 import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboard-master.component";
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
@@ -84,6 +86,10 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
           {
             path: 'configure-teams',
             component: ModeService.SIsMaster() ? ConfigureTeamsMasterComponent : WelcomeComponent
+          },
+          {
+            path: 'questions',
+            component: ModeService.SIsMaster() ? QuestionsMasterComponent : QuestionsComponent,
           },
           {
             path: 'scoreboard',
@@ -162,6 +168,8 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     ConfigurationComponent,
     ConfigureTeamsMasterComponent,
     LoginComponent,
+    QuestionsComponent,
+    QuestionsMasterComponent,
     ScoreboardComponent,
     ScoreboardMasterComponent,
     SimpleButtonComponent,
