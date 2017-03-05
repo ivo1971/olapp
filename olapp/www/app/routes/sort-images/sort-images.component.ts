@@ -149,6 +149,8 @@ export class SortImagesComponent extends ComponentBase {
     }
 
     private onClickDrop(dropIdx : number): void {
+        //handle drop
+        let changed : boolean = false;
         if(this.draggingIdx == this.draggingIdxNone) {
             //no drag in-progress
             //--> ignore
@@ -165,6 +167,13 @@ export class SortImagesComponent extends ComponentBase {
                 this.imagesSort.splice(this.draggingIdx + 1, 1);
             }
             this.draggingIdx = this.draggingIdxNone;
+            changed = true;
+        }
+
+        if(changed) {
+           this._websocketUserService.sendMsg("sort-images-list-team", {
+              images: this.imagesSort
+           });
         }
     }
 
