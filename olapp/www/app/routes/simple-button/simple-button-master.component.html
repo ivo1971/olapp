@@ -19,6 +19,9 @@
       <br />
       <br />
       <br />
+      <div class="row alert alert-warning" *ngFor="let dummy of dummies">
+        <i>{{dummy}}</i>
+      </div>
       <div class="row alert alert-warning" *ngIf="0 != teamNameEvaluate.length">
         <div class="col-md-1">
         </div>

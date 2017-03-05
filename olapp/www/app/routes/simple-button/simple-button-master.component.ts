@@ -30,12 +30,14 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'simple-button-master.component.html'
 })
 export class SimpleButtonMasterComponent extends ComponentBase implements OnInit, OnDestroy { 
-    private teamNameEvaluate      : string = "";
-    private configDelay           : number = 5;
-    private configPointsGoodThis  : number = 5;
-    private configPointsGoodOther : number = 0;
-    private configPointsBadThis   : number = 0;
-    private configPointsBadOther  : number = 3;
+    private teamNameEvaluate      : string   = "";
+    private configDelay           : number   = 5;
+    private configPointsGoodThis  : number   = 5;
+    private configPointsGoodOther : number   = 0;
+    private configPointsBadThis   : number   = 0;
+    private configPointsBadOther  : number   = 3;
+    private dummyPrev             : string   = ""
+    private dummies               : string[] = []
 
     /* Construction
      */
@@ -83,7 +85,13 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
         this.observableEvaluateSubscription = this.observableEvaluate.subscribe(
           data => {
             this.teamNameEvaluate = data["team"];
+            console.log("[" + this.dummyPrev + "][" + data["team"] + "]");
+            if((this.dummyPrev.length) && (this.dummyPrev!==data["team"])) {
+                this.dummies.push(this.dummyPrev);
+            }
+            this.dummyPrev = data["team"];
           });
+
     }
 
     public ngOnDestroy() : void {
@@ -93,6 +101,7 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
      */
     public onClickReset() : void {
         this.teamNameEvaluate = "";
+        this.dummies.length   = 0;
         this._websocketService.sendMsg("simple-button-event", {
             event: "reset"
         });        
