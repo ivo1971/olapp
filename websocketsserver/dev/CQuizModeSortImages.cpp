@@ -29,6 +29,7 @@ CQuizModeSortImages::CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLog
    , m_HttpImagesDir(httpImagesDir)
    , m_Images()
    , m_MapTeamImageLists()
+   , m_ModeSort(true) /* start in sorting mode */
 {
     //start this round clean
     m_spTeamManager->PointsRoundClear();
@@ -65,6 +66,8 @@ void CQuizModeSortImages::HandleMessageMaster(const std::string& /* id */, const
     m_spLogger->info("CQuizModeSortImages [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("sort-images-action" == mi) {
         HandleMessageMasterAction(citJsData);
+    } else if("sort-images-set-points" == mi) {
+        HandleMessageMasterSetPoints(citJsData);
     }
 }
 
@@ -83,17 +86,36 @@ void CQuizModeSortImages::ReConnect(const std::string& id)
 {
     CQuizModeBase::ReConnect(id);
 
+    //find the user and his/her team
+    std::string teamId  ;
+    MapUserCIt  citUser = m_Users.find(id);
+    if(m_Users.end() != citUser) {
+        //found
+        teamId = citUser->second.TeamGet();
+    }
+
     //send the list to the client
     {
        json jsonData; 
        for(auto image : m_Images) {
            jsonData["images"].push_back(image);
        }
-       //todo: figure out the client type instead of sending a message to all types
-       m_spWsQuizHandler->SendMessage  (id, "sort-images-list-random", jsonData);
        m_spWsMasterHandler->SendMessage(id, "sort-images-list-random", jsonData);
        m_spWsBeamerHandler->SendMessage(id, "sort-images-list-random", jsonData);
+
+       //special handling for clients
+       const auto teamImageList = m_MapTeamImageLists.find(teamId);
+       if(teamImageList == m_MapTeamImageLists.end()) {
+          //send randomized list
+          m_spWsQuizHandler->SendMessage(id, "sort-images-list-random", jsonData);
+       } else {
+          //send sorted list
+          m_spWsQuizHandler->SendMessage(id, "sort-images-list-random", teamImageList->second);
+       }
     }
+
+    //deal with the mode
+    HandleMessageMasterAction(m_ModeSort, id);
 }
 
 void CQuizModeSortImages::LoadImages(void)
@@ -192,6 +214,18 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
         }
         m_MapTeamImageLists.insert(std::pair<std::string, nlohmann::json>(teamId, *citJsData));
         m_spLogger->info("CQuizModeSortImages [%s][%u] [%s].", __FUNCTION__, __LINE__, teamId.c_str());
+
+        //send all teams with info to the master
+        {
+            json jsonData; 
+            for(const auto teamImageList : m_MapTeamImageLists) {
+                std::string teamName;
+                if(m_spTeamManager->FindTeamName(teamImageList.first, teamName)) {
+                    jsonData["teams"].push_back(teamName);
+                }
+            }
+            m_spWsMasterHandler->SendMessage("sort-images-list-teams", jsonData);
+        }        
     }
 
     //send the new list to all other user's in this team
@@ -216,6 +250,12 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
 void CQuizModeSortImages::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
 {
     const bool sort = GetElementBoolean(citJsData, "sort");
+    m_ModeSort = sort;
+    HandleMessageMasterAction(sort);
+}
+
+void CQuizModeSortImages::HandleMessageMasterAction(const bool sort, const std::string id)
+{
     m_spLogger->info("CQuizModeSortImages [%s][%u] [%d].", __FUNCTION__, __LINE__, sort);
     json jsonData; 
     jsonData["sort"] = sort;
@@ -237,7 +277,28 @@ void CQuizModeSortImages::HandleMessageMasterAction(const nlohmann::json::const_
             jsonData["teams"].push_back(jsonDataTeam);
         }    
     }
-    m_spWsBeamerHandler->SendMessage("sort-images-list-result", jsonData);
-    m_spWsMasterHandler->SendMessage("sort-images-list-result", jsonData);
-    m_spWsQuizHandler->SendMessage  ("sort-images-list-result", jsonData);
+    if(0 != id.length()) {
+        m_spWsBeamerHandler->SendMessage(id, "sort-images-list-result", jsonData);
+        m_spWsMasterHandler->SendMessage(id, "sort-images-list-result", jsonData);
+        m_spWsQuizHandler->SendMessage  (id, "sort-images-list-result", jsonData);
+    } else {
+        m_spWsBeamerHandler->SendMessage("sort-images-list-result", jsonData);
+        m_spWsMasterHandler->SendMessage("sort-images-list-result", jsonData);
+        m_spWsQuizHandler->SendMessage  ("sort-images-list-result", jsonData);
+    }
+}
+
+void CQuizModeSortImages::HandleMessageMasterSetPoints(const nlohmann::json::const_iterator citJsData)
+{
+    m_spLogger->info("CQuizModeSortImages [%s][%u].", __FUNCTION__, __LINE__);
+    const json::const_iterator citJsDataTeams = GetElement(citJsData, "teams");
+    const vector<json> vJsDataTeams = citJsDataTeams->get<vector<json>>();
+    m_spTeamManager->PointsRoundClear();
+    for(const auto team : vJsDataTeams) {
+        const std::string& id          = GetElementString(team, "id");
+        const int          pointsRound = GetElementInt(team, "pointsRound");
+        m_spLogger->info("CQuizModeSortImages [%s][%u] [%s][%d].", __FUNCTION__, __LINE__, id.c_str(), pointsRound);
+        m_spTeamManager->PointsRoundId(id, pointsRound, 0, true);
+    }
+    m_spTeamManager->PointsRound2Total();
 }
