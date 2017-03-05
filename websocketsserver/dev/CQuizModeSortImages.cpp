@@ -1,8 +1,9 @@
-#include <iostream>     // std::cout
 #include <algorithm>    // std::random_shuffle
-#include <vector>       // std::vector
-#include <ctime>        // std::time
 #include <cstdlib>      // std::rand, std::srand
+#include <ctime>        // std::time
+#include <fstream>      // std::ifstream, std::ofstream
+#include <iostream>     // std::cout
+#include <vector>       // std::vector
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -13,6 +14,8 @@
 using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
+
+#define FILE_NAME_SOLUTION "solution"
 
 // random generator function:
 int myrandom (int i) { return std::rand()%i;}
@@ -100,9 +103,9 @@ void CQuizModeSortImages::LoadImages(void)
 
    //read image files
    const std::string sortImages("sortImages");
-   std::stringstream ss;
-   ss << m_HttpImagesDir << sortImages;
-   DIR* pDir = opendir(ss.str().c_str());
+   std::stringstream imagesDir;
+   imagesDir << m_HttpImagesDir << sortImages;
+   DIR* pDir = opendir(imagesDir.str().c_str());
    struct dirent* pDirent = NULL;
    while (NULL != (pDirent = readdir(pDir))) {
       if(0 == strcmp(".", pDirent->d_name)) {
@@ -111,18 +114,56 @@ void CQuizModeSortImages::LoadImages(void)
       if(0 == strcmp("..", pDirent->d_name)) {
           continue;
       }
+      if(0 == strcmp(FILE_NAME_SOLUTION, pDirent->d_name)) {
+          continue;
+      }
+      if(0 == strcmp(FILE_NAME_SOLUTION "~", pDirent->d_name)) {
+          continue;
+      }
       if(0 == strcmp(".gitignore", pDirent->d_name)) {
           continue;
       }
       if(0 == strcmp(".gitignore~", pDirent->d_name)) {
           continue;
       }
-      const std::string imageAbs = ss.str() + std::string("/") + std::string(pDirent->d_name);
-      const std::string imageRel = sortImages + std::string("/") + std::string(pDirent->d_name); 
+      const std::string imageAbs = imagesDir.str() + std::string("/") + std::string(pDirent->d_name);
+      const std::string imageRel = sortImages      + std::string("/") + std::string(pDirent->d_name); 
       m_Images.push_back(imageRel);
       m_spLogger->info("CQuizModeSortImages [%s][%u] [%s][%s].", __FUNCTION__, __LINE__, imageAbs.c_str(), imageRel.c_str());
    }
    closedir(pDir);
+
+   //handle solutions file 
+   {
+       std::stringstream solutionsFile;
+       solutionsFile << imagesDir.str() << "/" << FILE_NAME_SOLUTION;
+       if(0 == access(solutionsFile.str().c_str(), R_OK)) {
+          //file exists, accept it as the solution
+          m_spLogger->info("CQuizModeSortImages [%s][%u] solutions file found.", __FUNCTION__, __LINE__);
+          std::vector<std::string> solution;
+          std::ifstream            solutionFileStream(solutionsFile.str());
+          std::string              line;
+          while (std::getline(solutionFileStream, line)) {
+             m_spLogger->info("CQuizModeSortImages [%s][%u] solutions file: [%s].", __FUNCTION__, __LINE__, line.c_str());
+             solution.push_back(line);
+          }
+          json jsonDataSolution; 
+          for(auto image : solution) {
+             jsonDataSolution["images"].push_back(image);
+          }
+          m_MapTeamImageLists.insert(std::pair<std::string, nlohmann::json>("solution", jsonDataSolution));
+       } else {
+          //file does not exist --> create it and exit
+          std::ofstream solutionFileStream(solutionsFile.str());
+          m_spLogger->info("CQuizModeSortImages [%s][%u] solutions file NOT found --> creating.", __FUNCTION__, __LINE__);
+          for(auto image : m_Images) {
+              solutionFileStream << image << std::endl;
+              m_spLogger->info("CQuizModeSortImages [%s][%u] add [%s].", __FUNCTION__, __LINE__, image.c_str());
+          }
+          solutionFileStream.close();
+          exit(-1);
+       }
+   }
 
    //randomize the list
    std::random_shuffle(m_Images.begin(), m_Images.end());
