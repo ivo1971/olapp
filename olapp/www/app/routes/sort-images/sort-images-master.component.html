@@ -13,12 +13,62 @@
           <input class="form-check-input" type="radio" name="inlineRadioAction" id="inlineRadioResult" value="result"         (click)="onClickRadioAction(false)"> Resultaat
         </label>
       </div>
+      <div class="row">
+        <div class="col-md-4 col-sm-3 col-xs-4">
+          Points per image OK:
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <input class="form-control" type="text" [(ngModel)]="pointsPerImageOk" />
+        </div>
+      </div>
+      <br />
+      <br />
+      <div *ngFor="let team of teamImagesInfo" class="row">
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-10 alert alert-success">
+          <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-8">
+              {{team.name}}
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <h4>
+                <span class="label label-primary">
+                  {{team.pointsRound}}
+                </span>
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-10">
+          <button *ngIf="0 != teamImagesInfo.length" type="button" class="btn btn-success" (click)="onClickSetPoints()">Set round & round to total</button>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-md-4 col-sm-3 col-xs-4">
+          Teams with an answer:
+        </div>
+        <div class="col-md-8 col-sm-9 col-xs-8">
+          <div *ngFor="let team of teams">
+            {{team}}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-md-1">
     </div>
     <div class="col-md-7">
       <h3 class="text-center"><b><u>Beamer</u></b></h3>
-      <sort-images-beamer></sort-images-beamer>
+      <sort-images-beamer [showTitle]="false" (teamImagesInfoEvt)="handleTeamImagesInfoEvt($event)"></sort-images-beamer>
     </div>
   </div>
 </div>

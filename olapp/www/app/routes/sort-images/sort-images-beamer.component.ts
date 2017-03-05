@@ -1,7 +1,10 @@
 import {Component}            from '@angular/core';
+import {EventEmitter}         from '@angular/core';
+import {Input}                from '@angular/core';
 import {Observable}           from 'rxjs/Observable';
 import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
+import {Output}               from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
 
@@ -10,6 +13,8 @@ import {ComponentBase}        from './../../classes/component-base.class';
 import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
+
+import {TeamImagesInfo }      from './team-images-info.class';
 
 @Component({
     moduleId   : module.id,
@@ -23,8 +28,12 @@ export class SortImagesBeamerComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private sortImages : boolean  = true;
-    private images     : string[] = [];
+    @Input()  showTitle         : boolean                        = true;
+    private   sortImages        : boolean                        = true;
+    private   images            : string[]                       = [];
+    private   imagesSolution    : string[]                       = [];
+    private   teams             : any[]                          = [];
+    @Output() teamImagesInfoEvt : EventEmitter<TeamImagesInfo[]> = new EventEmitter<TeamImagesInfo[]>();
 
     /* Construction
      */
@@ -47,42 +56,79 @@ export class SortImagesBeamerComponent extends ComponentBase {
         this.observableImagesListRandom = this._websocketUserService
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
-          data => {
-              if(0 == this.images.length) {
-                //initialization
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    this.images.push(data.images[u]);
+            data => {
+                if(0 == this.images.length) {
+                  //initialization
+                  for(let u : number = 0 ; u < data.images.length ; ++u) {
+                      this.images.push(data.images[u]);
+                  }
+                } else {
+                  //other team member changed the order
+                  //(assume there is no change in the size of the list)
+                  //(this is an update --> change as little as possible in the array)
+                  for(let u : number = 0 ; u < data.images.length ; ++u) {
+                      if(this.images[u] !== data.images[u]) {
+                          this.images[u] = data.images[u];
+                      }
+                  }
                 }
-              } else {
-                //other team member changed the order
-                //(assume there is no change in the size of the list)
-                //(this is an update --> change as little as possible in the array)
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    if(this.images[u] !== data.images[u]) {
-                        this.images[u] = data.images[u];
-                    }
-                }
-              }
-          });
+            }
+        );
         this.observableImagesListResult = this._websocketUserService
                                              .register("sort-images-list-result")
         this.observableImagesListResultSubscription = this.observableImagesListResult.subscribe(
-          data => {
-              console.log(data);
-              this.sortImages = data["sort"];
-              if(this.sortImages) {
-                  //start sorting again
-                console.log("sort");
-              } else {
-                  //show the results
-                console.log("results");
-              }
-          });
+            data => {
+                console.log(data);
+                this.sortImages = data["sort" ];
+                this.teams      = data["teams"];
+                let teamImagesInfo  : TeamImagesInfo[] = [];
+                if(data.sort) {
+                    //start sorting again
+                } else {
+                    //show the results
+                    for(let u : number = 0 ; u < data.teams.length ; ++u) {
+                        if("solution" == data.teams[u]["teamId"]) {
+                            this.imagesSolution = data.teams[u].images[0];
+                            data.teams.splice(u, 1);
+                        }
+                    }
+                    for(let u : number = 0 ; u < this.teams.length ; ++u) {
+                        this.teams[u]["ok"            ] = [];
+                        this.teams[u]["imagesNbrOk"   ] = 0;
+                        this.teams[u]["imagesNbrTotal"] = 0;
+                        for(let v : number = 0 ; v < this.teams[u].images[0].length ; ++v) {
+                            ++(this.teams[u]["imagesNbrTotal"]);
+                            if(this.imagesSolution[v] == this.teams[u]["images"][0][v]) {
+                                this.teams[u]["ok"][v] = true;
+                                ++(this.teams[u]["imagesNbrOk"]);
+                            } else {
+                                this.teams[u]["ok"][v] = false;
+                            }
+                        }
+                        let teamImageInfo         = new TeamImagesInfo();
+                        teamImageInfo.id          = this.teams[u]["teamId"];
+                        teamImageInfo.name        = this.teams[u]["teamName"];
+                        teamImageInfo.imagesOk    = this.teams[u]["imagesNbrOk"];
+                        teamImageInfo.imagesTotal = this.teams[u]["imagesNbrTotal"];
+                        teamImagesInfo.push(teamImageInfo);
+                    }
+                }
+                this.teamImagesInfoEvt.next(teamImagesInfo);
+            }
+        );
 
+        //start sorting timer
         this.observableTimer = IntervalObservable.create(5000);
         this.observableTimerSubscription = this.observableTimer.subscribe(t => {
             this.images = this.shuffle(this.images);
         });
+
+
+        //init events
+        {
+            let teamImagesInfo  : TeamImagesInfo[] = [];
+            this.teamImagesInfoEvt.next(teamImagesInfo);
+        }
     }
 
     public ngOnDestroy() : void {

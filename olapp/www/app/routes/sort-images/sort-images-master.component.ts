@@ -2,14 +2,16 @@ import {Component}            from '@angular/core';
 import {Observable}           from 'rxjs/Observable';
 import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
-import {Subscription}         from 'rxjs/Subscription';
 import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
+import {Subscription}         from 'rxjs/Subscription';
 
 import {ComponentBase}        from './../../classes/component-base.class';
 
 import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
+
+import {TeamImagesInfo }      from './team-images-info.class';
 
 @Component({
     moduleId   : module.id,
@@ -23,7 +25,10 @@ export class SortImagesMasterComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private images : string[] = [];
+    private images           : string[]         = [];
+    private teams            : string[]         = [];
+    private pointsPerImageOk : number           = 1;
+    private teamImagesInfo   : TeamImagesInfo[] = [];
 
     /* Construction
      */
@@ -42,42 +47,51 @@ export class SortImagesMasterComponent extends ComponentBase {
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
-        //register routing MI
-        /*
-        this.observableImagesListRandom = this._websocketUserService
-                                             .register("sort-images-list-random")
-        this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
-          data => {
-              if(0 == this.images.length) {
-                //initialization
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    this.images.push(data.images[u]);
+        this.observableImagesListTeams = this._websocketUserService
+                                             .register("sort-images-list-teams");
+        this.observableImagesListTeamsSubscription = this.observableImagesListTeams.subscribe(
+            data => {
+                console.log("observableImagesListTeamsSubscription [" + data.teams.length + "]");
+                console.log(data);
+                this.teams.length = 0;
+                for(let u = 0 ; u < data.teams.length ; ++u) {
+                    this.teams.push(data.teams[u]);
                 }
-              } else {
-                //other team member changed the order
-                //(assume there is no change in the size of the list)
-                //(this is an update --> change as little as possible in the array)
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    if(this.images[u] !== data.images[u]) {
-                        this.images[u] = data.images[u];
-                    }
-                }
-              }
-          });
-          */
+                console.log(this.teams);
+            }
+        );
     }
 
     public ngOnDestroy() : void {
-        //this.observableImagesListRandomSubscription.unsubscribe();
+        this.observableImagesListTeamsSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
      */
     private onClickRadioAction(sort : boolean) : void {
+        console.log("onClickRadioAction: [" + sort + "]");
         this._websocketUserService.sendMsg("sort-images-action", {
             sort: sort
         });        
-        
+    }
+
+    private handleTeamImagesInfoEvt(teamImagesInfo : TeamImagesInfo[]) : void {
+        this.teamImagesInfo = teamImagesInfo;
+        for(let u = 0 ; u < teamImagesInfo.length ; ++u) {
+            this.teamImagesInfo[u].pointsRound = this.teamImagesInfo[u].imagesOk * this.pointsPerImageOk;
+        }
+    }
+
+    private onClickSetPoints() : void {
+        //send message to set points
+        this._websocketUserService.sendMsg("sort-images-set-points", {
+            teams : this.teamImagesInfo
+        });        
+
+        //route to the scoreboard
+        this._websocketUserService.sendMsg("select-mode", {
+            mode: "scoreboard"
+        });
     }
 
     /* Private functions
@@ -85,8 +99,6 @@ export class SortImagesMasterComponent extends ComponentBase {
 
     /* Private members
      */
-    /*
-    private observableImagesListRandom               : Observable<any>;
-    private observableImagesListRandomSubscription   : Subscription;
-    */
+    private observableImagesListTeams               : Observable<any>;
+    private observableImagesListTeamsSubscription   : Subscription;
 }

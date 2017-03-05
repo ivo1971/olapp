@@ -1,6 +1,6 @@
 <div class="container-fuid">
   <div class="row">
-    <div class="col-md-12">
+    <div *ngIf="showTitle" class="col-md-12">
       <h2 class="text-center"><b><u>Sorteer de afbeeldingen</u></b></h2>
     </div>
   </div>
@@ -8,14 +8,52 @@
     <div class="col-md-12">
       <div id="elements" class="text-center">
         <span class="layout" *ngFor="let image of images; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)">
-          <image-local source="{{image}}" width="-2" height="200"></image-local>
+          <image-local [source]="image" width="-2" height="200"></image-local>
         </span>
       </div>
     </div>
   </div>
   <div *ngIf="!sortImages" class="row">
-    <div class="col-md-12">
-        Resultaten
+    <div class="col-md-12" class="text-center">
+       <table>
+         <tr>
+           <th>
+             <div class="text-center">
+               De oplossing
+             </div>
+           </th>
+           <th *ngFor="let team of teams">
+             <div class="text-center">
+               {{team.teamName}}  
+             </div>
+           </th>
+         </tr>
+         <tr *ngFor="let image of imagesSolution; let idx=index">
+           <td>
+             <div class="text-center">
+               <image-local [source]="image" width="-2" height="200"></image-local>
+             </div>
+           </td>
+           <td *ngFor="let team of teams">
+             <div class="text-center">
+               <image-local [source]="team.images[0][idx]" [class]="team.ok[idx] ? 'image-ok' : 'image-error'" width="-2" height="200"></image-local>
+             </div>
+           </td>
+         </tr>
+         <tr>
+           <td>
+           </td>
+           <td *ngFor="let team of teams">
+             <div class="text-center">
+               <h4>
+                 <span class="label label-primary">
+                   {{team.imagesNbrOk}}/{{team.imagesNbrTotal}}
+                 </span>
+               </h4>
+             </div>
+           </td>
+         </tr>
+       </table>
     </div>
   </div>
 </div>

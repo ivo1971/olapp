@@ -54,39 +54,44 @@ export class SortImagesComponent extends ComponentBase {
         this.observableImagesListRandom = this._websocketUserService
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
-          data => {
-              if(0 == this.imagesSort.length) {
-                //initialization
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    this.imagesSort.push(data.images[u]);
-                    this.imagesResultOk.push(false);
-                    this.imagesResultErr.push(false);
+            data => {
+                if(0 == this.imagesSort.length) {
+                  //initialization
+                  this.imagesResultOk.length  = 0;
+                  this.imagesResultErr.length = 0;
+                  for(let u : number = 0 ; u < data.images.length ; ++u) {
+                      this.imagesSort.push(data.images[u]);
+                      this.imagesResultOk.push(false);
+                      this.imagesResultErr.push(false);
+                  }
+                } else {
+                  //other team member changed the order
+                  //(assume there is no change in the size of the list)
+                  //(this is an update --> change as little as possible in the array)
+                  for(let u : number = 0 ; u < data.images.length ; ++u) {
+                      if(this.imagesSort[u] !== data.images[u]) {
+                          this.imagesSort[u] = data.images[u];
+                      }
+                  }
                 }
-              } else {
-                //other team member changed the order
-                //(assume there is no change in the size of the list)
-                //(this is an update --> change as little as possible in the array)
-                for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    if(this.imagesSort[u] !== data.images[u]) {
-                        this.imagesSort[u] = data.images[u];
-                    }
-                }
-              }
-          });
+            }
+        );
 
         this.observableImagesListResult = this._websocketUserService
                                              .register("sort-images-list-result")
         this.observableImagesListResultSubscription = this.observableImagesListResult.subscribe(
             data => {
-                console.log(data);
                 if(data.sort) {
                     //start sorting again
                     //(clear ok/error classifications)
                     for(let u : number = 0 ; u < this.imagesSort.length ; ++u) {
-                        this.imagesResultOk.push (false);
-                        this.imagesResultErr.push(false);
+                        this.imagesResultOk[u]  = false;
+                        this.imagesResultErr[u] = false;
                     }
                     this.imagesNbrShow  = false;
+                    console.log(this.imagesSort);
+                    console.log(this.imagesResultOk);
+                    console.log(this.imagesResultErr);
                 } else {
                     this.imagesNbrShow  = true;
                     this.imagesNbrOk    = 0;
@@ -94,9 +99,7 @@ export class SortImagesComponent extends ComponentBase {
                     //show the results
                     let solutionImages;
                     for(let u : number = 0 ; u < data.teams.length ; ++u) {
-                        console.log(data.teams[u]["teamId"]);
                         if("solution" == data.teams[u]["teamId"]) {
-                            console.log("OK");
                             solutionImages = data.teams[u].images[0];
                         }
                     }
@@ -108,7 +111,6 @@ export class SortImagesComponent extends ComponentBase {
                                 this.imagesResultOk[u]  = true ;
                                 this.imagesResultErr[u] = false;
                             } else {
-                                console.log("[" + this.imagesSort[u] + "][" + solutionImages[u] + "] err");
                                 this.imagesResultOk[u]  = false;
                                 this.imagesResultErr[u] = true ;
                             }
