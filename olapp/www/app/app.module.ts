@@ -57,10 +57,6 @@ import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-butto
 import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-button.pipe";
 import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-button.pipe";
 
-//Own components: directives
-import {MakeDraggable}                 from "./routes/sort-images/make-draggable.directive";
-import {MakeDroppable}                 from "./routes/sort-images/make-droppable.directive";
-
 //Module definition
 @NgModule({
   //Inject built-in modules
@@ -192,9 +188,6 @@ import {MakeDroppable}                 from "./routes/sort-images/make-droppable
     SimpleButtonActiveFilter,
     SimpleButtonTeamPointsSort,
     SimpleButtonTeamAlphabeticSort,
-    //directives
-    MakeDraggable,
-    MakeDroppable
   ],
   //Module you need to bootstrap
   bootstrap:    [ 

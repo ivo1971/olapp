@@ -1,16 +1,28 @@
 <div class="container-fuid">
   <div class="row">
-    <div class="col-md-12">
-      <h3 class="text-center"><b><u>Sorteer de afbeeldingen</u></b></h3>
+    <div class="col-md-12 text-center">
+      <h3><b><u>Sorteer de afbeeldingen</u></b></h3>
+      <i>
+        Selecteer een afbeelding door er op te clicken/touchen. Dan worden er doelen getoond waar deze afbeelding kan geplaatst worden. Selecteer een doel om de afbeelding te verplaatsen.
+      </i>
+      <i>
+        Deselecteer een afbeelding door er opnieuw op te clicken/touchen.
+      </i>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
       <div id="elements" class="text-center">
-        <div *ngFor="let image of imagesSort; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)" >
-          <image-local [source]="image" [class]="imagesResultOk[idx] ? 'image-ok' : imagesResultErr[idx] ? 'image-error' : 'none'" width="-2" height="200"></image-local>
-          <br />
-          <br />
+        <div *ngFor="let image of imagesSort; let idx = index" >
+          <div (click)="onClickDrop(idx)" class="drag-trg" [class.drag-trg-active]="(draggingIdx!=draggingIdxNone)&&(draggingIdx!=idx)&&(draggingIdx!=(idx-1))" >
+            <image-local source="target.png" width="45" height="-2"></image-local>
+          </div>
+          <div  (click)="onClickImage(idx)" [class.drag-src]="idx==draggingIdx">
+            <image-local [source]="image" [class]="imagesResultOk[idx] ? 'image-ok' : imagesResultErr[idx] ? 'image-error' : 'none'" width="-2" height="200"></image-local>
+          </div>
+        </div>
+        <div (click)="onClickDrop(imagesSort.length)" class="drag-trg" [class.drag-trg-active]="(draggingIdx!=draggingIdxNone)&&(draggingIdx!=(imagesSort.length-1))" >
+          <image-local source="target.png" width="45" height="-2"></image-local>
         </div>
         <h4 *ngIf="imagesNbrShow">
             <span class="label label-primary">

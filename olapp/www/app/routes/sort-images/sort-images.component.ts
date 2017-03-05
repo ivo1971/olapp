@@ -26,6 +26,8 @@ export class SortImagesComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
+    private draggingIdxNone : number = -1;
+    private draggingIdx     : number = this.draggingIdxNone; 
     private imagesSort      : string[]  = [];
     private imagesResultOk  : boolean[] = [];
     private imagesResultErr : boolean[] = [];
@@ -131,24 +133,39 @@ export class SortImagesComponent extends ComponentBase {
 
     /* Event handlers called from the template
      */
-    private onDrop(event: any, idxTrg : number) : void {
-        //handle UI
-        let idxSrc : number = parseInt(event);
-        if(idxSrc == idxTrg) {
-            return;
-        }
-        if(idxSrc < idxTrg) {
-            this.imagesSort.splice(idxTrg + 1, 0, this.imagesSort[parseInt(event)]);
-            this.imagesSort.splice(idxSrc, 1);
+    private onClickImage(imageIdx : number): void {
+        if(this.draggingIdx == imageIdx) {
+            //click on the image being dragged
+            //--> stop drag
+            this.draggingIdx = this.draggingIdxNone;
+        } else if(this.draggingIdx != this.draggingIdxNone) {
+            //dragging in-progress,
+            //but image is no drop zone
+            //--> ignore
         } else {
-            this.imagesSort.splice(idxTrg, 0, this.imagesSort[parseInt(event)]);
-            this.imagesSort.splice(idxSrc + 1, 1);
+            //start dragging
+            this.draggingIdx = imageIdx;
         }
+    }
 
-        //inform host
-        this._websocketUserService.sendMsg("sort-images-list-team", {
-            images: this.imagesSort
-        });
+    private onClickDrop(dropIdx : number): void {
+        if(this.draggingIdx == this.draggingIdxNone) {
+            //no drag in-progress
+            //--> ignore
+        } else if(this.draggingIdx == dropIdx) {
+            //drop at the same location as the drag started
+            //--> stop drag
+            this.draggingIdx = this.draggingIdxNone;
+        } else {
+            //drop
+            this.imagesSort.splice(dropIdx, 0, this.imagesSort[this.draggingIdx]);
+            if(this.draggingIdx < dropIdx) {
+                this.imagesSort.splice(this.draggingIdx,     1);
+            } else {
+                this.imagesSort.splice(this.draggingIdx + 1, 1);
+            }
+            this.draggingIdx = this.draggingIdxNone;
+        }
     }
 
     /* Private functions

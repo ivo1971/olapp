@@ -14,5 +14,9 @@
 }
 
 .drag-trg {
-    border: 5px dashed #0c0 !important;
+    opacity: 0.0;
+}
+
+.drag-trg-active {
+    opacity: 1 !important;
 }
