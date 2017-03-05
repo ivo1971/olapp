@@ -1,0 +1,11 @@
+.image-ok {
+    border: 5px solid #0c0 !important;
+}
+
+.image-waring {
+    border: 5px solid darkorange !important;
+}
+
+.image-error {
+    border: 5px solid #c00 !important;
+}

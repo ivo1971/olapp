@@ -17,6 +17,7 @@ export class ImageLocalComponent implements OnInit {
     @Input()  source   : string;
     @Input()  height   : string = "-1";
     @Input()  width    : string = "-1";
+    @Input()  class    : string = "none";
     public    fullSrc  : string = "";
 
     public constructor(

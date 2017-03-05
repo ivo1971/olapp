@@ -7,11 +7,16 @@
   <div class="row">
     <div class="col-md-12">
       <div id="elements" class="text-center">
-        <div *ngFor="let image of images; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)">
-          <image-local source="{{image}}" width="-2" height="200"></image-local>
+        <div *ngFor="let image of imagesSort; let idx = index" make-draggable="{{idx}}" make-droppable (dropped)="onDrop($event, idx)" >
+          <image-local [source]="image" [class]="imagesResultOk[idx] ? 'image-ok' : imagesResultErr[idx] ? 'image-error' : 'none'" width="-2" height="200"></image-local>
           <br />
           <br />
         </div>
+        <h4 *ngIf="imagesNbrShow">
+            <span class="label label-primary">
+                {{imagesNbrOk}}/{{imagesNbrTotal}}
+            </span>
+        </h4>
       </div>
     </div>
   </div>

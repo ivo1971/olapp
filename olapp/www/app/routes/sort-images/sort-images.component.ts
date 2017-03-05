@@ -26,7 +26,12 @@ export class SortImagesComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private images : string[] = [];
+    private imagesSort      : string[]  = [];
+    private imagesResultOk  : boolean[] = [];
+    private imagesResultErr : boolean[] = [];
+    private imagesNbrOk     : number    = 0;
+    private imagesNbrTotal  : number    = 0;
+    private imagesNbrShow   : boolean   = false;
 
     /* Construction
      */
@@ -50,26 +55,76 @@ export class SortImagesComponent extends ComponentBase {
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
           data => {
-              if(0 == this.images.length) {
+              if(0 == this.imagesSort.length) {
                 //initialization
                 for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    this.images.push(data.images[u]);
+                    this.imagesSort.push(data.images[u]);
+                    this.imagesResultOk.push(false);
+                    this.imagesResultErr.push(false);
                 }
               } else {
                 //other team member changed the order
                 //(assume there is no change in the size of the list)
                 //(this is an update --> change as little as possible in the array)
                 for(let u : number = 0 ; u < data.images.length ; ++u) {
-                    if(this.images[u] !== data.images[u]) {
-                        this.images[u] = data.images[u];
+                    if(this.imagesSort[u] !== data.images[u]) {
+                        this.imagesSort[u] = data.images[u];
                     }
                 }
               }
           });
+
+        this.observableImagesListResult = this._websocketUserService
+                                             .register("sort-images-list-result")
+        this.observableImagesListResultSubscription = this.observableImagesListResult.subscribe(
+            data => {
+                console.log(data);
+                if(data.sort) {
+                    //start sorting again
+                    //(clear ok/error classifications)
+                    for(let u : number = 0 ; u < this.imagesSort.length ; ++u) {
+                        this.imagesResultOk.push (false);
+                        this.imagesResultErr.push(false);
+                    }
+                    this.imagesNbrShow  = false;
+                } else {
+                    this.imagesNbrShow  = true;
+                    this.imagesNbrOk    = 0;
+                    this.imagesNbrTotal = 0;
+                    //show the results
+                    let solutionImages;
+                    for(let u : number = 0 ; u < data.teams.length ; ++u) {
+                        console.log(data.teams[u]["teamId"]);
+                        if("solution" == data.teams[u]["teamId"]) {
+                            console.log("OK");
+                            solutionImages = data.teams[u].images[0];
+                        }
+                    }
+                    for(let u : number = 0 ; u < this.imagesSort.length ; ++u) {
+                        ++this.imagesNbrTotal;
+                        if("undefined" !== typeof(solutionImages[u])) {
+                            if(this.imagesSort[u] == solutionImages[u]) {
+                                ++this.imagesNbrOk;        
+                                this.imagesResultOk[u]  = true ;
+                                this.imagesResultErr[u] = false;
+                            } else {
+                                console.log("[" + this.imagesSort[u] + "][" + solutionImages[u] + "] err");
+                                this.imagesResultOk[u]  = false;
+                                this.imagesResultErr[u] = true ;
+                            }
+                        } else {
+                                this.imagesResultOk[u]  = false;
+                                this.imagesResultErr[u] = false;
+                        }
+                    }
+                }
+            }
+        );
     }
 
     public ngOnDestroy() : void {
         this.observableImagesListRandomSubscription.unsubscribe();
+        this.observableImagesListResultSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -81,16 +136,16 @@ export class SortImagesComponent extends ComponentBase {
             return;
         }
         if(idxSrc < idxTrg) {
-            this.images.splice(idxTrg + 1, 0, this.images[parseInt(event)]);
-            this.images.splice(idxSrc, 1);
+            this.imagesSort.splice(idxTrg + 1, 0, this.imagesSort[parseInt(event)]);
+            this.imagesSort.splice(idxSrc, 1);
         } else {
-            this.images.splice(idxTrg, 0, this.images[parseInt(event)]);
-            this.images.splice(idxSrc + 1, 1);
+            this.imagesSort.splice(idxTrg, 0, this.imagesSort[parseInt(event)]);
+            this.imagesSort.splice(idxSrc + 1, 1);
         }
 
         //inform host
         this._websocketUserService.sendMsg("sort-images-list-team", {
-            images: this.images
+            images: this.imagesSort
         });
     }
 
@@ -101,4 +156,6 @@ export class SortImagesComponent extends ComponentBase {
      */
     private observableImagesListRandom               : Observable<any>;
     private observableImagesListRandomSubscription   : Subscription;
+    private observableImagesListResult               : Observable<any>;
+    private observableImagesListResultSubscription   : Subscription;
 }
