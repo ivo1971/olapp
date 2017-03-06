@@ -10,6 +10,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "questions")
    , m_spTeamManager(spTeamManager)
    , m_nbrOfQuestions(0)
+   , m_Questions()
 {
 }
 
@@ -53,7 +54,15 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
 
 void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::const_iterator citJsData)
 {
+    //spread the news
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
     m_nbrOfQuestions = GetElementInt(citJsData, "nbrOfQuestions");
     m_spWsQuizHandler->SendMessage("questions-configure", citJsData);
+
+    //prepare the answers storage
+    m_Questions.clear();
+    for(const auto teamId : m_spTeamManager->GetAllTeamIds()) {
+        std::vector<std::string> questions(m_nbrOfQuestions);
+        m_Questions.insert(std::pair<std::string,std::vector<std::string>>(teamId, questions));
+    }
 }
