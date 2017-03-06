@@ -57,6 +57,9 @@ export class SortImagesComponent extends ComponentBase {
                                              .register("sort-images-list-random")
         this.observableImagesListRandomSubscription = this.observableImagesListRandom.subscribe(
             data => {
+                //stop dragging
+                this.draggingIdx = this.draggingIdxNone; 
+
                 if(0 == this.imagesSort.length) {
                   //initialization
                   this.imagesResultOk.length  = 0;
@@ -83,6 +86,9 @@ export class SortImagesComponent extends ComponentBase {
                                              .register("sort-images-list-result")
         this.observableImagesListResultSubscription = this.observableImagesListResult.subscribe(
             data => {
+                //stop dragging
+                this.draggingIdx = this.draggingIdxNone; 
+
                 if(data.sort) {
                     //start sorting again
                     //(clear ok/error classifications)
@@ -134,6 +140,12 @@ export class SortImagesComponent extends ComponentBase {
     /* Event handlers called from the template
      */
     private onClickImage(imageIdx : number): void {
+        if(this.imagesNbrShow) {
+            //not in sorting mode,
+            //no drag & drop
+            return;
+        }
+
         if(this.draggingIdx == imageIdx) {
             //click on the image being dragged
             //--> stop drag
