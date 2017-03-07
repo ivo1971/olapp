@@ -7,7 +7,7 @@
 
 class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
    public:
-                                                     CQuizModeQuestions          (std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager);
+                                                     CQuizModeQuestions          (std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users);
       virtual                                        ~CQuizModeQuestions         (void) throw();
 
    public:
@@ -17,12 +17,13 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       virtual void                                   UsersChanged                (const MapUser& users);
       virtual void                                   ReConnect                   (const std::string& id);
 
-
    private:
       void                                           HandleMessageMasterConfigure(const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageQuizAnswer     (const std::string& id, const nlohmann::json::const_iterator citJsData);
 
    private:
       SPTeamManager                                  m_spTeamManager;
+      MapUser                                        m_Users;
       int                                            m_nbrOfQuestions;
       std::map<std::string,std::vector<std::string>> m_Questions;
 };
