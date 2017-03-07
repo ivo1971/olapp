@@ -46,6 +46,7 @@ import {WelcomeComponent}              from "./routes/welcome/welcome.component"
 import {ImageLocalComponent}           from "./components/image-local/image-local.component";
 import {ImageNativeComponent}          from "./components/image-native/image-native.component";
 import {ImageTeamfieComponent}         from "./components/image-teamfie/image-teamfie.component";
+import {InputDebounceComponent}        from "./components/input-debounce/input-debounce.component";
 import {MenuComponent}                 from "./components/menu/menu.component";
 import {ScoreboardListComponent}       from "./components/scoreboard-list/scoreboard-list.component";
 import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
@@ -185,6 +186,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     ImageLocalComponent,
     ImageNativeComponent,
     ImageTeamfieComponent,
+    InputDebounceComponent,
     MenuComponent,
     ScoreboardListComponent,
     StatusBarComponent,

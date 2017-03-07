@@ -10,6 +10,14 @@ import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
+class Question {
+    public answer : string = "";
+
+    public constructor(anwr : string = "") {
+        this.answer = anwr;
+    }
+}
+
 @Component({
     moduleId   : module.id,
     selector   : 'questions',
@@ -22,10 +30,10 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private questions          : string[]  = [];
-    private questionsNbrOk     : number    = 0;
-    private questionsNbrTotal  : number    = 0;
-    private questionsNbrShow   : boolean   = false;
+    private questions          : Question[] = [];
+    private questionsNbrOk     : number     = 0;
+    private questionsNbrTotal  : number     = 0;
+    private questionsNbrShow   : boolean    = false;
 
     /* Construction
      */
@@ -49,17 +57,42 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                                              .register("questions-configure")
         this.observableQuestionsConfigureSubscription = this.observableQuestionsConfigure.subscribe(
             data => {
+                //this is a reset,
+                //so start clean
                 let nbrOfQuestions     = data["nbrOfQuestions"];
-                let nbrOfQuestionsList = this.questions.length;
-                console.log("observableQuestionsConfigureSubscription [" + nbrOfQuestions + "]");
-                if(nbrOfQuestionsList < nbrOfQuestions) {
-                    console.log("observableQuestionsConfigureSubscription [" + nbrOfQuestions + "] add");
-                    for(let u = 0 ; u < (nbrOfQuestions - nbrOfQuestionsList) ; ++u) {
-                        this.questions.push("");
+                this.questions.length  = 0;
+                for(let u = 0 ; u < nbrOfQuestions ; ++u) {
+                    this.questions.push(new Question());
+                }
+            }
+        );
+
+        this.observableQuestionsAnswerUpdateOne = this._websocketUserService
+                                             .register("questions-answer-update-one")
+        this.observableQuestionsAnswerUpdateOneSubscription = this.observableQuestionsAnswerUpdateOne.subscribe(
+            data => {
+                let idx    : number = data["idx"];
+                let answer : string = data["answer"];
+                if(this.questions.length <= idx) {
+                    this.logService.error("questions-answer-update-one index [" + idx + "] too big (max: [" + this.questions.length + "])");
+                    return;
+                }
+                this.questions[idx].answer = answer; 
+            }
+        );
+
+        this.observableQuestionsAnswerUpdateOne = this._websocketUserService
+                                             .register("questions-answer-update-all")
+        this.observableQuestionsAnswerUpdateOneSubscription = this.observableQuestionsAnswerUpdateOne.subscribe(
+            data => {
+                for(let u = 0 ; u < data["answers"].length ; ++u) {
+                    let idx    : number = data["answers"][u]["idx"];
+                    let answer : string = data["answers"][u]["answer"];
+                    if(this.questions.length <= idx) {
+                        this.logService.error("questions-answer-update-all index [" + idx + "] too big (max: [" + this.questions.length + "])");
+                        return;
                     }
-                } else if(nbrOfQuestionsList > nbrOfQuestions) {
-                    console.log("observableQuestionsConfigureSubscription [" + nbrOfQuestions + "] remove");
-                    this.questions.splice(nbrOfQuestions, nbrOfQuestionsList - nbrOfQuestions);
+                    this.questions[idx].answer = answer; 
                 }
             }
         );
@@ -67,16 +100,26 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
 
     public ngOnDestroy() : void {
         this.observableQuestionsConfigureSubscription.unsubscribe();
+        this.observableQuestionsAnswerUpdateOneSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
      */
+    private valueChanged(idx : number, answer: string) : void {
+        this.questions[idx].answer = answer; 
+        this._websocketUserService.sendMsg("questions-answer", {
+            idx: idx,
+            answer: answer
+        });    
+    }
 
     /* Private functions
      */
 
     /* Private members
      */
-    private observableQuestionsConfigure               : Observable<any>;
-    private observableQuestionsConfigureSubscription   : Subscription;
+    private observableQuestionsConfigure                   : Observable<any>;
+    private observableQuestionsConfigureSubscription       : Subscription;
+    private observableQuestionsAnswerUpdateOne             : Observable<any>;
+    private observableQuestionsAnswerUpdateOneSubscription : Subscription;
 }
