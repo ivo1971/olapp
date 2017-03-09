@@ -12,6 +12,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , m_Users(users)
    , m_nbrOfQuestions(0)
    , m_Questions()
+   , m_Answering(true)
 {
 }
 
@@ -32,6 +33,10 @@ void CQuizModeQuestions::HandleMessageMaster(const std::string& /* id */, const 
     m_spLogger->info("CQuizModeQuestions [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("questions-configure" == mi) {
         HandleMessageMasterConfigure(citJsData);
+    } else if("questions-action" == mi) {
+        HandleMessageMasterAction(citJsData);
+    } else if("questions-evaluations" == mi) {
+        HandleMessageMasterEvaluations(citJsData);
     }
 }
 
@@ -104,6 +109,46 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
         std::vector<std::string> questions(m_nbrOfQuestions);
         m_Questions.insert(std::pair<std::string,std::vector<std::string>>(teamId, questions));
     }
+}
+
+void CQuizModeQuestions::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
+{
+    //spread the news
+    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    m_Answering = GetElementBoolean(citJsData, "answering");
+    m_spWsQuizHandler->SendMessage  ("questions-action", citJsData);
+    m_spWsBeamerHandler->SendMessage("questions-action", citJsData);
+    m_spWsMasterHandler->SendMessage("questions-action", citJsData);
+
+    //send answers from the teams to the masters and the beamers
+    json jsonData; 
+    for(const auto teamQuestions : m_Questions) {
+        std::string teamName;
+        m_spTeamManager->FindTeamName(teamQuestions.first, teamName);
+
+        json jsonDataTeam; 
+        jsonDataTeam["id"]    = teamQuestions.first;
+        jsonDataTeam["name"]  = teamName;
+        unsigned int idx = 0;
+        for(const auto teamAnswer : teamQuestions.second) {
+            json jsonDataTeamAnswer; 
+            jsonDataTeamAnswer["idx"]    = idx++;
+            jsonDataTeamAnswer["answer"] = teamAnswer;
+            jsonDataTeam["answers"].push_back(jsonDataTeamAnswer);
+        }
+        jsonData["teams"].push_back(jsonDataTeam);
+    }
+    m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
+    m_spWsMasterHandler->SendMessage("questions-teams-answers-all", jsonData);    
+}
+
+void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::const_iterator citJsData)
+{
+    //spread the news
+    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    m_spWsQuizHandler->SendMessage  ("questions-evaluations", citJsData);
+    m_spWsBeamerHandler->SendMessage("questions-evaluations", citJsData);
+    m_spWsMasterHandler->SendMessage("questions-evaluations", citJsData);
 }
 
 void CQuizModeQuestions::HandleMessageQuizAnswer(const std::string& id, const nlohmann::json::const_iterator citJsData)

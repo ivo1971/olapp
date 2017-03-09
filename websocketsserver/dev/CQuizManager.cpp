@@ -294,6 +294,7 @@ void CQuizManager::SendTeam(const std::string& userId)
 
   //send
   json data;
+  data["id"]   = citUser->second.TeamGet();
   data["name"] = teamName;
   m_spWsQuizHandler->SendMessage(citUser->first, "team", data);
 }
