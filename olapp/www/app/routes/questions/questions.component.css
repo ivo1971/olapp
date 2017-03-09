@@ -1,0 +1,11 @@
+.question-ok {
+    border: 5px solid #0c0 !important;
+}
+
+.question-waring {
+    border: 5px solid darkorange !important;
+}
+
+.question-error {
+    border: 5px solid #c00 !important;
+}

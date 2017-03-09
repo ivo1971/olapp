@@ -25,8 +25,9 @@ export class UserService {
         this.subjectUser.next(this.user);
     };
 
-    public setTeam(team: string) : void {
-        this.user.team = team;
+    public setTeam(id: string, name: string) : void {
+        this.user.teamId = id;
+        this.user.team   = name;
         this.subjectUser.next(this.user);
     };
 

@@ -6,8 +6,11 @@ import {Subscription}         from 'rxjs/Subscription';
 
 import {ComponentBase}        from './../../classes/component-base.class';
 
+import {User}                 from './../../classes/user.class';
+
 import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
+import {UserService}          from './../../services/user.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
 class Question {
@@ -30,23 +33,41 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private questions          : Question[] = [];
-    private questionsNbrOk     : number     = 0;
-    private questionsNbrTotal  : number     = 0;
-    private questionsNbrShow   : boolean    = false;
+    private modeAnswering            : boolean    = true;
+    private questions                : Question[] = [];
+    private questionsNbrOk           : number     = 0;
+    private questionsNbrTotal        : number     = 0;
+    private questionsNbrShow         : boolean    = false;
+    private teamsEvaluations         : Array<any> = [];
+    private teamsEvaluationsIdx      : number     = -1;
+    private teamsEvaluationsIdxStored: number     = -1;
+    private userInfo                 : User       = new User();
 
     /* Construction
      */
     public constructor(
         private logService             : LogService,
         private modeService            : ModeService,
-        private _websocketUserService : WebsocketUserService,
+        private usersService           : UserService,
+        private _websocketUserService  : WebsocketUserService,
         ) { 
         //call base class
         super(_websocketUserService);
 
         //inform parent
         this.sendLocation("questions");
+
+        //get user info
+        this.userServiceSubscription = this.usersService.getObservableUser().subscribe(
+          user => {
+            this.userInfo = user;
+            console.log(this.userInfo);
+          });
+
+    }
+
+    public destructor() {
+        this.userServiceSubscription.unsubscribe();
     }
 
     /* Life-cycle hooks
@@ -81,9 +102,9 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
             }
         );
 
-        this.observableQuestionsAnswerUpdateOne = this._websocketUserService
+        this.observableQuestionsAnswerUpdateAll = this._websocketUserService
                                              .register("questions-answer-update-all")
-        this.observableQuestionsAnswerUpdateOneSubscription = this.observableQuestionsAnswerUpdateOne.subscribe(
+        this.observableQuestionsAnswerUpdateAllSubscription = this.observableQuestionsAnswerUpdateAll.subscribe(
             data => {
                 for(let u = 0 ; u < data["answers"].length ; ++u) {
                     let idx    : number = data["answers"][u]["idx"];
@@ -96,11 +117,43 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                 }
             }
         );
+
+        this.observableQuestionsAction = this._websocketUserService
+                                             .register("questions-action")
+        this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
+            data => {
+                this.modeAnswering = data["answering"]; 
+                if(this.modeAnswering) {
+                    this.teamsEvaluationsIdx = -1;
+                } else {
+                    this.teamsEvaluationsIdx = this.teamsEvaluationsIdxStored;
+                }
+            }
+        );
+
+        this.observableQuestionsEvaluations = this._websocketUserService
+                                             .register("questions-evaluations")
+        this.observableQuestionsEvaluationsSubscription = this.observableQuestionsEvaluations.subscribe(
+            data => {
+                this.teamsEvaluations.length     = 0;
+                this.teamsEvaluationsIdx         = -1;
+                for(let u = 0 ; u < data["evaluations"].length ; ++u) {
+                    this.teamsEvaluations.push(data["evaluations"][u]);
+                    if(this.userInfo.teamId == data["evaluations"][u].id) {
+                        this.teamsEvaluationsIdx = u;    
+                    }
+                }
+                this.teamsEvaluationsIdxStored = this.teamsEvaluationsIdx;
+            }
+        );
     }
 
     public ngOnDestroy() : void {
         this.observableQuestionsConfigureSubscription.unsubscribe();
         this.observableQuestionsAnswerUpdateOneSubscription.unsubscribe();
+        this.observableQuestionsAnswerUpdateAllSubscription.unsubscribe();
+        this.observableQuestionsActionSubscription.unsubscribe();
+        this.observableQuestionsEvaluationsSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -118,8 +171,15 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
 
     /* Private members
      */
+    private userServiceSubscription                       : Subscription;
     private observableQuestionsConfigure                   : Observable<any>;
     private observableQuestionsConfigureSubscription       : Subscription;
     private observableQuestionsAnswerUpdateOne             : Observable<any>;
     private observableQuestionsAnswerUpdateOneSubscription : Subscription;
+    private observableQuestionsAnswerUpdateAll             : Observable<any>;
+    private observableQuestionsAnswerUpdateAllSubscription : Subscription;
+    private observableQuestionsAction                      : Observable<any>;
+    private observableQuestionsActionSubscription          : Subscription;
+    private observableQuestionsEvaluations                 : Observable<any>;
+    private observableQuestionsEvaluationsSubscription     : Subscription;
 }

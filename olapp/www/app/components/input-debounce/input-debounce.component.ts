@@ -8,10 +8,11 @@ import {Subscription}         from 'rxjs/Subscription';
 
 @Component({
     selector: 'input-debounce',
-    template: '<input type="text" class="form-control" [(ngModel)]="value">'
+    template: '<input type="text" class="form-control" [disabled]="disabled" [(ngModel)]="value">'
 })
 export class InputDebounceComponent {  
     @Input()  delay:       number               = 500;
+    @Input()  disabled:    boolean              = false;
     @Input()  value:       string               = "";
     @Output() valueEv:     EventEmitter<string> = new EventEmitter<string>();
 

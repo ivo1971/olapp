@@ -2,9 +2,10 @@
 declare var Fingerprint2: any
 
 export class User {
-    public id   : string = "";
-    public name : string = "";
-    public team : string = ""; //not stored
+    public id     : string = "";
+    public name   : string = "";
+    public teamId : string = ""; //not stored
+    public team   : string = ""; //not stored
 
     public constructor() {
         if (typeof(Storage) != "undefined") {

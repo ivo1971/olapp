@@ -1,0 +1,47 @@
+<div class="container-fuid">
+  <div class="row">
+    <div *ngIf="!inMaster" class="col-md-12">
+      <h2 class="text-center"><b><u>Vragen</u></b></h2>
+    </div>
+  </div>
+  <div *ngIf="!modeAnswering" class="row">
+    <div class="col-md-1 col-sm-1 col-xs-1">
+    </div>
+    <div class="col-md-10 col-sm-10 col-xs-10">
+      <table>
+          <tr>
+            <th *ngIf="!inMaster">
+              <h3>vraag</h3>
+            </th>
+            <th *ngFor="let teamAnswers of teamsAnswers; let teamIdx = index">
+                <h3 class="text-center">{{teamAnswers.name}}</h3>
+            </th>
+            <th *ngIf="inMaster">
+              <h3>nagekeken</h3>
+            </th>
+          </tr>
+          <tr *ngFor="let dummy of dummies; let answerIdx = index">
+            <td *ngIf="!inMaster">
+              {{answerIdx + 1}}
+            </td>
+            <td *ngFor="let teamAnswers of teamsAnswers; let teamIdx = index">
+                <input *ngIf="inMaster" class="form-check-input" type="checkbox" (click)="onClickCheckboxEvaluate(teamIdx, answerIdx, $event.target.checked)" > 
+                <span 
+                    [class.question-ok]="teamsEvaluationsSet && teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    [class.question-error]="teamsEvaluationsSet && teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    >
+                    {{teamAnswers.answers[answerIdx].answer}}
+                </span>
+            </td>
+            <td *ngIf="inMaster">
+              <button *ngIf="inMaster" type="button" class="btn btn-success" (click)="onClickAnswerEvaluated(answerIdx)" >
+                {{answerIdx + 1}}
+              </button>
+            </td>
+          </tr>
+      </table>
+    </div>
+    <div class="col-md-1 col-sm-1 col-xs-1">
+    </div>
+  </div>
+</div>

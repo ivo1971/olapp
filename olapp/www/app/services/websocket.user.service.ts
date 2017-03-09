@@ -28,7 +28,7 @@ export class WebsocketUserService extends WebsocketMessageService {
 
         //register and handle requests to set the team
         this.register("team").subscribe(data => {
-            this.userService.setTeam(data.name);
+            this.userService.setTeam(data.id, data.name);
         });
     }
 

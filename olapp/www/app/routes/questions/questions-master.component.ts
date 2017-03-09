@@ -14,6 +14,7 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
     moduleId   : module.id,
     selector   : 'questions-master',
     styleUrls  : [
+        'questions.component.css',
         'questions-master.component.css'
     ],
     templateUrl: 'questions-master.component.html'
@@ -52,6 +53,13 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         this._websocketUserService.sendMsg("questions-configure", {
             nbrOfQuestions: this.numberOfQuestions
         });    
+    }
+
+    private onClickRadioAction(answering : boolean) : void {
+        console.log("onClickRadioAction: [" + answering + "]");
+        this._websocketUserService.sendMsg("questions-action", {
+            answering: answering
+        });        
     }
 
     /* Private functions
