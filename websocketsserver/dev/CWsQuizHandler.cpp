@@ -138,6 +138,16 @@ void CWsQuizHandler::SendMessage(const std::string& id, const std::string& mi, c
   }
 }
 
+bool CWsQuizHandler::HasId(const std::string& id) const
+{
+  for(auto socketId : m_MapSocketId) {
+    if(socketId.second == id) {
+      return true;
+    }
+  }  
+  return false;
+}
+
 /*****************************************************************************************
  **
  ** Private functions

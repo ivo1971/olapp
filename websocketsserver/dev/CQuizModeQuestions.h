@@ -22,6 +22,7 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       void                                           HandleMessageMasterAction     (const nlohmann::json::const_iterator citJsData);
       void                                           HandleMessageMasterEvaluations(const nlohmann::json::const_iterator citJsData);
       void                                           HandleMessageQuizAnswer       (const std::string& id, const nlohmann::json::const_iterator citJsData);
+      void                                           SendAnswersAll                (const bool toMaster = true, const bool toBeamer = true);
 
    private:
       SPTeamManager                                  m_spTeamManager;

@@ -60,11 +60,20 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     {
         json jsonData; 
         jsonData["nbrOfQuestions"] = m_nbrOfQuestions;
-        m_spWsQuizHandler->SendMessage(id, "questions-configure", jsonData);
+        m_spWsQuizHandler->SendMessage  (id, "questions-configure", jsonData);
+        m_spWsBeamerHandler->SendMessage(id, "questions-configure", jsonData);
+    }
+
+    //send the current action
+    {
+        json jsonData; 
+        jsonData["answering"] = m_Answering;
+        m_spWsQuizHandler->SendMessage  (id, "questions-action", jsonData);
+        m_spWsBeamerHandler->SendMessage(id, "questions-action", jsonData);
     }
 
     //send all answers for this team
-    {
+    if(m_spWsQuizHandler->HasId(id)) {
         //find the user and his/her team
         MapUserCIt citUser = m_Users.find(id);
         if(m_Users.end() == citUser) {
@@ -93,6 +102,11 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
 
         //send
         m_spWsQuizHandler->SendMessage(id, "questions-answer-update-all", jsonData);
+    } else {
+        //send all information to the beamer or master
+        const bool toMaster = m_spWsMasterHandler->HasId(id);
+        const bool toBeamer = m_spWsBeamerHandler->HasId(id);
+        SendAnswersAll(toMaster, toBeamer);
     }
 }
 
@@ -121,25 +135,7 @@ void CQuizModeQuestions::HandleMessageMasterAction(const nlohmann::json::const_i
     m_spWsMasterHandler->SendMessage("questions-action", citJsData);
 
     //send answers from the teams to the masters and the beamers
-    json jsonData; 
-    for(const auto teamQuestions : m_Questions) {
-        std::string teamName;
-        m_spTeamManager->FindTeamName(teamQuestions.first, teamName);
-
-        json jsonDataTeam; 
-        jsonDataTeam["id"]    = teamQuestions.first;
-        jsonDataTeam["name"]  = teamName;
-        unsigned int idx = 0;
-        for(const auto teamAnswer : teamQuestions.second) {
-            json jsonDataTeamAnswer; 
-            jsonDataTeamAnswer["idx"]    = idx++;
-            jsonDataTeamAnswer["answer"] = teamAnswer;
-            jsonDataTeam["answers"].push_back(jsonDataTeamAnswer);
-        }
-        jsonData["teams"].push_back(jsonDataTeam);
-    }
-    m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
-    m_spWsMasterHandler->SendMessage("questions-teams-answers-all", jsonData);    
+    SendAnswersAll();
 }
 
 void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::const_iterator citJsData)
@@ -212,5 +208,32 @@ void CQuizModeQuestions::HandleMessageQuizAnswer(const std::string& id, const nl
             m_spLogger->warning("CQuizModeQuestions [%s][%u] incoming ID [%s] to ID [%s].", __FUNCTION__, __LINE__, id.c_str(), userId.c_str());
             m_spWsQuizHandler->SendMessage(userId, "questions-answer-update-one", citJsData);
         }
+    }
+}
+
+void CQuizModeQuestions::SendAnswersAll(const bool toMaster, const bool toBeamer)
+{
+    json jsonData; 
+    for(const auto teamQuestions : m_Questions) {
+        std::string teamName;
+        m_spTeamManager->FindTeamName(teamQuestions.first, teamName);
+
+        json jsonDataTeam; 
+        jsonDataTeam["id"]    = teamQuestions.first;
+        jsonDataTeam["name"]  = teamName;
+        unsigned int idx = 0;
+        for(const auto teamAnswer : teamQuestions.second) {
+            json jsonDataTeamAnswer; 
+            jsonDataTeamAnswer["idx"]    = idx++;
+            jsonDataTeamAnswer["answer"] = teamAnswer;
+            jsonDataTeam["answers"].push_back(jsonDataTeamAnswer);
+        }
+        jsonData["teams"].push_back(jsonDataTeam);
+    }
+    if(toMaster) {
+        m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
+    }
+    if(toBeamer) {
+        m_spWsMasterHandler->SendMessage("questions-teams-answers-all", jsonData);    
     }
 }
