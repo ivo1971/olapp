@@ -1,0 +1,11 @@
+.input-ok {
+    border: 5px solid #0c0 !important;
+}
+
+.input-waring {
+    border: 5px solid darkorange !important;
+}
+
+.input-error {
+    border: 5px solid #c00 !important;
+}

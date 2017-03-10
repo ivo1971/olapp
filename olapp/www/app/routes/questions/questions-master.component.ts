@@ -53,6 +53,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         this._websocketUserService.sendMsg("questions-configure", {
             nbrOfQuestions: this.numberOfQuestions
         });    
+        this.onClickRadioAction(true);
+        //TODO: set radio button to 'answering' in the UI
     }
 
     private onClickRadioAction(answering : boolean) : void {

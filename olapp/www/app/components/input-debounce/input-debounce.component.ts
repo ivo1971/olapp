@@ -7,10 +7,17 @@ import {Observable}           from 'rxjs/Rx';
 import {Subscription}         from 'rxjs/Subscription';
 
 @Component({
-    selector: 'input-debounce',
-    template: '<input type="text" class="form-control" [disabled]="disabled" [(ngModel)]="value">'
+    moduleId   : module.id,
+    selector   : 'input-debounce',
+    styleUrls  : [
+        'input-debounce.component.css'
+    ],
+    templateUrl: 'input-debounce.component.html'
 })
 export class InputDebounceComponent {  
+    @Input()  classError:  boolean              = false;
+    @Input()  classWarning:boolean              = false;
+    @Input()  classOk:     boolean              = false;
     @Input()  delay:       number               = 500;
     @Input()  disabled:    boolean              = false;
     @Input()  value:       string               = "";

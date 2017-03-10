@@ -85,6 +85,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                 for(let u = 0 ; u < nbrOfQuestions ; ++u) {
                     this.questions.push(new Question());
                 }
+                console.log("config [" + nbrOfQuestions + "]")
             }
         );
 
@@ -124,7 +125,8 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
             data => {
                 this.modeAnswering = data["answering"]; 
                 if(this.modeAnswering) {
-                    this.teamsEvaluationsIdx = -1;
+                    this.teamsEvaluationsIdx     = -1;
+                    this.teamsEvaluations.length = 0;
                 } else {
                     this.teamsEvaluationsIdx = this.teamsEvaluationsIdxStored;
                 }

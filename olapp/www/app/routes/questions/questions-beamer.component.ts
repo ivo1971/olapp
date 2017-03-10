@@ -55,6 +55,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
         this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
             data => {
                 this.modeAnswering = data["answering"]; 
+                console.log("observableQuestionsActionSubscription [" + this.modeAnswering + "]");
             }
         );
 
@@ -85,6 +86,8 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     }
                     this.teamsEvaluationsMstr.push(evaluation);
                 }
+                console.log("observableQuestionsTeamsAnswersAllSubscription");
+                console.log(this.teamsAnswers);
             }
         );
 
@@ -97,7 +100,6 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     this.teamsEvaluations.push(data["evaluations"][u]);
                 }
                 this.teamsEvaluationsSet = true;
-                console.log(this.teamsEvaluations);
             }
         );
     }
