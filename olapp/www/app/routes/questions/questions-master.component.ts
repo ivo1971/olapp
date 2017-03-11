@@ -24,6 +24,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
      * (hence at the top)
      */
     private numberOfQuestions  : number  = 10;
+    private pointsPerQuestion  : number  = 1;
     private resetConfirm       : boolean = false;
     private modeAnswering      : boolean = true;
 
@@ -50,7 +51,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             data => {
                 console.log(data);
                 this.numberOfQuestions = data["nbrOfQuestions"]; 
-                console.log("observableQuestionsConfigure-master [" + this.numberOfQuestions + "]");
+                this.pointsPerQuestion = data["pointsPerQuestion"];
+                console.log("observableQuestionsConfigure-master [" + this.numberOfQuestions + "][" + this.pointsPerQuestion + "]");
             }
         );
 
@@ -83,7 +85,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         console.log("onClickSetNumberOfQuestionsTwo");
         this.resetConfirm = false;
         this._websocketUserService.sendMsg("questions-configure", {
-            nbrOfQuestions: this.numberOfQuestions
+            nbrOfQuestions:    this.numberOfQuestions,
+            pointsPerQuestion: this.pointsPerQuestion
         });    
         this.onClickRadioAction(true);
         this.modeAnswering = true;

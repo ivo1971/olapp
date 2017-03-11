@@ -95,6 +95,8 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     if(evaluationsInit) {
                         let evaluation : any = {
                             id:              data["teams"][u].id,
+                            nbrCorrect:      0,
+                            nbrEvaluated:    0,
                             evaluations:     new Array<boolean>(),
                             evaluationsDone: new Array<boolean>()
                         }
@@ -155,9 +157,28 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
 
     private onClickAnswerEvaluated(answerIdx : number) : void {
         this.logService.log("onClickAnswerEvaluated [" + answerIdx + "]");
+        //set this question to evaluated
         for(let u = 0 ; u < this.teamsEvaluations.length ; ++u) {
             this.teamsEvaluations[u].evaluationsDone[answerIdx] = true;
         }
+
+        //count points
+        for(let u = 0 ; u < this.teamsEvaluations.length ; ++u) {
+            this.teamsEvaluations[u].nbrCorrect   = 0;
+            this.teamsEvaluations[u].nbrEvaluated = 0;
+            for(let v = 0 ; v < this.teamsEvaluations[u].evaluationsDone.length ; ++v) {
+                if(!this.teamsEvaluations[u].evaluationsDone[v]) {
+                    continue;
+                }
+                ++this.teamsEvaluations[u].nbrEvaluated;
+                if(!this.teamsEvaluations[u].evaluations[v]) {
+                    continue;
+                }
+                ++this.teamsEvaluations[u].nbrCorrect;
+            }
+        }
+
+        //spread the news
         this._websocketUserService.sendMsg("questions-evaluations", {
             evaluations: this.teamsEvaluations
         });    
