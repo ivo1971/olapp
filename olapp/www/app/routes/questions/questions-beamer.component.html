@@ -34,7 +34,13 @@
                 </span>
             </td>
             <td *ngIf="inMaster">
-              <button *ngIf="inMaster" type="button" class="btn btn-success" (click)="onClickAnswerEvaluated(answerIdx)" >
+              <button 
+                    *ngIf="inMaster" 
+                    type="button" 
+                    class="btn btn-success" 
+                    [class.question-neutral]="teamsEvaluationsSet && teamsEvaluations[0].evaluationsDone[answerIdx]" 
+                    (click)="onClickAnswerEvaluated(answerIdx)" 
+                    >
                 {{answerIdx + 1}}
               </button>
             </td>

@@ -9,3 +9,7 @@
 .question-error {
     border: 5px solid #c00 !important;
 }
+
+.question-neutral {
+    border: 5px solid #000 !important;
+}

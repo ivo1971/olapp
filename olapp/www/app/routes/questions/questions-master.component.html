@@ -14,14 +14,16 @@
         <div class="col-md-2 col-sm-2 col-xs-2">
           <input class="form-control" type="number" [(ngModel)]="numberOfQuestions" />
         </div>
-        <div class="col-md-2 col-sm-2 col-xs-2">
-          <button type="button" class="btn btn-success" (click)="onClickSetNumberOfQuestions()" >Configure/Reset</button>
+        <div class="col-md-6 col-sm-6 col-xs-6">
+          <button type="button" [disabled]="resetConfirm" class="btn btn-warning" (click)="onClickSetNumberOfQuestionsOne()"    >Configure/Reset</button>
+          <button type="button" *ngIf="resetConfirm"      class="btn btn-info"    (click)="onClickSetNumberOfQuestionsCancel()" >Cancel</button>
+          <button type="button" *ngIf="resetConfirm"      class="btn btn-danger"  (click)="onClickSetNumberOfQuestionsTwo()"    >Confirm</button>
         </div>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="inlineRadioAction" id="inlineRadioSort"   value="sort"   checked (click)="onClickRadioAction(true)" > Beantwoorden
-          <input class="form-check-input" type="radio" name="inlineRadioAction" id="inlineRadioResult" value="result"         (click)="onClickRadioAction(false)"> Beoordelen
+          <input class="form-check-input" type="radio" name="inlineRadioAction" id="inlineRadioSort"   value="sort"   [checked]="modeAnswering"  (click)="onClickRadioAction(true)" > Beantwoorden
+          <input class="form-check-input" type="radio" name="inlineRadioAction" id="inlineRadioResult" value="result" [checked]="!modeAnswering" (click)="onClickRadioAction(false)"> Beoordelen
         </label>
       </div>
       <br />
