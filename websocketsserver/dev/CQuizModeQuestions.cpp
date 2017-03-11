@@ -60,7 +60,7 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     m_spLogger->info("CQuizModeQuestions [%s][%u] [%d][%d][%d].", __FUNCTION__, __LINE__, toClient, toMaster, toBeamer);
     CQuizModeBase::ReConnect(id);
 
-    //send number of questions
+    //send configuration
     {
         json jsonData; 
         jsonData["nbrOfQuestions"] = m_nbrOfQuestions;
@@ -140,7 +140,9 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
     //spread the news
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
     m_nbrOfQuestions = GetElementInt(citJsData, "nbrOfQuestions");
-    m_spWsQuizHandler->SendMessage("questions-configure", citJsData);
+    m_spWsQuizHandler->SendMessage  ("questions-configure", citJsData);
+    m_spWsBeamerHandler->SendMessage("questions-configure", citJsData);
+    m_spWsMasterHandler->SendMessage("questions-configure", citJsData);
 
     //prepare the answers storage
     m_Questions.clear();
