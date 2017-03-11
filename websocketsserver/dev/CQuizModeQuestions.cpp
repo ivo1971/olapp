@@ -54,28 +54,46 @@ void CQuizModeQuestions::UsersChanged(const MapUser& users)
 
 void CQuizModeQuestions::ReConnect(const std::string& id)
 {
-    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    const bool toClient = m_spWsQuizHandler->HasId(id);
+    const bool toMaster = m_spWsMasterHandler->HasId(id);
+    const bool toBeamer = m_spWsBeamerHandler->HasId(id);
+    m_spLogger->info("CQuizModeQuestions [%s][%u] [%d][%d][%d].", __FUNCTION__, __LINE__, toClient, toMaster, toBeamer);
     CQuizModeBase::ReConnect(id);
 
     //send number of questions
     {
         json jsonData; 
         jsonData["nbrOfQuestions"] = m_nbrOfQuestions;
-        m_spWsQuizHandler->SendMessage  (id, "questions-configure", jsonData);
-        m_spWsBeamerHandler->SendMessage(id, "questions-configure", jsonData);
+        if(toMaster) {
+            m_spWsMasterHandler->SendMessage(id, "questions-configure",        jsonData);
+            m_spWsMasterHandler->SendMessage(id, "questions-configure-master", jsonData);
+        } else if(toBeamer) {
+            m_spWsBeamerHandler->SendMessage(id, "questions-configure",        jsonData);
+        } else if(toClient) {
+            m_spWsQuizHandler->SendMessage  (id, "questions-configure",        jsonData);
+        } else {
+            m_spLogger->error("CQuizModeQuestions [%s][%u] unknown ID [%s].", __FUNCTION__, __LINE__, id.c_str());
+        }
     }
 
     //send the current action
     {
         json jsonData; 
         jsonData["answering"] = m_Answering;
-        m_spWsQuizHandler->SendMessage  (id, "questions-action", jsonData);
-        m_spWsBeamerHandler->SendMessage(id, "questions-action", jsonData);
+        if(toMaster) {
+            m_spWsMasterHandler->SendMessage(id, "questions-action",        jsonData);
+            m_spWsMasterHandler->SendMessage(id, "questions-action-master", jsonData);
+        } else if(toBeamer) {
+            m_spWsBeamerHandler->SendMessage(id, "questions-action",        jsonData);
+        } else if(toClient) {
+            m_spWsQuizHandler->SendMessage  (id, "questions-action",        jsonData);
+        } else {
+            m_spLogger->error("CQuizModeQuestions [%s][%u] unknown ID [%s].", __FUNCTION__, __LINE__, id.c_str());
+        }
     }
 
     //send all answers for this team
-    m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
-    if(m_spWsQuizHandler->HasId(id)) {
+    if(toClient) {
         m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
         //find the user and his/her team
         MapUserCIt citUser = m_Users.find(id);
@@ -104,11 +122,8 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
                 m_spWsQuizHandler->SendMessage(id, "questions-evaluations",       m_Evaluations);
             }
         }
-        m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
     } else {
         //send all information to the beamer or master
-        const bool toMaster = m_spWsMasterHandler->HasId(id);
-        const bool toBeamer = m_spWsBeamerHandler->HasId(id);
         m_spLogger->info("CQuizModeQuestions [%s][%u] [%d][%d]", __FUNCTION__, __LINE__, toMaster, toBeamer);
         SendAnswersAll(toMaster, toBeamer);
         if(toMaster) {
