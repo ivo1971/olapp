@@ -13,6 +13,8 @@ import {ModeService, EMode}   from './../../services/mode.service';
 import {UserService}          from './../../services/user.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
+/* Help class
+   */
 class Question {
     public answer : string = "";
 
@@ -33,15 +35,11 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private modeAnswering            : boolean    = true;
-    private questions                : Question[] = [];
-    private questionsNbrOk           : number     = 0;
-    private questionsNbrTotal        : number     = 0;
-    private questionsNbrShow         : boolean    = false;
-    private teamsEvaluations         : Array<any> = [];
-    private teamsEvaluationsIdx      : number     = -1;
-    private teamsEvaluationsIdxStored: number     = -1;
-    private userInfo                 : User       = new User();
+    private modeAnswering            : boolean         = true;
+    private questions                : Array<Question> = [];
+    private teamsEvaluations         : Array<any>      = [];
+    private teamsEvaluationsIdx      : number          = -1;
+    private userInfo                 : User            = new User();
 
     /* Construction
      */
@@ -86,11 +84,12 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                 //this is a reset,
                 //so start clean
                 let nbrOfQuestions     = data["nbrOfQuestions"];
-                this.questions.length  = 0;
+                this.questions.length  = nbrOfQuestions;
                 for(let u = 0 ; u < nbrOfQuestions ; ++u) {
-                    this.questions.push(new Question());
+                    this.questions[u] = new Question();
                 }
-                console.log("config [" + nbrOfQuestions + "]")
+                this.teamsEvaluations.length = 0;
+                console.log("observableQuestionsConfigure [" + nbrOfQuestions + "]")
             }
         );
 
@@ -128,18 +127,10 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                                              .register("questions-action")
         this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
             data => {
-                console.log("observableQuestionsActionSubscription in");
+                console.log("observableQuestionsActionx in");
                 console.log(data);
                 this.modeAnswering = data["answering"]; 
-                if(this.modeAnswering) {
-                    console.log("observableQuestionsActionSubscription answering");
-                    this.teamsEvaluationsIdx     = -1;
-                    this.teamsEvaluations.length = 0;
-                } else {
-                    console.log("observableQuestionsActionSubscription evaluating");
-                    this.teamsEvaluationsIdx = this.teamsEvaluationsIdxStored;
-                }
-                console.log("observableQuestionsActionSubscription out");
+                console.log("observableQuestionsAction out");
             }
         );
 
@@ -147,22 +138,22 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                                              .register("questions-evaluations")
         this.observableQuestionsEvaluationsSubscription = this.observableQuestionsEvaluations.subscribe(
             data => {
-                console.log("observableQuestionsEvaluationsSubscription in");
-                this.teamsEvaluations.length     = 0;
-                this.teamsEvaluationsIdx         = -1;
-           	    if((null !== data) && ("undefined" !== typeof(data["evaluations"]))) {
-                    console.log("B");
-                    console.log(data);
-                    for(let u = 0 ; u < data["evaluations"].length ; ++u) {
-                        this.teamsEvaluations.push(data["evaluations"][u]);
-                        if(this.userInfo.teamId == data["evaluations"][u].id) {
-                            this.teamsEvaluationsIdx = u;    
-                        }
-                    }
-                    this.teamsEvaluations.length = data["evaluations"].length;
+                console.log("observableQuestionsEvaluations check");
+           	    if((null === data) || ("undefined" === typeof(data["evaluations"]))) {
+                   //no info
+                   return;
                 }
-                this.teamsEvaluationsIdxStored = this.teamsEvaluationsIdx;
-                console.log("observableQuestionsEvaluationsSubscription out");
+
+                console.log("observableQuestionsEvaluations in");
+                this.teamsEvaluations.length = 0;
+                this.teamsEvaluationsIdx     = -1;
+                for(let u = 0 ; u < data["evaluations"].length ; ++u) {
+                    this.teamsEvaluations.push(data["evaluations"][u]);
+                    if(this.userInfo.teamId == data["evaluations"][u].id) {
+                        this.teamsEvaluationsIdx = u;    
+                    }
+                }
+                console.log("observableQuestionsEvaluations out");
             }
         );
     }
@@ -190,7 +181,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
 
     /* Private members
      */
-    private userServiceSubscription                       : Subscription;
+    private userServiceSubscription                        : Subscription;
     private observableQuestionsConfigure                   : Observable<any>;
     private observableQuestionsConfigureSubscription       : Subscription;
     private observableQuestionsAnswerUpdateOne             : Observable<any>;
