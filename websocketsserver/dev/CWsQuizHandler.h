@@ -12,7 +12,7 @@
 
 class CWsQuizHandler: public seasocks::WebSocket::Handler {
  public:
-  CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<seasocks::Server> spServer);
+  CWsQuizHandler(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<seasocks::Server> spServer, const std::string& name);
   ~CWsQuizHandler(void) throw();
 
  public:
@@ -49,6 +49,7 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
  private:
   std::shared_ptr<seasocks::Logger>                    m_spLogger;
   std::shared_ptr<seasocks::Server>                    m_spServer;
+  std::string                                          m_Name;
   SignalMessage                                        m_SignalMessage;
   SignalDisconnect                                     m_SignalDisconnect;
   MapSocketId                                          m_MapSocketId;

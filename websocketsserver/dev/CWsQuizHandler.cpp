@@ -48,9 +48,10 @@ namespace {
  ** Construction/Destruction
  **
  *****************************************************************************************/
-CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger, shared_ptr<Server> spServer) 
+CWsQuizHandler::CWsQuizHandler(shared_ptr<Logger> spLogger, shared_ptr<Server> spServer, const std::string& name) 
   : m_spLogger(spLogger)
   , m_spServer(spServer)
+  , m_Name(name)
   , m_SignalMessage()
   , m_SignalDisconnect()
   , m_MapSocketId()
@@ -130,7 +131,7 @@ void CWsQuizHandler::SendMessage(const std::string& id, const std::string& mi, c
   jsonData["mi"]   = mi;
   jsonData["data"] = data;
   const std::string jsonDataDump = jsonData.dump();
-  m_spLogger->info("CWsQuizHandler [%s][%u] [%s][%u]: [%s].", __FUNCTION__, __LINE__, id.c_str(), m_MapSocketId.size(), jsonDataDump.c_str());
+  m_spLogger->info("CWsQuizHandler [%s][%u][%s] [%s][%u]: [%s].", __FUNCTION__, __LINE__, m_Name.c_str(), id.c_str(), m_MapSocketId.size(), jsonDataDump.c_str());
   for(auto socketId : m_MapSocketId) {
     if((0 == id.length()) || (socketId.second == id)) {
       socketId.first->send(jsonDataDump);
@@ -155,17 +156,17 @@ bool CWsQuizHandler::HasId(const std::string& id) const
  *****************************************************************************************/
 void CWsQuizHandler::onConnect(WebSocket* /* pConnection */)
 {
-  m_spLogger->info("CWsQuizHandler [%s][%u].", __FUNCTION__, __LINE__);
+  m_spLogger->info("CWsQuizHandler [%s][%u][%s].", __FUNCTION__, __LINE__, m_Name.c_str());
 }
 
 void CWsQuizHandler::onDisconnect(WebSocket* pConnection) 
 {
-  m_spLogger->info("CWsQuizHandler [%s][%u].", __FUNCTION__, __LINE__);
+  m_spLogger->info("CWsQuizHandler [%s][%u][%s].", __FUNCTION__, __LINE__, m_Name.c_str());
 
   //internal bookkeeping
   MapSocketIdCIt cit = m_MapSocketId.find(pConnection);
   if(m_MapSocketId.end() != cit) {
-    m_spLogger->info("CWsQuizHandler [%s][%u] found in map [%s].", __FUNCTION__, __LINE__, cit->second.c_str());
+    m_spLogger->info("CWsQuizHandler [%s][%u][%s] found in map [%s].", __FUNCTION__, __LINE__, m_Name.c_str(), cit->second.c_str());
 
     //emit disconnect
     m_SignalDisconnect(cit->second.c_str());
@@ -177,12 +178,12 @@ void CWsQuizHandler::onDisconnect(WebSocket* pConnection)
 
 void CWsQuizHandler::onData(WebSocket* /* pConnection */, const uint8_t* /* pData */, size_t /* length */)
 {
-  m_spLogger->info("CWsQuizHandler [%s][%u] ignoring binary data.", __FUNCTION__, __LINE__);
+  m_spLogger->info("CWsQuizHandler [%s][%u][%s] ignoring binary data.", __FUNCTION__, __LINE__, m_Name.c_str());
 }
 
 void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
 {
-  m_spLogger->info("CWsQuizHandler [%s][%u] string.", __FUNCTION__, __LINE__);
+  m_spLogger->info("CWsQuizHandler [%s][%u][%s] string.", __FUNCTION__, __LINE__, m_Name.c_str());
   try {
     const json           jsonData = json::parse(pData);
     const std::string    mi       = GetElementString(jsonData, "mi");
@@ -190,7 +191,7 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
 
     //special handing for ID message
     if(0 == mi.compare("id")) {
-      m_spLogger->info("CWsQuizHandler [%s][%u] string ID.", __FUNCTION__, __LINE__);
+      m_spLogger->info("CWsQuizHandler [%s][%u][%s] string ID.", __FUNCTION__, __LINE__, m_Name.c_str());
       const json::const_iterator citJsonData = GetElement(jsonData, "data");
       id = GetElementString(citJsonData, "id");
       m_MapSocketId.insert(PairSocketId(pConnection, id));
@@ -198,18 +199,18 @@ void CWsQuizHandler::onData(WebSocket* pConnection, const char* pData)
       const MapSocketIdCIt cit = m_MapSocketId.find(pConnection);
       if(m_MapSocketId.end() == cit) {
         //ID not found in the map
-        m_spLogger->info("CWsQuizHandler [%s][%u] string ID not found", __FUNCTION__, __LINE__);
+        m_spLogger->info("CWsQuizHandler [%s][%u][%s] string ID not found", __FUNCTION__, __LINE__, m_Name.c_str());
         return;
       }
       id = cit->second;
     }
 
     //emit each and every messagge
-    m_spLogger->info("CWsQuizHandler [%s][%u] string from [%s] with MI [%s] emit.", __FUNCTION__, __LINE__, id.c_str(), mi.c_str());
+    m_spLogger->info("CWsQuizHandler [%s][%u][%s] string from [%s] with MI [%s] emit.", __FUNCTION__, __LINE__, m_Name.c_str(), id.c_str(), mi.c_str());
     m_SignalMessage(id, mi, GetElement(jsonData, "data"));
   } catch(std::exception& ex) {
-    m_spLogger->info("CWsQuizHandler [%s][%u] string exception: %s.", __FUNCTION__, __LINE__, ex.what());
+    m_spLogger->info("CWsQuizHandler [%s][%u][%s] string exception: %s.", __FUNCTION__, __LINE__, m_Name.c_str(), ex.what());
   } catch(...) {
-    m_spLogger->info("CWsQuizHandler [%s][%u] string exception: %s.", __FUNCTION__, __LINE__, "unknown");
+    m_spLogger->info("CWsQuizHandler [%s][%u][%s] string exception: %s.", __FUNCTION__, __LINE__, m_Name.c_str(), "unknown");
   } 
 }

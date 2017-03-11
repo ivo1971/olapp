@@ -13,6 +13,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , m_nbrOfQuestions(0)
    , m_Questions()
    , m_Answering(true)
+   , m_Evaluations()
 {
 }
 
@@ -73,40 +74,49 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     }
 
     //send all answers for this team
+    m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
     if(m_spWsQuizHandler->HasId(id)) {
+        m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
         //find the user and his/her team
         MapUserCIt citUser = m_Users.find(id);
         if(m_Users.end() == citUser) {
             //not found
-            //can be the beamer or the master
-            return;
-        }
-        const std::string teamId(citUser->second.TeamGet());
+        } else {
+            const std::string teamId(citUser->second.TeamGet());
 
-        auto teamQuestions = m_Questions.find(teamId);
-        if(teamQuestions == m_Questions.end()) {
-            //this should not happen: team memory was prepared before
-            m_spLogger->warning("CQuizModeQuestions [%s][%u] team-ID [%s] not found.", __FUNCTION__, __LINE__, teamId.c_str());
-            return;
-        }
+            auto teamQuestions = m_Questions.find(teamId);
+            if(teamQuestions == m_Questions.end()) {
+                //this should not happen: team memory was prepared before
+                m_spLogger->warning("CQuizModeQuestions [%s][%u] team-ID [%s] not found.", __FUNCTION__, __LINE__, teamId.c_str());
+            } else {
+                //compose data
+                json         jsonData; 
+                unsigned int idx     = 0;
+                for(const auto teamQuestionsOne : teamQuestions->second) {
+                    json jsonDataOne; 
+                    jsonDataOne["idx"]    = idx++;
+                    jsonDataOne["answer"] = teamQuestionsOne;
+                    jsonData["answers"].push_back(jsonDataOne);
+                }
 
-        //compose data
-        json         jsonData; 
-        unsigned int idx     = 0;
-        for(const auto teamQuestionsOne : teamQuestions->second) {
-            json jsonDataOne; 
-            jsonDataOne["idx"]    = idx++;
-            jsonDataOne["answer"] = teamQuestionsOne;
-            jsonData["answers"].push_back(jsonDataOne);
+                //send
+                m_spWsQuizHandler->SendMessage(id, "questions-answer-update-all", jsonData     );
+                m_spWsQuizHandler->SendMessage(id, "questions-evaluations",       m_Evaluations);
+            }
         }
-
-        //send
-        m_spWsQuizHandler->SendMessage(id, "questions-answer-update-all", jsonData);
+        m_spLogger->info("CQuizModeQuestions [%s][%u]", __FUNCTION__, __LINE__);
     } else {
         //send all information to the beamer or master
         const bool toMaster = m_spWsMasterHandler->HasId(id);
         const bool toBeamer = m_spWsBeamerHandler->HasId(id);
+        m_spLogger->info("CQuizModeQuestions [%s][%u] [%d][%d]", __FUNCTION__, __LINE__, toMaster, toBeamer);
         SendAnswersAll(toMaster, toBeamer);
+        if(toMaster) {
+            m_spWsMasterHandler->SendMessage(id, "questions-evaluations", m_Evaluations);
+        }
+        if(toBeamer) {
+            m_spWsBeamerHandler->SendMessage(id, "questions-evaluations", m_Evaluations);
+        }
     }
 }
 
@@ -123,6 +133,9 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
         std::vector<std::string> questions(m_nbrOfQuestions);
         m_Questions.insert(std::pair<std::string,std::vector<std::string>>(teamId, questions));
     }
+
+    //clear the evaluations
+    m_Evaluations.clear();
 }
 
 void CQuizModeQuestions::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
@@ -142,6 +155,7 @@ void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::co
 {
     //spread the news
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    m_Evaluations = *citJsData;
     m_spWsQuizHandler->SendMessage  ("questions-evaluations", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-evaluations", citJsData);
     m_spWsMasterHandler->SendMessage("questions-evaluations", citJsData);
@@ -231,9 +245,9 @@ void CQuizModeQuestions::SendAnswersAll(const bool toMaster, const bool toBeamer
         jsonData["teams"].push_back(jsonDataTeam);
     }
     if(toMaster) {
-        m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
+        m_spWsMasterHandler->SendMessage("questions-teams-answers-all", jsonData);    
     }
     if(toBeamer) {
-        m_spWsMasterHandler->SendMessage("questions-teams-answers-all", jsonData);    
+        m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
     }
 }
