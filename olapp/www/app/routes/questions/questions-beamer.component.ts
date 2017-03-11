@@ -96,10 +96,12 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
         this.observableQuestionsEvaluationsSubscription = this.observableQuestionsEvaluations.subscribe(
             data => {
                 this.teamsEvaluations.length     = 0;
-                for(let u = 0 ; u < data["evaluations"].length ; ++u) {
-                    this.teamsEvaluations.push(data["evaluations"][u]);
+           	    if((null !== data) && ("undefined" !== typeof(data["evaluations"]))) {
+                    for(let u = 0 ; u < data["evaluations"].length ; ++u) {
+                        this.teamsEvaluations.push(data["evaluations"][u]);
+                    }
+                    this.teamsEvaluationsSet = true;
                 }
-                this.teamsEvaluationsSet = true;
             }
         );
     }
