@@ -50,7 +50,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             data => {
                 console.log(data);
                 this.numberOfQuestions = data["nbrOfQuestions"]; 
-                console.log("observableQuestionsConfigureSubscription [" + this.numberOfQuestions + "]");
+                console.log("observableQuestionsConfigure-master [" + this.numberOfQuestions + "]");
             }
         );
 
@@ -59,7 +59,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
             data => {
                 this.modeAnswering = data["answering"]; 
-                console.log("observableQuestionsActionSubscription [" + this.modeAnswering + "]");
+                console.log("observableQuestionsAction-master [" + this.modeAnswering + "]");
             }
         );
     }
@@ -70,14 +70,17 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     /* Event handlers called from the template
      */
     private onClickSetNumberOfQuestionsOne() : void {
+        console.log("onClickSetNumberOfQuestionsOne");
         this.resetConfirm = true;
     }
 
     private onClickSetNumberOfQuestionsCancel() : void {
+        console.log("onClickSetNumberOfQuestionsCancel");
         this.resetConfirm = false;
     }
 
     private onClickSetNumberOfQuestionsTwo() : void {
+        console.log("onClickSetNumberOfQuestionsTwo");
         this.resetConfirm = false;
         this._websocketUserService.sendMsg("questions-configure", {
             nbrOfQuestions: this.numberOfQuestions

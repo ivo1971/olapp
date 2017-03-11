@@ -4,7 +4,7 @@
       <h2 class="text-center"><b><u>Vragen</u></b></h2>
     </div>
   </div>
-  <div *ngIf="!modeAnswering" class="row">
+  <div *ngIf="(!modeAnswering) && (0 != teamsEvaluations.length)" class="row">
     <div class="col-md-1 col-sm-1 col-xs-1">
     </div>
     <div class="col-md-10 col-sm-10 col-xs-10">
@@ -25,10 +25,16 @@
               {{answerIdx + 1}}
             </td>
             <td *ngFor="let teamAnswers of teamsAnswers; let teamIdx = index">
-                <input *ngIf="inMaster" class="form-check-input" type="checkbox" (click)="onClickCheckboxEvaluate(teamIdx, answerIdx, $event.target.checked)" > 
+                <input 
+                    *ngIf="inMaster" 
+                    class="form-check-input" 
+                    type="checkbox"
+                    [checked]="teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    (click)="onClickCheckboxEvaluate(teamIdx, answerIdx, $event.target.checked)" 
+                    > 
                 <span 
-                    [class.question-ok]="teamsEvaluationsSet && teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
-                    [class.question-error]="teamsEvaluationsSet && teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
                     >
                     {{teamAnswers.answers[answerIdx].answer}}
                 </span>
@@ -38,7 +44,7 @@
                     *ngIf="inMaster" 
                     type="button" 
                     class="btn btn-success" 
-                    [class.question-neutral]="teamsEvaluationsSet && teamsEvaluations[0].evaluationsDone[answerIdx]" 
+                    [class.question-neutral]="teamsEvaluations[0].evaluationsDone[answerIdx]" 
                     (click)="onClickAnswerEvaluated(answerIdx)" 
                     >
                 {{answerIdx + 1}}

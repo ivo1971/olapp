@@ -48,15 +48,6 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
      */
     public ngOnInit() : void {
         //register routing MI
-        this.observableQuestionsAction = this._websocketUserService
-                                             .register("questions-action")
-        this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
-            data => {
-                this.modeAnswering = data["answering"]; 
-                console.log("observableQuestionsAction [" + this.modeAnswering + "]");
-            }
-        );
-
         this.observableQuestionsConfigure = this._websocketUserService
                                              .register("questions-configure")
         this.observableQuestionsConfigureSubscription = this.observableQuestionsConfigure.subscribe(
@@ -69,7 +60,50 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 this.dummies.length          = 0;
                 this.teamsAnswers.length     = 0;
                 this.teamsEvaluations.length = 0;     
-                console.log("observableQuestionsConfigure in");
+                for(let u : number = 0 ; u < nbrOfQuestions ; ++u) {
+                    this.dummies.push(u.toString());
+                }
+                for(let u = 0 ; u < data["teams"].length ; ++u) {
+                    //crete team
+                    {
+                        let team : any = {
+                            id:              data["teams"][u].id,
+                            name:            data["teams"][u].name,
+                            questions:       new Array<string>(),
+                        }
+                        for(let u : number = 0 ; u < nbrOfQuestions ; ++u) {
+                            team.qustions.push("");
+                        }
+                        this.teamsAnswers.push(team);
+                    }
+
+                    //create evaluation
+                    {
+                        let evaluation : any = {
+                            id:              data["teams"][u].id,
+                            name:            data["teams"][u].name,
+                            evaluations:     new Array<boolean>(),
+                            evaluationsDone: new Array<boolean>()
+                        }
+                        for(let u : number = 0 ; u < nbrOfQuestions ; ++u) {
+                            evaluation.evaluations.push(false);
+                            evaluation.evaluationsDone.push(false);
+                        }
+                        this.teamsEvaluations.push(evaluation);
+                    }
+                }
+                console.log(this.teamsAnswers);
+                console.log(this.teamsEvaluations);
+                console.log("observableQuestionsConfigure out");
+            }
+        );
+
+        this.observableQuestionsAction = this._websocketUserService
+                                             .register("questions-action")
+        this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
+            data => {
+                this.modeAnswering = data["answering"]; 
+                console.log("observableQuestionsAction [" + this.modeAnswering + "]");
             }
         );
 
@@ -77,37 +111,21 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                                              .register("questions-teams-answers-all")
         this.observableQuestionsTeamsAnswersAllSubscription = this.observableQuestionsTeamsAnswersAll.subscribe(
             data => {
-                console.log("observableQuestionsTeamsAnswersAll check");
-                if((null == data) || ("undefined" === typeof(data["teams"]))) {
+                if((null == data) || ("undefined" !== typeof(data["teams"]))) {
                     //no info
-                    console.log("observableQuestionsTeamsAnswersAll check no info");
                     return;
                 }
-                //valid data
+                if(this.teamsAnswers.length != data["teams"].length) {
+                    //length mismatch
+                    this.logService.error("observableQuestionsTeamsAnswersAll length mismatch [" + this.teamsAnswers.length + "][" + data["teams"].length + "]");
+                }
                 console.log("observableQuestionsTeamsAnswersAll in");
-
-                let evaluationsInit          = 0 == this.teamsEvaluations.length;
-                this.teamsAnswers.length     = data["teams"].length;
-                this.teamsEvaluations.length = data["teams"].length;
-                for(let u = 0 ; u < data["teams"].length ; ++u) {
-                    this.dummies.length = data["teams"][u]["answers"].length;
-                    this.teamsAnswers[u] = data["teams"][u];
-                    if(evaluationsInit) {
-                        let evaluation : any = {
-                            id:              data["teams"][u].id,
-                            evaluations:     new Array<boolean>(),
-                            evaluationsDone: new Array<boolean>()
-                        }
-                        for(let v = 0 ; v < data["teams"][u]["answers"].length ; ++v) {
-                            evaluation.evaluations.push(false);
-                            evaluation.evaluationsDone.push(false);
-                        }
-                        this.teamsEvaluations[u] = evaluation;
+                for(let u : number = 0 ; u < this.teamsAnswers.length ; ++u) {
+                    for(let v : number = 0 ; v < this.teamsAnswers[u].answers.length ; ++v) {
+                        this.teamsAnswers[u].answers[v] = data["teams"][u];
                     }
                 }
-                console.log(this.dummies);
                 console.log(this.teamsAnswers);
-                console.log(this.teamsEvaluations);
                 console.log("observableQuestionsTeamsAnswersAll out");
             }
         );
@@ -116,23 +134,25 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                                              .register("questions-evaluations")
         this.observableQuestionsEvaluationsSubscription = this.observableQuestionsEvaluations.subscribe(
             data => {
-                console.log("observableQuestionsEvaluations check");
-                if((null == data) || ("undefined" === typeof(data["evaluations"]))) {
+                if((null == data) || ("undefined" !== typeof(data["evaluations"]))) {
                     //no info
-                    console.log("observableQuestionsEvaluations check no info");
                     return;
                 }
                 if(this.teamsEvaluations.length != data["evaluations"].length) {
                     //length mismatch
                     this.logService.error("observableQuestionsEvaluations length mismatch [" + this.teamsEvaluations.length + "][" + data["evaluations"].length + "]");
-                    console.log(data);
                 }
-                //valid data
-
                 console.log("observableQuestionsEvaluations in");
-                for(let u = 0 ; u < data["evaluations"].length ; ++u) {
-                    this.teamsEvaluations[u] = data["evaluations"][u];
+                for(let u : number = 0 ; u < this.teamsEvaluations.length ; ++u) {
+                    for(let v : number = 0 ; v < this.teamsEvaluations[u].evaluations.length ; ++v) {
+                        this.teamsEvaluations[u].evaluations[v] = data["evaluations"][u].evaluations[v];
+                    }
+                    for(let v : number = 0 ; v < this.teamsEvaluations[u].evaluationsDone.length ; ++v) {
+                        this.teamsEvaluations[u].evaluationsDone[v] = data["evaluations"][u].evaluationsDone[v];
+                    }
                 }
+                console.log(this.teamsEvaluations);
+                console.log("observableQuestionsEvaluations out");
             }
         );
     }
@@ -158,6 +178,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
         for(let u = 0 ; u < this.teamsEvaluations.length ; ++u) {
             this.teamsEvaluations[u].evaluationsDone[answerIdx] = true;
         }
+        console.log(this.teamsEvaluations);
         this._websocketUserService.sendMsg("questions-evaluations", {
             evaluations: this.teamsEvaluations
         });    
@@ -165,10 +186,10 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
 
     /* Private members
      */
-    private observableQuestionsAction                      : Observable<any>;
-    private observableQuestionsActionSubscription          : Subscription;
     private observableQuestionsConfigure                   : Observable<any>;
     private observableQuestionsConfigureSubscription       : Subscription;
+    private observableQuestionsAction                      : Observable<any>;
+    private observableQuestionsActionSubscription          : Subscription;
     private observableQuestionsTeamsAnswersAll             : Observable<any>;
     private observableQuestionsTeamsAnswersAllSubscription : Subscription;
     private observableQuestionsEvaluations                 : Observable<any>;
