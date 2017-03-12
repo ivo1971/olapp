@@ -149,6 +149,15 @@ bool CWsQuizHandler::HasId(const std::string& id) const
   return false;
 }
 
+std::list<std::string> CWsQuizHandler::GetAllIds(void)
+{
+  std::list<std::string> ids;
+  for(auto socketId : m_MapSocketId) {
+    ids.push_back(socketId.second);
+  }
+  return ids;
+}
+
 /*****************************************************************************************
  **
  ** Private functions

@@ -29,7 +29,8 @@ class CWsQuizHandler: public seasocks::WebSocket::Handler {
   void                                                 SendMessage      (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
   void                                                 SendMessage      (const std::string& id, const std::string& mi, const nlohmann::json&                data     );
   bool                                                 HasId            (const std::string& id) const;
-
+  std::list<std::string>                               GetAllIds        (void);
+  
  private:
                                                        CWsQuizHandler(const CWsQuizHandler& ref);
   CWsQuizHandler                                       operator=(const CWsQuizHandler& ref) const;

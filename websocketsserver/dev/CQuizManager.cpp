@@ -54,6 +54,13 @@ CQuizManager::CQuizManager(std::shared_ptr<seasocks::Logger> spLogger, std::shar
 
   //make teamfie dir
   mkdir(m_TeamfieDir.c_str(), S_IRWXU);
+
+  //start-up checks
+  //(executed by quiz-mode classes when they are instantiated --> so instantiate them to test them)
+  {
+    CQuizModeSortImages* const pQuizModeSortImages = new CQuizModeSortImages(m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_HttpDir, m_HttpImagesDir);
+    delete pQuizModeSortImages;
+  }
 }
 
 CQuizManager::~CQuizManager(void) throw()
@@ -266,7 +273,7 @@ void CQuizManager::SelectMode(const std::string& mode)
   } else if("sort-images" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSortImages      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_HttpDir, m_HttpImagesDir));
   } else if("questions" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeQuestions       (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
+    m_CurrentQuizMode.reset(new CQuizModeQuestions       (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_FileName));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else if("teamfie" == mode) {

@@ -1,3 +1,6 @@
+#include <fstream>
+#include <iostream>
+
 #include "CQuizModeQuestions.h"
 #include "JsonHelpers.h"
 
@@ -5,21 +8,30 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users)
+CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& fileName)
    : IQuizMode()
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "questions")
    , m_spTeamManager(spTeamManager)
    , m_Users(users)
-   , m_nbrOfQuestions(0)
+   , m_FileName(fileName + std::string(".questions"))
+   , m_NbrOfQuestions(0)
    , m_PointsPerQuestion(1)
    , m_Questions()
    , m_Answering(true)
    , m_Evaluations()
 {
+    //load from file
+    if(Load()) {
+        //loaded status from file
+        //--> simulate reconnect of all to spread the new information
+        ReConnectAll();
+    }
 }
 
 CQuizModeQuestions::~CQuizModeQuestions(void) throw()
 {
+    //clear the status
+    unlink(m_FileName.c_str());
 }
 
 void CQuizModeQuestions::HandleMessageQuiz(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
@@ -69,7 +81,7 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     //send configuration
     {
         json jsonData; 
-        jsonData["nbrOfQuestions"]    = m_nbrOfQuestions;
+        jsonData["nbrOfQuestions"]    = m_NbrOfQuestions;
         jsonData["pointsPerQuestion"] = m_PointsPerQuestion;
         if(toMaster) {
             m_spWsMasterHandler->SendMessage(id, "questions-configure",        jsonData);
@@ -146,7 +158,7 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
 {
     //spread the news
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
-    m_nbrOfQuestions    = GetElementInt(citJsData, "nbrOfQuestions"   );
+    m_NbrOfQuestions    = GetElementInt(citJsData, "nbrOfQuestions"   );
     m_PointsPerQuestion = GetElementInt(citJsData, "pointsPerQuestion");
     m_spWsQuizHandler->SendMessage  ("questions-configure", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-configure", citJsData);
@@ -155,12 +167,15 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
     //prepare the answers storage
     m_Questions.clear();
     for(const auto teamId : m_spTeamManager->GetAllTeamIds()) {
-        std::vector<std::string> questions(m_nbrOfQuestions);
+        std::vector<std::string> questions(m_NbrOfQuestions);
         m_Questions.insert(std::pair<std::string,std::vector<std::string>>(teamId, questions));
     }
 
     //clear the evaluations
     m_Evaluations.clear();
+
+    //save the current state
+    Save();
 }
 
 void CQuizModeQuestions::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
@@ -174,6 +189,9 @@ void CQuizModeQuestions::HandleMessageMasterAction(const nlohmann::json::const_i
 
     //send answers from the teams to the masters and the beamers
     SendAnswersAll();
+
+    //save the current state
+    Save();
 }
 
 void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::const_iterator citJsData)
@@ -184,6 +202,9 @@ void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::co
     m_spWsQuizHandler->SendMessage  ("questions-evaluations", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-evaluations", citJsData);
     m_spWsMasterHandler->SendMessage("questions-evaluations", citJsData);
+
+    //save the current state
+    Save();
 }
 
 void CQuizModeQuestions::HandleMessageMasterSetPoints(const nlohmann::json::const_iterator citJsData)
@@ -199,6 +220,9 @@ void CQuizModeQuestions::HandleMessageMasterSetPoints(const nlohmann::json::cons
         m_spTeamManager->PointsRoundId(id, pointsRound, 0, true);
     }
     m_spTeamManager->PointsRound2Total();
+
+    //save the current state
+    Save();
 }
 
 void CQuizModeQuestions::HandleMessageQuizAnswer(const std::string& id, const nlohmann::json::const_iterator citJsData)
@@ -263,6 +287,9 @@ void CQuizModeQuestions::HandleMessageQuizAnswer(const std::string& id, const nl
             m_spWsQuizHandler->SendMessage(userId, "questions-answer-update-one", citJsData);
         }
     }
+
+    //save the current state
+    Save();
 }
 
 void CQuizModeQuestions::SendAnswersAll(const bool toMaster, const bool toBeamer)
@@ -290,4 +317,115 @@ void CQuizModeQuestions::SendAnswersAll(const bool toMaster, const bool toBeamer
     if(toBeamer) {
         m_spWsBeamerHandler->SendMessage("questions-teams-answers-all", jsonData);    
     }
+}
+
+void CQuizModeQuestions::Save(void)
+{
+    //generate json data
+    json data;
+    data["nbrOfQuestions"]       = m_NbrOfQuestions;
+    data["pointsPerQuestion"]    = m_PointsPerQuestion;
+    data["answering"]            = m_Answering;
+    data["evaluations"]          = m_Evaluations;
+    for(const auto team : m_Questions) {
+        json dataTeam;
+        dataTeam["id"] = team.first;
+        for(const auto question : team.second) {
+            json dataQuestion;
+            dataQuestion["answer"] = question;
+            dataTeam["questions"].push_back(dataQuestion);
+        }
+        data["questions"].push_back(dataTeam);        
+    }
+
+    //trace
+    const std::string dataDump = data.dump();
+    m_spLogger->info("CQuizModeQuestions [%s][%u] save [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+    //save to file
+    ofstream file;
+    file.open(m_FileName, ios::out | ios::trunc);
+    if(!file.is_open()) {
+        m_spLogger->error("CQuizModeQuestions [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+    }
+    file << dataDump;
+    file.close();
+}
+
+bool CQuizModeQuestions::Load(void)
+{
+    //load status from file when the file exists
+    if(0 != access(m_FileName.c_str(), R_OK)) {
+        //no status file
+        return false;
+    }
+
+    //read from file
+    std::string dataDump;
+
+    //read from file
+    ifstream file;
+    file.open(m_FileName, ios::in);
+    if(!file.is_open()) {
+        m_spLogger->error("CQuizModeQuestions [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+    }
+    while(file) {
+        std::string tmp;
+        file >> tmp;
+        dataDump += tmp;
+    }
+    file.close();
+    m_spLogger->info("CQuizModeQuestions [%s][%u] load [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+    //string to json
+    const json jsonData = json::parse(dataDump);  
+
+    //from json to status
+    m_NbrOfQuestions    = GetElementInt    (jsonData, "nbrOfQuestions"   );
+    m_PointsPerQuestion = GetElementInt    (jsonData, "pointsPerQuestion");
+    m_Answering         = GetElementBoolean(jsonData, "answering"        );
+    try {
+        m_Evaluations.clear();
+        const json::const_iterator citEvaluations = GetElement(jsonData, "evaluations");
+        m_Evaluations = *citEvaluations;
+    } catch(...) {
+        m_Evaluations.clear();
+    }
+    try {
+        m_Questions.clear();
+        const json::const_iterator questions = GetElement(jsonData, "questions");
+        for(json::const_iterator citQuestions = questions->begin() ; questions->end() != citQuestions ; ++citQuestions) {
+            const std::string          id               = GetElementString(*citQuestions, "id"       );
+            const json::const_iterator teamQuestions    = GetElement      (*citQuestions, "questions");
+            std::vector<std::string>   teamQuestionsV   ;
+            for(json::const_iterator citTeamQuestions = teamQuestions->begin() ; teamQuestions->end() != citTeamQuestions ; ++citTeamQuestions) {
+                const std::string answer = GetElementString(*citTeamQuestions, "answer");
+                teamQuestionsV.push_back(answer);
+            }
+            m_Questions.insert(std::pair<std::string,std::vector<std::string>>(id, teamQuestionsV));
+        }
+    } catch(...) {
+        //clear all answers
+        m_Questions.clear();
+        for(const auto teamId : m_spTeamManager->GetAllTeamIds()) {
+            std::vector<std::string> questions(m_NbrOfQuestions);
+            m_Questions.insert(std::pair<std::string,std::vector<std::string>>(teamId, questions));
+        }
+    }
+    return true;
+}
+
+void CQuizModeQuestions::ReConnectAll(void)
+{
+    ReConnectAll(m_spWsMasterHandler);
+    ReConnectAll(m_spWsBeamerHandler);
+    ReConnectAll(m_spWsQuizHandler);
+}
+
+void CQuizModeQuestions::ReConnectAll(std::shared_ptr<CWsQuizHandler> wsQuizHandler)
+{
+    const std::list<std::string> ids = wsQuizHandler->GetAllIds();
+    for(const auto id : ids) {
+        ReConnect(id);
+    }    
 }
