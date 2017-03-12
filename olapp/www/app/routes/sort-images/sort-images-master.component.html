@@ -18,7 +18,7 @@
           Points per image OK:
         </div>
         <div class="col-md-2 col-sm-2 col-xs-2">
-          <input class="form-control" type="text" [(ngModel)]="pointsPerImageOk" />
+          <input class="form-control" type="number" [(ngModel)]="pointsPerImageOk" (change)="onPointsPerImageChange($event.target.value)" />
         </div>
       </div>
       <br />

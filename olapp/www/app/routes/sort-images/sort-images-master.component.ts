@@ -94,6 +94,12 @@ export class SortImagesMasterComponent extends ComponentBase {
         });
     }
 
+    private onPointsPerImageChange(pointsPerImage : number) : void {
+        for(let u = 0 ; u < this.teamImagesInfo.length ; ++u) {
+            this.teamImagesInfo[u].pointsRound = this.teamImagesInfo[u].imagesOk * this.pointsPerImageOk;
+        }
+    }
+
     /* Private functions
      */
 
