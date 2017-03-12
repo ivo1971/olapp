@@ -273,7 +273,7 @@ void CQuizManager::SelectMode(const std::string& mode)
   } else if("sort-images" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeSortImages      (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_HttpDir, m_HttpImagesDir, m_FileName));
   } else if("questions" == mode) {
-    m_CurrentQuizMode.reset(new CQuizModeQuestions       (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_FileName));
+    m_CurrentQuizMode.reset(new CQuizModeQuestions       (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users, m_HttpDir, m_HttpImagesDir, m_FileName));
   } else if("configure-teams" == mode) {
     m_CurrentQuizMode.reset(new CQuizModeConfigureTeams  (m_spLogger, m_spWsQuizHandler, m_spWsMasterHandler, m_spWsBeamerHandler, m_spTeamManager, m_Users));
   } else if("teamfie" == mode) {

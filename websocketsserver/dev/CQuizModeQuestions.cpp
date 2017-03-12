@@ -1,6 +1,11 @@
 #include <fstream>
 #include <iostream>
 
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "CQuizModeQuestions.h"
 #include "JsonHelpers.h"
 
@@ -8,17 +13,21 @@ using namespace std;
 using namespace nlohmann;
 using namespace seasocks;
 
-CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& fileName)
+CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& httpDir, const std::string& httpImagesDir, const std::string& fileName)
    : IQuizMode()
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "questions")
    , m_spTeamManager(spTeamManager)
    , m_Users(users)
+   , m_HttpDir(httpDir)
+   , m_HttpImagesDir(httpImagesDir)
    , m_FileName(fileName + std::string(".questions"))
    , m_NbrOfQuestions(0)
    , m_PointsPerQuestion(1)
    , m_Questions()
    , m_Answering(true)
    , m_Evaluations()
+   , m_ImagesAvailable(LoadImages())
+   , m_ImageOnBeamer()
 {
     //load from file
     if(Load()) {
@@ -26,6 +35,9 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
         //--> simulate reconnect of all to spread the new information
         ReConnectAll();
     }
+
+    //send available images to master
+    m_spWsMasterHandler->SendMessage("questions-images-available", m_ImagesAvailable);
 }
 
 CQuizModeQuestions::~CQuizModeQuestions(void) throw()
@@ -55,6 +67,10 @@ void CQuizModeQuestions::HandleMessageMaster(const std::string& /* id */, const 
         HandleMessageMasterEvaluations(citJsData);
     } else if("questions-set-points" == mi) {
         HandleMessageMasterSetPoints(citJsData);
+    } else if("questions-image-on-beamer" == mi) {
+        HandleMessageMasterImageOnBeamer(citJsData);
+    } else {
+        m_spLogger->error("CQuizModeQuestions [%s][%u] MI [%s] unhandled.", __FUNCTION__, __LINE__, mi.c_str());
     }
 }
 
@@ -152,6 +168,16 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
             m_spWsBeamerHandler->SendMessage(id, "questions-evaluations", m_Evaluations);
         }
     }
+
+    //send available images to master
+    if(toMaster) {
+        m_spWsMasterHandler->SendMessage(id, "questions-images-available", m_ImagesAvailable);
+    }
+
+    //send image-on-beamer to the beamer
+    if(toBeamer) {
+        m_spWsBeamerHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
+    }
 }
 
 void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::const_iterator citJsData)
@@ -220,6 +246,16 @@ void CQuizModeQuestions::HandleMessageMasterSetPoints(const nlohmann::json::cons
         m_spTeamManager->PointsRoundId(id, pointsRound, 0, true);
     }
     m_spTeamManager->PointsRound2Total();
+
+    //save the current state
+    Save();
+}
+
+void CQuizModeQuestions::HandleMessageMasterImageOnBeamer(const nlohmann::json::const_iterator citJsData)
+{
+    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    m_ImageOnBeamer = *citJsData;
+    m_spWsBeamerHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
 
     //save the current state
     Save();
@@ -327,6 +363,8 @@ void CQuizModeQuestions::Save(void)
     data["pointsPerQuestion"]    = m_PointsPerQuestion;
     data["answering"]            = m_Answering;
     data["evaluations"]          = m_Evaluations;
+    data["imageOnBeamer"]        = m_ImageOnBeamer;
+
     for(const auto team : m_Questions) {
         json dataTeam;
         dataTeam["id"] = team.first;
@@ -393,6 +431,13 @@ bool CQuizModeQuestions::Load(void)
         m_Evaluations.clear();
     }
     try {
+        m_ImageOnBeamer.clear();
+        const json::const_iterator cit = GetElement(jsonData, "imageOnBeamer");
+        m_ImageOnBeamer = *cit;
+    } catch(...) {
+        m_ImageOnBeamer.clear();
+    }
+    try {
         m_Questions.clear();
         const json::const_iterator questions = GetElement(jsonData, "questions");
         for(json::const_iterator citQuestions = questions->begin() ; questions->end() != citQuestions ; ++citQuestions) {
@@ -414,4 +459,75 @@ bool CQuizModeQuestions::Load(void)
         }
     }
     return true;
+}
+
+json CQuizModeQuestions::LoadImages(void) const
+{
+    //read image files
+    const std::string questionsImages("questions");
+    const std::string dirAbs         (m_HttpImagesDir + questionsImages);
+    //const std::string dirRel         (dirAbs.substr(m_HttpDir.length() + 1));
+    const std::string dirRel         (questionsImages);
+    const json        dataDir        = LoadImagesDir(dirAbs, dirRel, questionsImages);
+    m_spLogger->info("CQuizModeQuestions [%s][%u] [%s].", __FUNCTION__, __LINE__, dataDir.dump().c_str());
+    return dataDir;
+}
+
+json CQuizModeQuestions::LoadImagesDir(const std::string& dirAbs, const std::string& dirRel, const std::string dirName) const
+{
+    m_spLogger->info("CQuizModeQuestions [%s][%u] [%s][%s][%s].", __FUNCTION__, __LINE__, dirAbs.c_str(), dirRel.c_str(), dirName.c_str());
+
+    //start json data for this directory
+    json dataDir;
+    dataDir["dirName"] = dirName;
+
+    //scan this directory
+    DIR* pDir = opendir(dirAbs.c_str());
+    struct dirent* pDirent = NULL;
+    while (NULL != (pDirent = readdir(pDir))) {
+        //handle all directory entries
+      if(0 == strcmp(".", pDirent->d_name)) {
+          continue;
+      }
+      if(0 == strcmp("..", pDirent->d_name)) {
+          continue;
+      }
+      if(0 == strcmp(".gitignore", pDirent->d_name)) {
+          continue;
+      }
+      if(0 == strcmp(".gitignore~", pDirent->d_name)) {
+          continue;
+      }
+      const std::string imageAbs = dirAbs + std::string("/") + std::string(pDirent->d_name);
+      const std::string imageRel = dirRel + std::string("/") + std::string(pDirent->d_name); 
+      m_spLogger->info("CQuizModeQuestions [%s][%u] [%s][%s].", __FUNCTION__, __LINE__, imageAbs.c_str(), imageRel.c_str());
+
+      //dir or file?
+      struct stat fs;
+      if(0 != stat(imageAbs.c_str(), &fs)) {
+          m_spLogger->info("CQuizModeQuestions [%s][%u] [%s] fstat error: %m.", __FUNCTION__, __LINE__, imageAbs.c_str());
+          continue;
+      }
+      if(S_ISDIR(fs.st_mode)) {
+          //dir
+          m_spLogger->info("CQuizModeQuestions [%s][%u] [%s][%s] dir.", __FUNCTION__, __LINE__, imageAbs.c_str(), imageRel.c_str());
+          dataDir["images"] = json::array();          
+          dataDir["subdir"].push_back(LoadImagesDir(imageAbs, imageRel, pDirent->d_name));
+      } else {
+          //file
+          std::string name(pDirent->d_name);
+          size_t      posNameExt = name.find_last_of(".");
+          if(std::string::npos != posNameExt) {
+              name = name.substr(0, posNameExt);
+          }
+          m_spLogger->info("CQuizModeQuestions [%s][%u] [%s][%s] image.", __FUNCTION__, __LINE__, imageAbs.c_str(), imageRel.c_str());
+          json dataImage;
+          dataImage["name"] = name;
+          dataImage["url"]  = imageRel;
+          dataDir["images"].push_back(dataImage);          
+          dataDir["subdir"] = json::array();          
+      }
+   }
+   closedir(pDir);
+   return dataDir;
 }
