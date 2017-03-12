@@ -33,3 +33,21 @@ void CQuizModeBase::ReConnect(const std::string& id)
     m_spWsMasterHandler->SendMessage(id, "route", data);
     m_spWsBeamerHandler->SendMessage(id, "route", data);          
 }
+
+void CQuizModeBase::ReConnectAll(void)
+{
+    m_spLogger->info("CQuizModeBase [%s][%u].", __FUNCTION__, __LINE__);
+    ReConnectAll(m_spWsMasterHandler);
+    ReConnectAll(m_spWsBeamerHandler);
+    ReConnectAll(m_spWsQuizHandler);
+}
+
+void CQuizModeBase::ReConnectAll(std::shared_ptr<CWsQuizHandler> wsQuizHandler)
+{
+    m_spLogger->info("CQuizModeBase [%s][%u] for [%s].", __FUNCTION__, __LINE__, wsQuizHandler->GetName().c_str());
+    const std::list<std::string> ids = wsQuizHandler->GetAllIds();
+    for(const auto id : ids) {
+        ReConnect(id);
+    }    
+}
+

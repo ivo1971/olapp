@@ -9,7 +9,7 @@
 
 class CQuizModeSortImages : public IQuizMode, public CQuizModeBase {
    public:
-                                            CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& httpDir, const std::string& httpImagesDir);
+                                            CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& httpDir, const std::string& httpImagesDir, const std::string& fileName = std::string());
       virtual                               ~CQuizModeSortImages(void) throw();
 
    public:
@@ -25,12 +25,15 @@ class CQuizModeSortImages : public IQuizMode, public CQuizModeBase {
       void                                  HandleMessageMasterAction   (const nlohmann::json::const_iterator citJsData);
       void                                  HandleMessageMasterAction   (const bool sort, const std::string id = std::string());
       void                                  HandleMessageMasterSetPoints(const nlohmann::json::const_iterator citJsData);
+      void                                  Save                        (void);
+      bool                                  Load                        (void);
 
     private:
       MapUser                               m_Users;
       SPTeamManager                         m_spTeamManager;
       std::string                           m_HttpDir;
       std::string                           m_HttpImagesDir;
+      std::string                           m_FileName;
       std::vector<std::string>              m_Images;
       std::map<std::string, nlohmann::json> m_MapTeamImageLists;
       bool                                  m_ModeSort;

@@ -26,8 +26,6 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       void                                           SendAnswersAll                (const bool toMaster = true, const bool toBeamer = true);
       void                                           Save                          (void);
       bool                                           Load                          (void);
-      void                                           ReConnectAll                  (void);
-      void                                           ReConnectAll                  (std::shared_ptr<CWsQuizHandler> wsQuizHandler);
 
    private:
       SPTeamManager                                  m_spTeamManager;

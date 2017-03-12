@@ -8,11 +8,15 @@
 
 class CQuizModeBase {
    public:
-                                            CQuizModeBase(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& mode);
+                                            CQuizModeBase (std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, const std::string& mode);
       virtual                               ~CQuizModeBase(void) throw();
 
    public:
-      virtual void                          ReConnect(const std::string& id);
+      virtual void                          ReConnect     (const std::string& id);
+
+   protected:
+      void                                  ReConnectAll  (void);
+      void                                  ReConnectAll  (std::shared_ptr<CWsQuizHandler> wsQuizHandler);
 
    protected:
       const std::string                     m_Mode;

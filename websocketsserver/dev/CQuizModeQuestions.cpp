@@ -368,6 +368,7 @@ bool CQuizModeQuestions::Load(void)
     file.open(m_FileName, ios::in);
     if(!file.is_open()) {
         m_spLogger->error("CQuizModeQuestions [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+        return false;
     }
     while(file) {
         std::string tmp;
@@ -413,19 +414,4 @@ bool CQuizModeQuestions::Load(void)
         }
     }
     return true;
-}
-
-void CQuizModeQuestions::ReConnectAll(void)
-{
-    ReConnectAll(m_spWsMasterHandler);
-    ReConnectAll(m_spWsBeamerHandler);
-    ReConnectAll(m_spWsQuizHandler);
-}
-
-void CQuizModeQuestions::ReConnectAll(std::shared_ptr<CWsQuizHandler> wsQuizHandler)
-{
-    const std::list<std::string> ids = wsQuizHandler->GetAllIds();
-    for(const auto id : ids) {
-        ReConnect(id);
-    }    
 }

@@ -20,13 +20,14 @@ using namespace seasocks;
 // random generator function:
 int myrandom (int i) { return std::rand()%i;}
 
-CQuizModeSortImages::CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& httpDir, const std::string& httpImagesDir)
+CQuizModeSortImages::CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLogger, std::shared_ptr<CWsQuizHandler> spWsQuizHandler, std::shared_ptr<CWsQuizHandler> spWsMasterHandler, std::shared_ptr<CWsQuizHandler> spWsBeamerHandler, SPTeamManager spTeamManager, const MapUser& users, const std::string& httpDir, const std::string& httpImagesDir, const std::string& fileName)
    : IQuizMode()
    , CQuizModeBase(spLogger, spWsQuizHandler, spWsMasterHandler, spWsBeamerHandler, "sort-images")
    , m_Users(users)
    , m_spTeamManager(spTeamManager)
    , m_HttpDir(httpDir)
    , m_HttpImagesDir(httpImagesDir)
+   , m_FileName(fileName + std::string(".sort-images"))
    , m_Images()
    , m_MapTeamImageLists()
    , m_ModeSort(true) /* start in sorting mode */
@@ -47,10 +48,18 @@ CQuizModeSortImages::CQuizModeSortImages(std::shared_ptr<seasocks::Logger> spLog
        m_spWsMasterHandler->SendMessage("sort-images-list-random", jsonData);
        m_spWsBeamerHandler->SendMessage("sort-images-list-random", jsonData);
     }
+
+    //load status from file
+    if(Load()) {
+        //loaded status from file
+        //--> simulate reconnect of all to spread the new information
+        ReConnectAll();
+    }
 }
 
 CQuizModeSortImages::~CQuizModeSortImages(void) throw()
 {
+    unlink(m_FileName.c_str());
 }
 
 void CQuizModeSortImages::HandleMessageQuiz(const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData)
@@ -245,6 +254,9 @@ void CQuizModeSortImages::HandleMessageQuizListTeam(const std::string& id, const
         m_spLogger->warning("CQuizModeSimpleButton [%s][%u] incoming ID [%s] to ID [%s].", __FUNCTION__, __LINE__, id.c_str(), userId.c_str());
         m_spWsQuizHandler->SendMessage(userId, "sort-images-list-random", citJsData);
     }
+
+    //store status
+    Save();
 }
 
 void CQuizModeSortImages::HandleMessageMasterAction(const nlohmann::json::const_iterator citJsData)
@@ -252,6 +264,7 @@ void CQuizModeSortImages::HandleMessageMasterAction(const nlohmann::json::const_
     const bool sort = GetElementBoolean(citJsData, "sort");
     m_ModeSort = sort;
     HandleMessageMasterAction(sort);
+    Save();
 }
 
 void CQuizModeSortImages::HandleMessageMasterAction(const bool sort, const std::string id)
@@ -301,4 +314,79 @@ void CQuizModeSortImages::HandleMessageMasterSetPoints(const nlohmann::json::con
         m_spTeamManager->PointsRoundId(id, pointsRound, 0, true);
     }
     m_spTeamManager->PointsRound2Total();
+}
+
+void CQuizModeSortImages::Save(void)
+{
+    //generate json data
+    json data;
+    data["modeSort"]             = m_ModeSort;
+    for(const auto teamImageList : m_MapTeamImageLists) {
+        json dataTeamImageList;
+        dataTeamImageList["first"]  = teamImageList.first;
+        dataTeamImageList["second"] = teamImageList.second;
+        data["teamImageLists"].push_back(dataTeamImageList);
+    }
+
+    //trace
+    const std::string dataDump = data.dump();
+    m_spLogger->info("CQuizModeSortImages [%s][%u] save [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+    //save to file
+    ofstream file;
+    file.open(m_FileName, ios::out | ios::trunc);
+    if(!file.is_open()) {
+        m_spLogger->error("CQuizModeSortImages [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+    }
+    file << dataDump;
+    file.close();
+}
+
+bool CQuizModeSortImages::Load(void)
+{
+    //load status from file when the file exists
+    if(0 == m_FileName.length()) {
+        //do not handle empty files
+        return false;
+    } else if(0 != access(m_FileName.c_str(), R_OK)) {
+        //no status file
+        return false;
+    }
+
+    //read from file
+    std::string dataDump;
+
+    //read from file
+    ifstream file;
+    file.open(m_FileName, ios::in);
+    if(!file.is_open()) {
+        m_spLogger->error("CQuizModeSortImages [%s][%u] could not open file [%s]: %m", __FUNCTION__, __LINE__, m_FileName.c_str());
+        return false;
+    }
+    while(file) {
+        std::string tmp;
+        file >> tmp;
+        dataDump += tmp;
+    }
+    file.close();
+    m_spLogger->info("CQuizModeSortImages [%s][%u] load [%s]: [%s].", __FUNCTION__, __LINE__, m_FileName.c_str(), dataDump.c_str());
+
+    //string to json
+    const json jsonData = json::parse(dataDump);  
+
+    //from json to status
+    m_ModeSort          = GetElementBoolean(jsonData, "modeSort"        );
+    try {
+        m_MapTeamImageLists.clear();
+        const json::const_iterator teamImageLists = GetElement(jsonData, "teamImageLists");
+        for(json::const_iterator citTeamImageLists = teamImageLists->begin() ; teamImageLists->end() != citTeamImageLists ; ++citTeamImageLists) {
+            const std::string          id               = GetElementString(*citTeamImageLists, "first" );
+            const json::const_iterator citSecond        = GetElement      (*citTeamImageLists, "second");
+            m_MapTeamImageLists.insert(std::pair<std::string,nlohmann::json>(id, *citSecond));
+        }
+    } catch(...) {
+        m_MapTeamImageLists.clear();
+        LoadImages();
+    }
+    return true;
 }
