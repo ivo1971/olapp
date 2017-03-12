@@ -78,7 +78,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 this.dummies.length          = 0;
                 this.teamsAnswers.length     = 0;
                 this.teamsEvaluations.length = 0;     
-                console.log("observableQuestionsConfigure in");
+                console.log("observableQuestionsConfigure out");
             }
         );
 
