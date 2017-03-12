@@ -33,6 +33,7 @@ export class QuestionsImagesComponent implements OnInit {
     @Output() clickDir     : EventEmitter<QuestionsSelectImage> = new EventEmitter<QuestionsSelectImage>();
     private   showQuestions: string                             = "";
     private   questions    : Array<number>                      = [];
+    private   showSub      : boolean                            = false;
 
     public constructor() {
     }
@@ -40,7 +41,12 @@ export class QuestionsImagesComponent implements OnInit {
     public ngOnInit() : void {
     }
 
-    private onClickImage(url : string) {
+    private onClickDirName() : void {
+        this.showSub = !this.showSub;
+        console.log("onClickDirName [" + this.showSub + "]");
+    }
+
+    private onClickImage(url : string) : void {
         if(url !== this.showQuestions) {
             this.showQuestions = url;
             if(this.questions.length !== this.nbrQuestions) {

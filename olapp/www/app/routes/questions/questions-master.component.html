@@ -42,9 +42,9 @@
         </div>
       </div>
       <div *ngFor="let teamQuestionEvaluation of teamQuestionsEvaluation" class="row">
-        <div class="col-md-1 col-sm-1 col-xs-1">
+        <div *ngIf="!modeAnswering" class="col-md-1 col-sm-1 col-xs-1">
         </div>
-        <div class="col-md-10 col-sm-10 col-xs-10 alert alert-success">
+        <div *ngIf="!modeAnswering" class="col-md-10 col-sm-10 col-xs-10 alert alert-success">
           <div class="row">
             <div class="col-md-8 col-sm-8 col-xs-8">
               {{teamQuestionEvaluation.name}}
@@ -58,7 +58,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-1 col-sm-1 col-xs-1">
+        <div *ngIf="!modeAnswering" class="col-md-1 col-sm-1 col-xs-1">
         </div>
       </div>
       <div *ngIf="!modeAnswering" class="row">
@@ -70,13 +70,14 @@
         <div class="col-md-1 col-sm-1 col-xs-1">
         </div>
       </div>
+      <span *ngIf="modeAnswering">
+        Selecteer afbeeldingen:
+      </span>
       <div *ngIf="modeAnswering" class="row">
         <div class="col-md-1 col-sm-1 col-xs-1">
         </div>
-        <div class="col-md-10 col-sm-10 col-xs-10">
+        <div class="col-md-11 col-sm-11 col-xs-11">
           <questions-images [dir]="imagesAvailable" [dirSet]="imagesAvailableSet" [showDirName]="false" [nbrQuestions]="numberOfQuestions" (clickDir)="onImagesAvailableClick($event)"></questions-images>
-        </div>
-        <div class="col-md-1 col-sm-1 col-xs-1">
         </div>
       </div>
     </div>
