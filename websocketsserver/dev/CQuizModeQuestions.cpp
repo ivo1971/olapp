@@ -172,6 +172,7 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     //send available images to master
     if(toMaster) {
         m_spWsMasterHandler->SendMessage(id, "questions-images-available", m_ImagesAvailable);
+        m_spWsMasterHandler->SendMessage(id, "questions-image-on-beamer",  m_ImageOnBeamer);
     }
 
     //send image-on-beamer to the beamer
@@ -256,6 +257,7 @@ void CQuizModeQuestions::HandleMessageMasterImageOnBeamer(const nlohmann::json::
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
     m_ImageOnBeamer = *citJsData;
     m_spWsBeamerHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
+    m_spWsMasterHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
 
     //save the current state
     Save();
