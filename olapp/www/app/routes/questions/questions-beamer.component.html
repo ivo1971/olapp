@@ -79,4 +79,17 @@
     <div class="col-md-1 col-sm-1 col-xs-1">
     </div>
   </div>
+  <div *ngIf="modeAnswering" class="row">
+    <div class="col-md-1 col-sm-1 col-xs-1">
+    </div>
+    <div class="col-md-10 col-sm-10 col-xs-10 text-center">
+      <h3>
+        Vraag {{questionsSelectImage.question + 1}}
+      </h3>
+      <br />
+      <image-local [source]="questionsSelectImage.url" [width]="400"></image-local>
+    </div>
+    <div class="col-md-1 col-sm-1 col-xs-1">
+    </div>
+  </div>
 </div>

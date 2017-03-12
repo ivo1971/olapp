@@ -70,6 +70,15 @@
         <div class="col-md-1 col-sm-1 col-xs-1">
         </div>
       </div>
+      <div *ngIf="modeAnswering" class="row">
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-10">
+          <questions-images [dir]="imagesAvailable" [dirSet]="imagesAvailableSet" [showDirName]="false" [nbrQuestions]="numberOfQuestions" (clickDir)="onImagesAvailableClick($event)"></questions-images>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+      </div>
     </div>
     <div class="col-md-1">
     </div>

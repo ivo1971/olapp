@@ -30,6 +30,7 @@ import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/con
 import {LoginComponent}                from "./routes/login/login.component";
 import {QuestionsComponent}            from "./routes/questions/questions.component";
 import {QuestionsBeamerComponent}      from "./routes/questions/questions-beamer.component";
+import {QuestionsImagesComponent}      from "./routes/questions/questions-images.component"
 import {QuestionsMasterComponent}      from "./routes/questions/questions-master.component";
 import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.component";
 import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboard-master.component";
@@ -190,6 +191,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     ImageTeamfieComponent,
     InputDebounceComponent,
     MenuComponent,
+    QuestionsImagesComponent,
     ScoreboardListComponent,
     StatusBarComponent,
     TeamInfoComponent,

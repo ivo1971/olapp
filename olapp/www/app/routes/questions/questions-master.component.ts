@@ -10,6 +10,8 @@ import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
+import {QuestionsSelectImage} from './questions.classes';
+
 class TeamQuestionsEvaluation {
     public id           : string = "";
     public name         : string = "";
@@ -36,6 +38,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private resetConfirm            : boolean                        = false;
     private modeAnswering           : boolean                        = true;
     private teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
+    private imagesAvailable         : Object                         = new Object();
+    private imagesAvailableSet      : boolean                        = false;
 
     /* Construction
      */
@@ -71,6 +75,18 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             data => {
                 this.modeAnswering = data["answering"]; 
                 console.log("observableQuestionsAction-master [" + this.modeAnswering + "]");
+            }
+        );
+
+        this.observableQuestionsImagesAvailable = this._websocketUserService
+                                             .register("questions-images-available")
+        this.observableQuestionsImagesAvailableSubscription = this.observableQuestionsImagesAvailable.subscribe(
+            data => {
+                console.log("observableQuestionsImagesAvailable in");
+                this.imagesAvailable    = data;
+                this.imagesAvailableSet = true;
+                console.log(this.imagesAvailable);
+                console.log("observableQuestionsImagesAvailable out");
             }
         );
     }
@@ -148,6 +164,14 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         });
     }
 
+    private onImagesAvailableClick(image : QuestionsSelectImage) : void {
+        console.log("onImagesAvailableClick [" + image.question + "][" + image.url + "]");
+        console.log(image);
+        this._websocketUserService.sendMsg("questions-image-on-beamer", {
+            image : image
+        });        
+    }
+
     /* Private functions
      */
 
@@ -157,4 +181,6 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private observableQuestionsConfigureSubscription       : Subscription;
     private observableQuestionsAction                      : Observable<any>;
     private observableQuestionsActionSubscription          : Subscription;
+    private observableQuestionsImagesAvailable             : Observable<any>;
+    private observableQuestionsImagesAvailableSubscription : Subscription;
 }

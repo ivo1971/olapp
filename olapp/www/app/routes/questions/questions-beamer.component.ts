@@ -13,6 +13,8 @@ import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
+import {QuestionsSelectImage} from './questions.classes';
+
 @Component({
     moduleId   : module.id,
     selector   : 'questions-beamer',
@@ -26,12 +28,13 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     /* Private variables intended for the template
      * (hence at the top)
      */
-    @Input()  inMaster             : boolean       = false;
-    private   modeAnswering        : boolean       = true;
-    private   dummies              : Array<string> = [];
-    private   teamsAnswers         : Array<any>    = [];
-    private   teamsEvaluations     : Array<any>    = [];
+    @Input()  inMaster             : boolean                  = false;
+    private   modeAnswering        : boolean                  = true;
+    private   dummies              : Array<string>            = [];
+    private   teamsAnswers         : Array<any>               = [];
+    private   teamsEvaluations     : Array<any>               = [];
     @Output() teamEvaluationsEvt   : EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
+    private   questionsSelectImage : QuestionsSelectImage     = new QuestionsSelectImage();
 
     /* Construction
      */
@@ -152,6 +155,25 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 console.log("observableQuestionsEvaluations out");
             }
         );
+
+        this.observableQuestionsImageOnBeamer = this._websocketUserService
+                                             .register("questions-image-on-beamer")
+        this.observableQuestionsImageOnBeamerSubscription = this.observableQuestionsImageOnBeamer.subscribe(
+            data => {
+                console.log("observableQuestionsImageOnBeamer check");
+                if((null == data) || ("undefined" === typeof(data["image"]))) {
+                    //no info
+                    console.log("observableQuestionsImageOnBeamer check no info");
+                    return;
+                }
+                //valid data
+
+                console.log("observableQuestionsImageOnBeamer in");
+                this.questionsSelectImage = data["image"];
+                console.log(this.questionsSelectImage);
+                console.log("observableQuestionsImageOnBeamer out");
+            }
+        );
     }
 
     public ngOnDestroy() : void {
@@ -210,4 +232,6 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     private observableQuestionsTeamsAnswersAllSubscription : Subscription;
     private observableQuestionsEvaluations                 : Observable<any>;
     private observableQuestionsEvaluationsSubscription     : Subscription;
+    private observableQuestionsImageOnBeamer               : Observable<any>;
+    private observableQuestionsImageOnBeamerSubscription   : Subscription;
 }
