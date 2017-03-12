@@ -11,6 +11,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , m_spTeamManager(spTeamManager)
    , m_Users(users)
    , m_nbrOfQuestions(0)
+   , m_PointsPerQuestion(1)
    , m_Questions()
    , m_Answering(true)
    , m_Evaluations()
@@ -26,6 +27,8 @@ void CQuizModeQuestions::HandleMessageQuiz(const std::string& id, const std::str
     m_spLogger->info("CQuizModeQuestions [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
     if("questions-answer" == mi) {
         HandleMessageQuizAnswer(id, citJsData);
+    } else {
+        m_spLogger->error("CQuizModeQuestions [%s][%u] MI [%s] unhandled.", __FUNCTION__, __LINE__, mi.c_str());
     }
 }
 
@@ -38,12 +41,15 @@ void CQuizModeQuestions::HandleMessageMaster(const std::string& /* id */, const 
         HandleMessageMasterAction(citJsData);
     } else if("questions-evaluations" == mi) {
         HandleMessageMasterEvaluations(citJsData);
+    } else if("questions-set-points" == mi) {
+        HandleMessageMasterSetPoints(citJsData);
     }
 }
 
 void CQuizModeQuestions::HandleMessageBeamer(const std::string& /* id */, const std::string& mi, const nlohmann::json::const_iterator  /* citJsData */)
 {
     m_spLogger->info("CQuizModeQuestions [%s][%u] MI [%s].", __FUNCTION__, __LINE__, mi.c_str());
+    m_spLogger->error("CQuizModeQuestions [%s][%u] MI [%s] unhandled.", __FUNCTION__, __LINE__, mi.c_str());
 }
 
 void CQuizModeQuestions::UsersChanged(const MapUser& users)
@@ -63,7 +69,8 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     //send configuration
     {
         json jsonData; 
-        jsonData["nbrOfQuestions"] = m_nbrOfQuestions;
+        jsonData["nbrOfQuestions"]    = m_nbrOfQuestions;
+        jsonData["pointsPerQuestion"] = m_PointsPerQuestion;
         if(toMaster) {
             m_spWsMasterHandler->SendMessage(id, "questions-configure",        jsonData);
             m_spWsMasterHandler->SendMessage(id, "questions-configure-master", jsonData);
@@ -139,7 +146,8 @@ void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::cons
 {
     //spread the news
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
-    m_nbrOfQuestions = GetElementInt(citJsData, "nbrOfQuestions");
+    m_nbrOfQuestions    = GetElementInt(citJsData, "nbrOfQuestions"   );
+    m_PointsPerQuestion = GetElementInt(citJsData, "pointsPerQuestion");
     m_spWsQuizHandler->SendMessage  ("questions-configure", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-configure", citJsData);
     m_spWsMasterHandler->SendMessage("questions-configure", citJsData);
@@ -176,6 +184,21 @@ void CQuizModeQuestions::HandleMessageMasterEvaluations(const nlohmann::json::co
     m_spWsQuizHandler->SendMessage  ("questions-evaluations", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-evaluations", citJsData);
     m_spWsMasterHandler->SendMessage("questions-evaluations", citJsData);
+}
+
+void CQuizModeQuestions::HandleMessageMasterSetPoints(const nlohmann::json::const_iterator citJsData)
+{
+    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    const json::const_iterator citJsDataTeams = GetElement(citJsData, "teams");
+    const vector<json> vJsDataTeams = citJsDataTeams->get<vector<json>>();
+    m_spTeamManager->PointsRoundClear();
+    for(const auto team : vJsDataTeams) {
+        const std::string& id          = GetElementString(team, "id");
+        const int          pointsRound = GetElementInt   (team, "pointsRound");
+        m_spLogger->info("CQuizModeQuestions [%s][%u] [%s][%d].", __FUNCTION__, __LINE__, id.c_str(), pointsRound);
+        m_spTeamManager->PointsRoundId(id, pointsRound, 0, true);
+    }
+    m_spTeamManager->PointsRound2Total();
 }
 
 void CQuizModeQuestions::HandleMessageQuizAnswer(const std::string& id, const nlohmann::json::const_iterator citJsData)
