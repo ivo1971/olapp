@@ -1,8 +1,10 @@
 import {Component}            from '@angular/core';
+import {EventEmitter}         from '@angular/core';
 import {Input}                from '@angular/core';
 import {Observable}           from 'rxjs/Observable';
 import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
+import {Output}               from '@angular/core';
 import {Subscription}         from 'rxjs/Subscription';
 
 import {ComponentBase}        from './../../classes/component-base.class';
@@ -24,11 +26,12 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     /* Private variables intended for the template
      * (hence at the top)
      */
-    @Input() inMaster             : boolean       = false;
-    private  modeAnswering        : boolean       = true;
-    private  dummies              : Array<string> = [];
-    private  teamsAnswers         : Array<any>    = [];
-    private  teamsEvaluations     : Array<any>    = [];
+    @Input()  inMaster             : boolean       = false;
+    private   modeAnswering        : boolean       = true;
+    private   dummies              : Array<string> = [];
+    private   teamsAnswers         : Array<any>    = [];
+    private   teamsEvaluations     : Array<any>    = [];
+    @Output() teamEvaluationsEvt   : EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
 
     /* Construction
      */
@@ -47,6 +50,12 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     /* Life-cycle hooks
      */
     public ngOnInit() : void {
+        //init events
+        {
+            let teamEvaluations  : Array<any> = [];
+            this.teamEvaluationsEvt.next(teamEvaluations);
+        }
+        
         //register routing MI
         this.observableQuestionsAction = this._websocketUserService
                                              .register("questions-action")
@@ -95,11 +104,13 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     if(evaluationsInit) {
                         let evaluation : any = {
                             id:              data["teams"][u].id,
+                            name:            data["teams"][u].name,
                             nbrCorrect:      0,
                             nbrEvaluated:    0,
                             evaluations:     new Array<boolean>(),
                             evaluationsDone: new Array<boolean>()
                         }
+                        console.log("observableQuestionsTeamsAnswersAll name [" + evaluation.name + "]");
                         for(let v = 0 ; v < data["teams"][u]["answers"].length ; ++v) {
                             evaluation.evaluations.push(false);
                             evaluation.evaluationsDone.push(false);
@@ -135,6 +146,10 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 for(let u = 0 ; u < data["evaluations"].length ; ++u) {
                     this.teamsEvaluations[u] = data["evaluations"][u];
                 }
+
+                //spread the news
+                this.teamEvaluationsEvt.next(this.teamsEvaluations);
+                console.log("observableQuestionsEvaluations out");
             }
         );
     }
@@ -182,6 +197,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
         this._websocketUserService.sendMsg("questions-evaluations", {
             evaluations: this.teamsEvaluations
         });    
+        this.teamEvaluationsEvt.next(this.teamsEvaluations);
     }
 
     /* Private members

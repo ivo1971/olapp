@@ -25,7 +25,7 @@
           Points per question:
         </div>
         <div class="col-md-2 col-sm-2 col-xs-2">
-          <input class="form-control" type="text" [(ngModel)]="pointsPerQuestion" />
+          <input class="form-control" type="number" [(ngModel)]="pointsPerQuestion" (change)="onPointsPerQuestionChange($event.target.value)" />
         </div>
       </div>
       <div class="form-check form-check-inline">
@@ -36,12 +36,46 @@
       </div>
       <br />
       <br />
+      <div *ngIf="!modeAnswering" class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          Punten in deze ronde:
+        </div>
+      </div>
+      <div *ngFor="let teamQuestionEvaluation of teamQuestionsEvaluation" class="row">
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-10 alert alert-success">
+          <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-8">
+              {{teamQuestionEvaluation.name}}
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <h4>
+                <span class="label label-primary">
+                  {{teamQuestionEvaluation.pointsRound}}
+                </span>
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+      </div>
+      <div *ngIf="!modeAnswering" class="row">
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-10">
+          <button *ngIf="0 != teamQuestionsEvaluation.length" type="button" class="btn btn-success" (click)="onClickSetPoints()">Set round & round to total</button>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+        </div>
+      </div>
     </div>
     <div class="col-md-1">
     </div>
     <div class="col-md-7">
       <h3 class="text-center"><b><u>Beamer</u></b></h3>
-      <questions-beamer [inMaster]="true"></questions-beamer>
+      <questions-beamer [inMaster]="true" (teamEvaluationsEvt)="onTeamEvaluationsEvt($event)"></questions-beamer>
     </div>
   </div>
 </div>

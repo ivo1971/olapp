@@ -10,6 +10,14 @@ import {LogService }          from './../../services/log.service';
 import {ModeService, EMode}   from './../../services/mode.service';
 import {WebsocketUserService} from './../../services/websocket.user.service';
 
+class TeamQuestionsEvaluation {
+    public id           : string = "";
+    public name         : string = "";
+    public nbrCorrect   : number = 0;
+    public nbrEvaluated : number = 0;
+    public pointsRound  : number = 0;
+}
+
 @Component({
     moduleId   : module.id,
     selector   : 'questions-master',
@@ -23,10 +31,11 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private numberOfQuestions  : number  = 10;
-    private pointsPerQuestion  : number  = 1;
-    private resetConfirm       : boolean = false;
-    private modeAnswering      : boolean = true;
+    private numberOfQuestions       : number                         = 10;
+    private pointsPerQuestion       : number                         = 1;
+    private resetConfirm            : boolean                        = false;
+    private modeAnswering           : boolean                        = true;
+    private teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
 
     /* Construction
      */
@@ -89,7 +98,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             pointsPerQuestion: this.pointsPerQuestion
         });    
         this.onClickRadioAction(true);
-        this.modeAnswering = true;
+        this.modeAnswering                  = true;
+        this.teamQuestionsEvaluation.length = 0;
     }
 
     private onClickRadioAction(answering : boolean) : void {
@@ -98,6 +108,44 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         this._websocketUserService.sendMsg("questions-action", {
             answering: answering
         });        
+    }
+
+    private onPointsPerQuestionChange(pointsPerQuestion : number) : void {
+        console.log("onPointsPerQuestionChange in  [" + pointsPerQuestion + "]");
+        for(let u = 0 ; u < this.teamQuestionsEvaluation.length ; ++u) {
+            this.teamQuestionsEvaluation[u].pointsRound  = this.teamQuestionsEvaluation[u].nbrCorrect   * this.pointsPerQuestion;
+        }
+        console.log(this.teamQuestionsEvaluation);
+        console.log("onPointsPerQuestionChange out");
+    }
+
+    private onTeamEvaluationsEvt(teamQuestionsEvaluation : Array<any>) : void {
+        console.log("onTeamEvaluationsEvt in  [" + teamQuestionsEvaluation.length + "]");
+        this.teamQuestionsEvaluation.length = teamQuestionsEvaluation.length;
+        for(let u = 0 ; u < teamQuestionsEvaluation.length ; ++u) {
+            if("undefined" === typeof(this.teamQuestionsEvaluation[u])) {
+                this.teamQuestionsEvaluation[u]          = new TeamQuestionsEvaluation();
+            }
+            this.teamQuestionsEvaluation[u].id           = teamQuestionsEvaluation[u].id           ;
+            this.teamQuestionsEvaluation[u].name         = teamQuestionsEvaluation[u].name         ;
+            this.teamQuestionsEvaluation[u].nbrCorrect   = teamQuestionsEvaluation[u].nbrCorrect   ;
+            this.teamQuestionsEvaluation[u].nbrEvaluated = teamQuestionsEvaluation[u].nbrEvaluated ;
+            this.teamQuestionsEvaluation[u].pointsRound  = teamQuestionsEvaluation[u].nbrCorrect   * this.pointsPerQuestion;
+        }
+        console.log(this.teamQuestionsEvaluation);
+        console.log("onTeamEvaluationsEvt out [" + teamQuestionsEvaluation.length + "]");
+    }
+
+    private onClickSetPoints() : void {
+        //send message to set points
+        this._websocketUserService.sendMsg("questions-set-points", {
+            teams : this.teamQuestionsEvaluation
+        });        
+
+        //route to the scoreboard
+        this._websocketUserService.sendMsg("select-mode", {
+            mode: "scoreboard"
+        });
     }
 
     /* Private functions
