@@ -35,6 +35,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     private   teamsEvaluations     : Array<any>               = [];
     @Output() teamEvaluationsEvt   : EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
     private   questionsSelectImage : QuestionsSelectImage     = new QuestionsSelectImage();
+    private   questionsImages      : Array<string>            = [];
 
     /* Construction
      */
@@ -82,6 +83,10 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 this.teamsAnswers.length     = 0;
                 this.teamsEvaluations.length = 0;     
                 this.questionsSelectImage    = new QuestionsSelectImage();
+                this.questionsImages.length  = nbrOfQuestions;
+                for(let u : number = 0 ; u < nbrOfQuestions ; ++u) {
+                    this.questionsImages[u] = "";
+                }
                 console.log("observableQuestionsConfigure out");
             }
         );
@@ -175,12 +180,33 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 console.log("observableQuestionsImageOnBeamer out");
             }
         );
+
+        this.observableQuestionsImagesOnClient = this._websocketUserService
+                                             .register("questions-images-on-client")
+        this.observableQuestionsImagesOnClientSubscription = this.observableQuestionsImagesOnClient.subscribe(
+            data => {
+                console.log("observableQuestionsImagesOnClient check");
+                if((null == data) || ("undefined" === typeof(data["images"]))) {
+                    //no info
+                    console.log("observableQuestionsImagesOnClient check no info");
+                    return;
+                }
+                //valid data
+
+                console.log("observableQuestionsImagesOnClient in");
+                this.questionsImages = data["images"];
+                console.log(this.questionsImages);
+                console.log("observableQuestionsImagesOnClient out");
+            }
+        );
     }
 
     public ngOnDestroy() : void {
         this.observableQuestionsActionSubscription.unsubscribe();
         this.observableQuestionsTeamsAnswersAllSubscription.unsubscribe();
         this.observableQuestionsEvaluationsSubscription.unsubscribe();
+        this.observableQuestionsImageOnBeamerSubscription.unsubscribe();
+        this.observableQuestionsImagesOnClientSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -235,4 +261,6 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     private observableQuestionsEvaluationsSubscription     : Subscription;
     private observableQuestionsImageOnBeamer               : Observable<any>;
     private observableQuestionsImageOnBeamerSubscription   : Subscription;
+    private observableQuestionsImagesOnClient              : Observable<any>;
+    private observableQuestionsImagesOnClientSubscription  : Subscription;
 }

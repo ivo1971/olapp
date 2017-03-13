@@ -91,34 +91,38 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             }
         );
 
-        this.observableQuestionsImagesOnClient = this._websocketUserService
-                                             .register("questions-images-on-client")
-        this.observableQuestionsImagesOnClientSubscription = this.observableQuestionsImagesOnClient.subscribe(
+        this.observableQuestionsImagesOnClientMaster = this._websocketUserService
+                                             .register("questions-images-on-client-master")
+        this.observableQuestionsImagesOnClientMasterSubscription = this.observableQuestionsImagesOnClientMaster.subscribe(
             data => {
-                console.log("observableQuestionsImagesOnClient check");
+                console.log("observableQuestionsImagesOnClientMaster check");
                 if((null == data) || ("undefined" === typeof(data["images"]))) {
                     //no info
-                    console.log("observableQuestionsImagesOnClient check no info");
+                    console.log("observableQuestionsImagesOnClientMaster check no info");
                     return;
                 }
                 //valid data
 
-                console.log("observableQuestionsImagesOnClient in");
+                console.log("observableQuestionsImagesOnClientMaster in");
                 this.imagesDisplay = data["images"];
                 console.log(this.imagesDisplay);
                 if(this.imagesDisplay.length !== this.numberOfQuestions) {
-                    this.logService.error("observableQuestionsImagesOnClient size mismatch between questions (" + this.imagesDisplay.length + ") and images (" + this.numberOfQuestions + ").");
+                    this.logService.error("observableQuestionsImagesOnClientMaster size mismatch between questions (" + this.imagesDisplay.length + ") and images (" + this.numberOfQuestions + ").");
                     this.imagesDisplay.length = this.numberOfQuestions;
                     for(let u : number = 0 ; u < this.imagesDisplay.length ; ++u) {
                         this.imagesDisplay[u] = "";
                     }
                 }
-                console.log("observableQuestionsImagesOnClient out");
+                console.log("observableQuestionsImagesOnClientMaster out");
             }
         );
     }
 
     public ngOnDestroy() : void {
+        this.observableQuestionsConfigureSubscription.unsubscribe();
+        this.observableQuestionsActionSubscription.unsubscribe();
+        this.observableQuestionsImagesAvailableSubscription.unsubscribe();
+        this.observableQuestionsImagesOnClientMasterSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -213,12 +217,12 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
 
     /* Private members
      */
-    private observableQuestionsConfigure                   : Observable<any>;
-    private observableQuestionsConfigureSubscription       : Subscription;
-    private observableQuestionsAction                      : Observable<any>;
-    private observableQuestionsActionSubscription          : Subscription;
-    private observableQuestionsImagesAvailable             : Observable<any>;
-    private observableQuestionsImagesAvailableSubscription : Subscription;
-    private observableQuestionsImagesOnClient              : Observable<any>;
-    private observableQuestionsImagesOnClientSubscription  : Subscription;
+    private observableQuestionsConfigure                        : Observable<any>;
+    private observableQuestionsConfigureSubscription            : Subscription;
+    private observableQuestionsAction                           : Observable<any>;
+    private observableQuestionsActionSubscription               : Subscription;
+    private observableQuestionsImagesAvailable                  : Observable<any>;
+    private observableQuestionsImagesAvailableSubscription      : Subscription;
+    private observableQuestionsImagesOnClientMaster             : Observable<any>;
+    private observableQuestionsImagesOnClientMasterSubscription : Subscription;
 }

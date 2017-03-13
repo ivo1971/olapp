@@ -10,7 +10,7 @@
     <div class="col-md-10 col-sm-10 col-xs-10">
       <table>
           <tr>
-            <th *ngIf="!inMaster">
+            <th>
               <h3>vraag</h3>
             </th>
             <th *ngFor="let teamAnswers of teamsAnswers; let teamIdx = index">
@@ -21,8 +21,14 @@
             </th>
           </tr>
           <tr *ngFor="let dummy of dummies; let answerIdx = index">
-            <td *ngIf="!inMaster">
+            <td>
               {{answerIdx + 1}}
+              <image-local 
+                *ngIf="(0 != questionsImages.length) && (0 != questionsImages[answerIdx].length)"
+                [source]="questionsImages[answerIdx]" 
+                [height]="65"
+                >
+              </image-local>
             </td>
             <td *ngFor="let teamAnswers of teamsAnswers; let teamIdx = index">
                 <input 
@@ -52,7 +58,7 @@
             </td>
           </tr>
           <tr>
-            <td *ngIf="!inMaster">
+            <td>
                <h3 class="text-left">
                  <span class="label label-primary">
                    Resultaat

@@ -84,10 +84,12 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
             data => {
                 //this is a reset,
                 //so start clean
-                let nbrOfQuestions     = data["nbrOfQuestions"];
-                this.questions.length  = nbrOfQuestions;
+                let nbrOfQuestions          = data["nbrOfQuestions"];
+                this.questions.length       = nbrOfQuestions;
+                this.questionsImages.length = nbrOfQuestions;
                 for(let u = 0 ; u < nbrOfQuestions ; ++u) {
-                    this.questions[u] = new Question();
+                    this.questions[u]       = new Question();
+                    this.questionsImages[u] = "";
                 }
                 this.teamsEvaluations.length = 0;
                 console.log("observableQuestionsConfigure [" + nbrOfQuestions + "]")
@@ -188,6 +190,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
         this.observableQuestionsAnswerUpdateAllSubscription.unsubscribe();
         this.observableQuestionsActionSubscription.unsubscribe();
         this.observableQuestionsEvaluationsSubscription.unsubscribe();
+        this.observableQuestionsImagesOnClientSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
