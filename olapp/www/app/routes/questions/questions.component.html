@@ -20,6 +20,13 @@
               (valueEv)="valueChanged(idx, $event)"
               >
             </input-debounce>
+            <span 
+              *ngIf="(modeAnswering) && (0 != questionsImages.length) && (0 != questionsImages[idx].length)" 
+              >
+              <image-local [source]="questionsImages[idx]" [height]="200"></image-local>
+              <br />
+              <br />
+            </span>
           </div>
           <div class="col-md-1 col-sm-1 col-xs-1">
           </div>

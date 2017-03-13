@@ -40,6 +40,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     private teamsEvaluations         : Array<any>      = [];
     private teamsEvaluationsIdx      : number          = -1;
     private userInfo                 : User            = new User();
+    private questionsImages          : Array<string>   = [];
 
     /* Construction
      */
@@ -156,6 +157,29 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                 console.log("observableQuestionsEvaluations out");
             }
         );
+
+        this.observableQuestionsImagesOnClient = this._websocketUserService
+                                             .register("questions-images-on-client")
+        this.observableQuestionsImagesOnClientSubscription = this.observableQuestionsImagesOnClient.subscribe(
+            data => {
+                console.log("observableQuestionsImagesOnClient check");
+                if((null == data) || ("undefined" === typeof(data["images"]))) {
+                    //no info
+                    console.log("observableQuestionsImagesOnClient check no info");
+                    return;
+                }
+                //valid data
+
+                console.log("observableQuestionsImagesOnClient in");
+                this.questionsImages = data["images"];
+                console.log(this.questionsImages);
+                if(this.questionsImages.length !== this.questions.length) {
+                    this.logService.error("observableQuestionsImagesOnClient size mismatch between questions (" + this.questions.length + ") and images (" + this.questionsImages.length + ").");
+                    this.questionsImages.length = 0;
+                }
+                console.log("observableQuestionsImagesOnClient out");
+            }
+        );
     }
 
     public ngOnDestroy() : void {
@@ -192,4 +216,6 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     private observableQuestionsActionSubscription          : Subscription;
     private observableQuestionsEvaluations                 : Observable<any>;
     private observableQuestionsEvaluationsSubscription     : Subscription;
+    private observableQuestionsImagesOnClient              : Observable<any>;
+    private observableQuestionsImagesOnClientSubscription  : Subscription;
 }

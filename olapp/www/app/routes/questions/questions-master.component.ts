@@ -40,6 +40,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
     private imagesAvailable         : Object                         = new Object();
     private imagesAvailableSet      : boolean                        = false;
+    private imagesDisplay           : Array<string>                  = [];
 
     /* Construction
      */
@@ -89,6 +90,32 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
                 console.log("observableQuestionsImagesAvailable out");
             }
         );
+
+        this.observableQuestionsImagesOnClient = this._websocketUserService
+                                             .register("questions-images-on-client")
+        this.observableQuestionsImagesOnClientSubscription = this.observableQuestionsImagesOnClient.subscribe(
+            data => {
+                console.log("observableQuestionsImagesOnClient check");
+                if((null == data) || ("undefined" === typeof(data["images"]))) {
+                    //no info
+                    console.log("observableQuestionsImagesOnClient check no info");
+                    return;
+                }
+                //valid data
+
+                console.log("observableQuestionsImagesOnClient in");
+                this.imagesDisplay = data["images"];
+                console.log(this.imagesDisplay);
+                if(this.imagesDisplay.length !== this.numberOfQuestions) {
+                    this.logService.error("observableQuestionsImagesOnClient size mismatch between questions (" + this.imagesDisplay.length + ") and images (" + this.numberOfQuestions + ").");
+                    this.imagesDisplay.length = this.numberOfQuestions;
+                    for(let u : number = 0 ; u < this.imagesDisplay.length ; ++u) {
+                        this.imagesDisplay[u] = "";
+                    }
+                }
+                console.log("observableQuestionsImagesOnClient out");
+            }
+        );
     }
 
     public ngOnDestroy() : void {
@@ -116,6 +143,10 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         this.onClickRadioAction(true);
         this.modeAnswering                  = true;
         this.teamQuestionsEvaluation.length = 0;
+        this.imagesDisplay.length           = this.numberOfQuestions;
+        for(let u : number = 0 ; u < this.imagesDisplay.length ; ++u) {
+            this.imagesDisplay[u] = "";
+        }
     }
 
     private onClickRadioAction(answering : boolean) : void {
@@ -169,7 +200,12 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         console.log(image);
         this._websocketUserService.sendMsg("questions-image-on-beamer", {
             image : image
-        });        
+        });
+        this.imagesDisplay[image.question] = image.url;
+        console.log(this.imagesDisplay);
+        this._websocketUserService.sendMsg("questions-images-on-client", {
+            images : this.imagesDisplay
+        });
     }
 
     /* Private functions
@@ -183,4 +219,6 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private observableQuestionsActionSubscription          : Subscription;
     private observableQuestionsImagesAvailable             : Observable<any>;
     private observableQuestionsImagesAvailableSubscription : Subscription;
+    private observableQuestionsImagesOnClient              : Observable<any>;
+    private observableQuestionsImagesOnClientSubscription  : Subscription;
 }
