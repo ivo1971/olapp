@@ -11,24 +11,25 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       virtual                                        ~CQuizModeQuestions             (void) throw();
 
    public:
-      virtual void                                   HandleMessageQuiz               (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                                   HandleMessageMaster             (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                                   HandleMessageBeamer             (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
-      virtual void                                   UsersChanged                    (const MapUser& users);
-      virtual void                                   ReConnect                       (const std::string& id);
+      virtual void                                   HandleMessageQuiz                 (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                                   HandleMessageMaster               (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                                   HandleMessageBeamer               (const std::string& id, const std::string& mi, const nlohmann::json::const_iterator citJsData);
+      virtual void                                   UsersChanged                      (const MapUser& users);
+      virtual void                                   ReConnect                         (const std::string& id);
 
    private:
-      void                                           HandleMessageMasterConfigure    (const nlohmann::json::const_iterator citJsData);
-      void                                           HandleMessageMasterAction       (const nlohmann::json::const_iterator citJsData);
-      void                                           HandleMessageMasterEvaluations  (const nlohmann::json::const_iterator citJsData);
-      void                                           HandleMessageMasterSetPoints    (const nlohmann::json::const_iterator citJsData);
-      void                                           HandleMessageMasterImageOnBeamer(const nlohmann::json::const_iterator citJsData);
-      void                                           HandleMessageQuizAnswer         (const std::string& id, const nlohmann::json::const_iterator citJsData);
-      void                                           SendAnswersAll                  (const bool toMaster = true, const bool toBeamer = true);
-      void                                           Save                            (void);
-      bool                                           Load                            (void);
-      nlohmann::json                                 LoadImages                      (void) const;
-      nlohmann::json                                 LoadImagesDir                   (const std::string& dirAbs, const std::string& dirRel, const std::string dirName) const;
+      void                                           HandleMessageMasterConfigure      (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageMasterAction         (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageMasterEvaluations    (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageMasterSetPoints      (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageMasterImageOnBeamer  (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageMasterImagesOnClient (const nlohmann::json::const_iterator citJsData);
+      void                                           HandleMessageQuizAnswer           (const std::string& id, const nlohmann::json::const_iterator citJsData);
+      void                                           SendAnswersAll                    (const bool toMaster = true, const bool toBeamer = true);
+      void                                           Save                              (void);
+      bool                                           Load                              (void);
+      nlohmann::json                                 LoadImages                        (void) const;
+      nlohmann::json                                 LoadImagesDir                     (const std::string& dirAbs, const std::string& dirRel, const std::string dirName) const;
 
    private:
       SPTeamManager                                  m_spTeamManager;
@@ -43,6 +44,7 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       nlohmann::json                                 m_Evaluations;
       const nlohmann::json                           m_ImagesAvailable;
       nlohmann::json                                 m_ImageOnBeamer;
+      nlohmann::json                                 m_ImagesOnClient;
 };
 
 #endif //__CQUIZMODEQUESTIONS__H__

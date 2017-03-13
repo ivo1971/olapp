@@ -28,6 +28,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , m_Evaluations()
    , m_ImagesAvailable(LoadImages())
    , m_ImageOnBeamer()
+   , m_ImagesOnClient()
 {
     //load from file
     if(Load()) {
@@ -69,6 +70,8 @@ void CQuizModeQuestions::HandleMessageMaster(const std::string& /* id */, const 
         HandleMessageMasterSetPoints(citJsData);
     } else if("questions-image-on-beamer" == mi) {
         HandleMessageMasterImageOnBeamer(citJsData);
+    } else if("questions-images-on-client" == mi) {
+        HandleMessageMasterImagesOnClient(citJsData);
     } else {
         m_spLogger->error("CQuizModeQuestions [%s][%u] MI [%s] unhandled.", __FUNCTION__, __LINE__, mi.c_str());
     }
@@ -173,11 +176,17 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
     if(toMaster) {
         m_spWsMasterHandler->SendMessage(id, "questions-images-available", m_ImagesAvailable);
         m_spWsMasterHandler->SendMessage(id, "questions-image-on-beamer",  m_ImageOnBeamer);
+        m_spWsMasterHandler->SendMessage(id, "questions-images-on-client", m_ImagesOnClient);
     }
 
     //send image-on-beamer to the beamer
     if(toBeamer) {
-        m_spWsBeamerHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
+        m_spWsBeamerHandler->SendMessage(id, "questions-image-on-beamer", m_ImageOnBeamer);
+    }
+
+    //send images-on-client to the client
+    if(toClient) {
+        m_spWsQuizHandler->SendMessage(id, "questions-images-on-client", m_ImagesOnClient);
     }
 }
 
@@ -258,6 +267,16 @@ void CQuizModeQuestions::HandleMessageMasterImageOnBeamer(const nlohmann::json::
     m_ImageOnBeamer = *citJsData;
     m_spWsBeamerHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
     m_spWsMasterHandler->SendMessage("questions-image-on-beamer", m_ImageOnBeamer);
+
+    //save the current state
+    Save();
+}
+
+void CQuizModeQuestions::HandleMessageMasterImagesOnClient(const nlohmann::json::const_iterator citJsData)
+{
+    m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
+    m_ImagesOnClient = *citJsData;
+    m_spWsQuizHandler->SendMessage("questions-images-on-client", m_ImagesOnClient);
 
     //save the current state
     Save();
@@ -366,6 +385,7 @@ void CQuizModeQuestions::Save(void)
     data["answering"]            = m_Answering;
     data["evaluations"]          = m_Evaluations;
     data["imageOnBeamer"]        = m_ImageOnBeamer;
+    data["imagesOnClient"]       = m_ImagesOnClient;
 
     for(const auto team : m_Questions) {
         json dataTeam;
@@ -438,6 +458,13 @@ bool CQuizModeQuestions::Load(void)
         m_ImageOnBeamer = *cit;
     } catch(...) {
         m_ImageOnBeamer.clear();
+    }
+    try {
+        m_ImagesOnClient.clear();
+        const json::const_iterator cit = GetElement(jsonData, "imagesOnClient");
+        m_ImagesOnClient = *cit;
+    } catch(...) {
+        m_ImagesOnClient.clear();
     }
     try {
         m_Questions.clear();
