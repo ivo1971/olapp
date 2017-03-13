@@ -174,14 +174,16 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
 
     //send available images to master
     if(toMaster) {
-        m_spWsMasterHandler->SendMessage(id, "questions-images-available", m_ImagesAvailable);
-        m_spWsMasterHandler->SendMessage(id, "questions-image-on-beamer",  m_ImageOnBeamer);
-        m_spWsMasterHandler->SendMessage(id, "questions-images-on-client", m_ImagesOnClient);
+        m_spWsMasterHandler->SendMessage(id, "questions-images-available",        m_ImagesAvailable);
+        m_spWsMasterHandler->SendMessage(id, "questions-image-on-beamer",         m_ImageOnBeamer);
+        m_spWsMasterHandler->SendMessage(id, "questions-images-on-client",        m_ImagesOnClient);
+        m_spWsMasterHandler->SendMessage(id, "questions-images-on-client-master", m_ImagesOnClient);
     }
 
     //send image-on-beamer to the beamer
     if(toBeamer) {
-        m_spWsBeamerHandler->SendMessage(id, "questions-image-on-beamer", m_ImageOnBeamer);
+        m_spWsBeamerHandler->SendMessage(id, "questions-image-on-beamer",  m_ImageOnBeamer);
+        m_spWsBeamerHandler->SendMessage(id, "questions-images-on-client", m_ImagesOnClient);
     }
 
     //send images-on-client to the client
@@ -276,7 +278,9 @@ void CQuizModeQuestions::HandleMessageMasterImagesOnClient(const nlohmann::json:
 {
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
     m_ImagesOnClient = *citJsData;
-    m_spWsQuizHandler->SendMessage("questions-images-on-client", m_ImagesOnClient);
+    m_spWsBeamerHandler->SendMessage("questions-images-on-client", m_ImagesOnClient);
+    m_spWsQuizHandler->SendMessage  ("questions-images-on-client", m_ImagesOnClient);
+    m_spWsMasterHandler->SendMessage("questions-images-on-client", m_ImagesOnClient);
 
     //save the current state
     Save();
