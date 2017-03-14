@@ -12,7 +12,41 @@
               Vraag {{idx + 1}}:
           </div>
           <div class="col-md-9 col-sm-9 col-xs-9">
+            <span
+              *ngIf = "'Good-Wrong' === answeringType"
+              >
+              <button 
+                type="button" 
+                *ngIf="0 != question.answer.length" 
+                class="btn btn-lg"
+                [class.btn-success]="modeAnswering" 
+                [class.btn-info]="!modeAnswering" 
+                [class.question-ok]="   (!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] &&  teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
+                [class.question-error]="(!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] && !teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
+                [disabled]="!modeAnswering" 
+                (click)="onClickButtonAnswer(idx, true)" 
+                >
+                <span class="glyphicon glyphicon-ok"     aria-hidden="true"></span>
+                Goed
+              </button>
+              <button 
+                type="button" 
+                *ngIf="0 == question.answer.length" 
+                class="btn btn-lg"
+                [class.btn-danger]="modeAnswering" 
+                [class.btn-info]="!modeAnswering" 
+                [class.question-ok]="   (!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] &&  teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
+                [class.question-error]="(!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] && !teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
+                [disabled]="!modeAnswering" 
+                (click)="onClickButtonAnswer(idx, false)" 
+                >
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              Fout
+              </button>
+              <br />
+            </span>
             <input-debounce 
+              *ngIf = "'Input' === answeringType"
               [classOk]="   (!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] &&  teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
               [classError]="(!modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length) && teamsEvaluations[teamsEvaluationsIdx].evaluationsDone[idx] && !teamsEvaluations[teamsEvaluationsIdx].evaluations[idx]"
               [disabled]="!modeAnswering" 
@@ -36,7 +70,7 @@
       </div>
     </div>
   </div>
-  <div class="row" *ngIf="(-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length)">
+  <div class="row" *ngIf="(modeAnswering) && (-1 != teamsEvaluationsIdx) && (0 != teamsEvaluations.length)">
     <div class="col-md-12">
       <div id="score">
         <div class="row">

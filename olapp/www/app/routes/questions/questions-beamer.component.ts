@@ -29,6 +29,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
      * (hence at the top)
      */
     @Input()  inMaster             : boolean                  = false;
+    private   answeringType        : string                   = "";
     private   modeAnswering        : boolean                  = true;
     private   dummies              : Array<string>            = [];
     private   teamsAnswers         : Array<any>               = [];
@@ -78,6 +79,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 //so start clean
                 console.log("observableQuestionsConfigure in");
                 let nbrOfQuestions           = data["nbrOfQuestions"];
+                this.answeringType           = data["answeringType"];
                 this.modeAnswering           = true;
                 this.dummies.length          = 0;
                 this.teamsAnswers.length     = 0;

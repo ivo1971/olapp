@@ -38,7 +38,33 @@
                     [checked]="teamsEvaluations[teamIdx].evaluations[answerIdx]"
                     (click)="onClickCheckboxEvaluate(teamIdx, answerIdx, $event.target.checked)" 
                     > 
+                <span *ngIf = "'Good-Wrong' === answeringType">
+                  <button 
+                    type="button"
+                    disabled 
+                    *ngIf="0 != teamAnswers.answers[answerIdx].answer.length" 
+                    class="btn btn-lg btn-info"
+                    [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    >
+                    <span class="glyphicon glyphicon-ok"     aria-hidden="true"></span>
+                    Goed
+                  </button>
+                  <button 
+                    type="button" 
+                    disabled 
+                    *ngIf="0 == teamAnswers.answers[answerIdx].answer.length" 
+                    class="btn btn-lg btn-info"
+                    [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    >
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  Fout
+                  </button>
+                  <br />
+                </span>
                 <span 
+                    *ngIf = "'Input' === answeringType"
                     [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
                     [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
                     >

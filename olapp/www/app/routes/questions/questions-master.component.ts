@@ -20,6 +20,10 @@ class TeamQuestionsEvaluation {
     public pointsRound  : number = 0;
 }
 
+class AnsweringType {
+    public constructor(public name : string) {
+    }
+}
 @Component({
     moduleId   : module.id,
     selector   : 'questions-master',
@@ -35,6 +39,11 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
      */
     private numberOfQuestions       : number                         = 10;
     private pointsPerQuestion       : number                         = 1;
+    private answeringTypeOptions    : Array<AnsweringType>           = [
+        new AnsweringType("Input"),
+        new AnsweringType("Good-Wrong")
+    ];
+    private answeringType           : string                         = this.answeringTypeOptions[0].name; 
     private resetConfirm            : boolean                        = false;
     private modeAnswering           : boolean                        = true;
     private teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
@@ -66,7 +75,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
                 console.log(data);
                 this.numberOfQuestions = data["nbrOfQuestions"]; 
                 this.pointsPerQuestion = data["pointsPerQuestion"];
-                console.log("observableQuestionsConfigure-master [" + this.numberOfQuestions + "][" + this.pointsPerQuestion + "]");
+                this.answeringType     = data["answeringType"];
+                console.log("observableQuestionsConfigure-master [" + this.numberOfQuestions + "][" + this.pointsPerQuestion + "][" + this.answeringType + "]");
             }
         );
 
@@ -140,10 +150,13 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private onClickSetNumberOfQuestionsTwo() : void {
         console.log("onClickSetNumberOfQuestionsTwo");
         this.resetConfirm = false;
-        this._websocketUserService.sendMsg("questions-configure", {
+        let data = {
             nbrOfQuestions:    this.numberOfQuestions,
-            pointsPerQuestion: this.pointsPerQuestion
-        });    
+            pointsPerQuestion: this.pointsPerQuestion,
+            answeringType:     this.answeringType
+        };
+        console.log(data);
+        this._websocketUserService.sendMsg("questions-configure", data);    
         this.onClickRadioAction(true);
         this.modeAnswering                  = true;
         this.teamQuestionsEvaluation.length = 0;

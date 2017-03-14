@@ -35,6 +35,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
     /* Private variables intended for the template
      * (hence at the top)
      */
+    private answeringType            : string          = "";
     private modeAnswering            : boolean         = true;
     private questions                : Array<Question> = [];
     private teamsEvaluations         : Array<any>      = [];
@@ -85,6 +86,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
                 //this is a reset,
                 //so start clean
                 let nbrOfQuestions          = data["nbrOfQuestions"];
+                this.answeringType          = data["answeringType"];
                 this.questions.length       = nbrOfQuestions;
                 this.questionsImages.length = nbrOfQuestions;
                 for(let u = 0 ; u < nbrOfQuestions ; ++u) {
@@ -195,7 +197,13 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
 
     /* Event handlers called from the template
      */
+    private onClickButtonAnswer(idx : number, answer: boolean) : void {
+        console.log("onClickButtonAnswer [" + idx + "][" + answer + "]")
+        this.valueChanged(idx, answer ? "" : "good");
+    }
+
     private valueChanged(idx : number, answer: string) : void {
+        console.log("valueChanged [" + idx + "][" + answer + "]")
         this.questions[idx].answer = answer; 
         this._websocketUserService.sendMsg("questions-answer", {
             idx: idx,
