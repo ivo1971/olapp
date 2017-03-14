@@ -199,7 +199,7 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
      */
     private onClickButtonAnswer(idx : number, answer: boolean) : void {
         console.log("onClickButtonAnswer [" + idx + "][" + answer + "]")
-        this.valueChanged(idx, answer ? "" : "good");
+        this.valueChanged(idx, answer ? "good" : "bad");
     }
 
     private valueChanged(idx : number, answer: string) : void {

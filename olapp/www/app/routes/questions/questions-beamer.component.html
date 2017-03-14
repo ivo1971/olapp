@@ -40,28 +40,37 @@
                     > 
                 <span *ngIf = "'Good-Wrong' === answeringType">
                   <button 
-                    type="button"
+                    type="button" 
                     disabled 
-                    *ngIf="0 != teamAnswers.answers[answerIdx].answer.length" 
-                    class="btn btn-lg btn-info"
-                    [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
-                    [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    class="btn btn-lg btn-success"
+                    [class.display-none]="'good'!== teamAnswers.answers[answerIdx].answer"
                     >
-                    <span class="glyphicon glyphicon-ok"     aria-hidden="true"></span>
-                    Goed
+                    <span *ngIf="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] &&  teamsEvaluations[teamIdx].evaluations[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-thumbs-up"               ></span>
+                    </span>
+                    <span *ngIf="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-thumbs-down"             ></span>
+                    </span>
+                    <span *ngIf="!teamsEvaluations[teamIdx].evaluationsDone[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-alert        display-none"></span>
+                    </span>
                   </button>
                   <button 
                     type="button" 
                     disabled 
-                    *ngIf="0 == teamAnswers.answers[answerIdx].answer.length" 
-                    class="btn btn-lg btn-info"
-                    [class.question-ok]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && teamsEvaluations[teamIdx].evaluations[answerIdx]"
-                    [class.question-error]="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]"
+                    class="btn btn-lg btn-danger"
+                    [class.display-none]="'bad'!== teamAnswers.answers[answerIdx].answer"
                     >
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  Fout
+                    <span *ngIf="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] &&  teamsEvaluations[teamIdx].evaluations[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-thumbs-up"               ></span>
+                    </span>
+                    <span *ngIf="teamsEvaluations[teamIdx].evaluationsDone[answerIdx] && !teamsEvaluations[teamIdx].evaluations[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-thumbs-down"             ></span>
+                    </span>
+                    <span *ngIf="!teamsEvaluations[teamIdx].evaluationsDone[answerIdx]">
+                      <span aria-hidden="true" class="glyphicon glyphicon-alert        display-none"></span>
+                    </span>
                   </button>
-                  <br />
                 </span>
                 <span 
                     *ngIf = "'Input' === answeringType"

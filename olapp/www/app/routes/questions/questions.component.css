@@ -13,3 +13,15 @@
 .question-neutral {
     border: 5px solid #000 !important;
 }
+
+.evaluation-ok {
+    background-color: #060 !important;
+}
+
+.evaluation-error {
+    background-color: #600 !important;
+}
+
+.display-none {
+    visibility: hidden !important;
+}
