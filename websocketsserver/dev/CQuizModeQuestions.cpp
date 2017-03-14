@@ -23,6 +23,7 @@ CQuizModeQuestions::CQuizModeQuestions(std::shared_ptr<seasocks::Logger> spLogge
    , m_FileName(fileName + std::string(".questions"))
    , m_NbrOfQuestions(0)
    , m_PointsPerQuestion(1)
+   , m_AnsweringType()
    , m_Questions()
    , m_Answering(true)
    , m_Evaluations()
@@ -102,6 +103,7 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
         json jsonData; 
         jsonData["nbrOfQuestions"]    = m_NbrOfQuestions;
         jsonData["pointsPerQuestion"] = m_PointsPerQuestion;
+        jsonData["answeringType"]     = m_AnsweringType;
         if(toMaster) {
             m_spWsMasterHandler->SendMessage(id, "questions-configure",        jsonData);
             m_spWsMasterHandler->SendMessage(id, "questions-configure-master", jsonData);
@@ -194,10 +196,13 @@ void CQuizModeQuestions::ReConnect(const std::string& id)
 
 void CQuizModeQuestions::HandleMessageMasterConfigure(const nlohmann::json::const_iterator citJsData)
 {
-    //spread the news
+    //parse the request
     m_spLogger->info("CQuizModeQuestions [%s][%u].", __FUNCTION__, __LINE__);
-    m_NbrOfQuestions    = GetElementInt(citJsData, "nbrOfQuestions"   );
-    m_PointsPerQuestion = GetElementInt(citJsData, "pointsPerQuestion");
+    m_NbrOfQuestions    = GetElementInt   (citJsData, "nbrOfQuestions"   );
+    m_PointsPerQuestion = GetElementInt   (citJsData, "pointsPerQuestion");
+    m_AnsweringType     = GetElementString(citJsData, "answeringType"    );
+
+    //spread the news
     m_spWsQuizHandler->SendMessage  ("questions-configure", citJsData);
     m_spWsBeamerHandler->SendMessage("questions-configure", citJsData);
     m_spWsMasterHandler->SendMessage("questions-configure", citJsData);
@@ -386,6 +391,7 @@ void CQuizModeQuestions::Save(void)
     json data;
     data["nbrOfQuestions"]       = m_NbrOfQuestions;
     data["pointsPerQuestion"]    = m_PointsPerQuestion;
+    data["answeringType"]        = m_AnsweringType;
     data["answering"]            = m_Answering;
     data["evaluations"]          = m_Evaluations;
     data["imageOnBeamer"]        = m_ImageOnBeamer;
@@ -448,6 +454,7 @@ bool CQuizModeQuestions::Load(void)
     //from json to status
     m_NbrOfQuestions    = GetElementInt    (jsonData, "nbrOfQuestions"   );
     m_PointsPerQuestion = GetElementInt    (jsonData, "pointsPerQuestion");
+    m_AnsweringType     = GetElementString (jsonData, "answeringType"    );
     m_Answering         = GetElementBoolean(jsonData, "answering"        );
     try {
         m_Evaluations.clear();

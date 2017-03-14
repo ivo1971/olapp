@@ -39,6 +39,7 @@ class CQuizModeQuestions : public IQuizMode, public CQuizModeBase {
       const std::string                              m_FileName;
       int                                            m_NbrOfQuestions;
       int                                            m_PointsPerQuestion;
+      std::string                                    m_AnsweringType;
       std::map<std::string,std::vector<std::string>> m_Questions;
       bool                                           m_Answering;
       nlohmann::json                                 m_Evaluations;
