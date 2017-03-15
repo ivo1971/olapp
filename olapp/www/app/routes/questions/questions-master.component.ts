@@ -89,18 +89,6 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
             }
         );
 
-        this.observableQuestionsImagesAvailable = this._websocketUserService
-                                             .register("questions-images-available")
-        this.observableQuestionsImagesAvailableSubscription = this.observableQuestionsImagesAvailable.subscribe(
-            data => {
-                console.log("observableQuestionsImagesAvailable in");
-                this.imagesAvailable    = data;
-                this.imagesAvailableSet = true;
-                console.log(this.imagesAvailable);
-                console.log("observableQuestionsImagesAvailable out");
-            }
-        );
-
         this.observableQuestionsImagesOnClientMaster = this._websocketUserService
                                              .register("questions-images-on-client-master")
         this.observableQuestionsImagesOnClientMasterSubscription = this.observableQuestionsImagesOnClientMaster.subscribe(
@@ -126,13 +114,25 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
                 console.log("observableQuestionsImagesOnClientMaster out");
             }
         );
+
+        this.observableQuestionsImagesAvailable = this._websocketUserService
+                                             .register("questions-images-available")
+        this.observableQuestionsImagesAvailableSubscription = this.observableQuestionsImagesAvailable.subscribe(
+            data => {
+                console.log("observableQuestionsImagesAvailable in");
+                this.imagesAvailable    = data;
+                this.imagesAvailableSet = true;
+                console.log(this.imagesAvailable);
+                console.log("observableQuestionsImagesAvailable out");
+            }
+        );
     }
 
     public ngOnDestroy() : void {
         this.observableQuestionsConfigureSubscription.unsubscribe();
         this.observableQuestionsActionSubscription.unsubscribe();
-        this.observableQuestionsImagesAvailableSubscription.unsubscribe();
         this.observableQuestionsImagesOnClientMasterSubscription.unsubscribe();
+        this.observableQuestionsImagesAvailableSubscription.unsubscribe();
     }
 
     /* Event handlers called from the template
@@ -234,8 +234,8 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     private observableQuestionsConfigureSubscription            : Subscription;
     private observableQuestionsAction                           : Observable<any>;
     private observableQuestionsActionSubscription               : Subscription;
-    private observableQuestionsImagesAvailable                  : Observable<any>;
-    private observableQuestionsImagesAvailableSubscription      : Subscription;
     private observableQuestionsImagesOnClientMaster             : Observable<any>;
     private observableQuestionsImagesOnClientMasterSubscription : Subscription;
+    private observableQuestionsImagesAvailable                  : Observable<any>;
+    private observableQuestionsImagesAvailableSubscription      : Subscription;
 }

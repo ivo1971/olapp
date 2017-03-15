@@ -120,6 +120,11 @@
     <div class="col-md-1 col-sm-1 col-xs-1">
     </div>
   </div>
+  <div *ngIf="modeAnswering && (0 == questionsSelectImage.url.length)" >
+    <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+      <image-local source="question-mark.png" [height]="400"></image-local>
+    </div>
+  </div>
   <div *ngIf="modeAnswering && (0 <= questionsSelectImage.question)" class="row">
     <div class="col-md-1 col-sm-1 col-xs-1">
     </div>

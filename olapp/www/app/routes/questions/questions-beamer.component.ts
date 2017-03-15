@@ -28,15 +28,25 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     /* Private variables intended for the template
      * (hence at the top)
      */
-    @Input()  inMaster             : boolean                  = false;
-    private   answeringType        : string                   = "";
-    private   modeAnswering        : boolean                  = true;
-    private   dummies              : Array<string>            = [];
-    private   teamsAnswers         : Array<any>               = [];
-    private   teamsEvaluations     : Array<any>               = [];
+    //set one time as an html element attribute, not expected to change after instantiation
+    @Input()  inMaster             : boolean                  = false; 
+    //in master-mode: send evaluation info to the parent element
     @Output() teamEvaluationsEvt   : EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
+    //members configured via the "questions-configure" message
+    private   answeringType        : string                   = "";
+    private   modeAnswering        : boolean                  = true; //can be changed via the "questions-action" message
+                                                                      //true: answering mode; false: evaluation mode
+    //members configured via the "questions-teams-answers-all" message
+    //(should only be used in the view when "modeAnswering" is false)
+    //(reset via the "questions-configure" message)
+    private   arraysInitDone       : boolean                  = false;
+    private   teamsAnswers         : Array<any>               = [];   //length: number of teams
+    private   teamsEvaluations     : Array<any>               = [];   //length: number of teams
+    private   dummies              : Array<string>            = [];   //length: number of answers
+    private   questionsImages      : Array<string>            = [];   //length: number of answers
+    //members updated via the "questions-image-on-beamer" message
+    //(reset via the "questions-configure" message)
     private   questionsSelectImage : QuestionsSelectImage     = new QuestionsSelectImage();
-    private   questionsImages      : Array<string>            = [];
 
     /* Construction
      */
@@ -61,7 +71,29 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
             this.teamEvaluationsEvt.next(teamEvaluations);
         }
         
-        //register routing MI
+        //handle "questions-configure"
+        //this is a reset, so start clean
+        //and switch to answering mode
+        this.observableQuestionsConfigure = this._websocketUserService
+                                             .register("questions-configure")
+        this.observableQuestionsConfigureSubscription = this.observableQuestionsConfigure.subscribe(
+            data => {
+                console.log("observableQuestionsConfigure in");
+                let nbrOfQuestions           = data["nbrOfQuestions"];
+                this.answeringType           = data["answeringType"];
+                this.modeAnswering           = true;
+                this.arraysInitDone          = false;
+                this.dummies.length          = 0;
+                this.teamsAnswers.length     = 0;
+                this.teamsEvaluations.length = 0;     
+                this.questionsImages.length  = 0;
+                this.questionsSelectImage    = new QuestionsSelectImage();
+                console.log("observableQuestionsConfigure out");
+            }
+        );
+
+        //handle "questions-action"
+        //switch between answering and evaluation mode
         this.observableQuestionsAction = this._websocketUserService
                                              .register("questions-action")
         this.observableQuestionsActionSubscription = this.observableQuestionsAction.subscribe(
@@ -71,28 +103,12 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
             }
         );
 
-        this.observableQuestionsConfigure = this._websocketUserService
-                                             .register("questions-configure")
-        this.observableQuestionsConfigureSubscription = this.observableQuestionsConfigure.subscribe(
-            data => {
-                //this is a reset,
-                //so start clean
-                console.log("observableQuestionsConfigure in");
-                let nbrOfQuestions           = data["nbrOfQuestions"];
-                this.answeringType           = data["answeringType"];
-                this.modeAnswering           = true;
-                this.dummies.length          = 0;
-                this.teamsAnswers.length     = 0;
-                this.teamsEvaluations.length = 0;     
-                this.questionsSelectImage    = new QuestionsSelectImage();
-                this.questionsImages.length  = nbrOfQuestions;
-                for(let u : number = 0 ; u < nbrOfQuestions ; ++u) {
-                    this.questionsImages[u] = "";
-                }
-                console.log("observableQuestionsConfigure out");
-            }
-        );
-
+        //handle "questions-teams-answers-all"
+        //this message contains information about all the answers given by all the teams
+        //this message is expected when switching from answering to evaluation mode
+        //but it can be received multiple times without intermediate resets
+        //this should be the only location where array sizes are changed, so they will
+        //always be consistent with one another
         this.observableQuestionsTeamsAnswersAll = this._websocketUserService
                                              .register("questions-teams-answers-all")
         this.observableQuestionsTeamsAnswersAllSubscription = this.observableQuestionsTeamsAnswersAll.subscribe(
@@ -104,15 +120,29 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     return;
                 }
                 //valid data
-                console.log("observableQuestionsTeamsAnswersAll in");
 
-                let evaluationsInit          = 0 == this.teamsEvaluations.length;
-                this.teamsAnswers.length     = data["teams"].length;
-                this.teamsEvaluations.length = data["teams"].length;
+                let nbrTeams : number = data["teams"].length;
+                console.log("observableQuestionsTeamsAnswersAll in [" + nbrTeams + "]");
+                this.teamsAnswers.length     = nbrTeams;
+                this.teamsEvaluations.length = nbrTeams;
                 for(let u = 0 ; u < data["teams"].length ; ++u) {
-                    this.dummies.length = data["teams"][u]["answers"].length;
+                    //one-time configurations
+                    //(team independent, array length is number of answers)
+                    let nbrAnswers : number      = data["teams"][u]["answers"].length;
+                    if((!this.arraysInitDone) && (0 === u)) {
+                        this.dummies.length          = nbrAnswers;
+                        this.questionsImages.length  = nbrAnswers;
+                        for(let v : number = 0 ; v < nbrAnswers ; ++v) {
+                            this.dummies[v]         = v.toString();
+                            this.questionsImages[v] = "";
+                        }
+                    }
+
+                    //per team initialisations: copy from incoming data
                     this.teamsAnswers[u] = data["teams"][u];
-                    if(evaluationsInit) {
+
+                    //per team initialisations: prepare data structure
+                    if(!this.arraysInitDone) {
                         let evaluation : any = {
                             id:              data["teams"][u].id,
                             name:            data["teams"][u].name,
@@ -121,8 +151,7 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                             evaluations:     new Array<boolean>(),
                             evaluationsDone: new Array<boolean>()
                         }
-                        console.log("observableQuestionsTeamsAnswersAll name [" + evaluation.name + "]");
-                        for(let v = 0 ; v < data["teams"][u]["answers"].length ; ++v) {
+                        for(let v = 0 ; v < nbrAnswers ; ++v) {
                             evaluation.evaluations.push(false);
                             evaluation.evaluationsDone.push(false);
                         }
@@ -130,12 +159,18 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     }
                 }
                 console.log(this.dummies);
+                console.log(this.questionsImages);
                 console.log(this.teamsAnswers);
                 console.log(this.teamsEvaluations);
+                this.arraysInitDone = true;
                 console.log("observableQuestionsTeamsAnswersAll out");
             }
         );
 
+        //handle "questions-evaluations"
+        //this message contains evaluation information for all teams for all questions
+        //it is expected while in evaluation mode
+        //this handler should NOT change array sizes
         this.observableQuestionsEvaluations = this._websocketUserService
                                              .register("questions-evaluations")
         this.observableQuestionsEvaluationsSubscription = this.observableQuestionsEvaluations.subscribe(
@@ -146,24 +181,23 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                     console.log("observableQuestionsEvaluations check no info");
                     return;
                 }
-                if(this.teamsEvaluations.length != data["evaluations"].length) {
-                    //length mismatch
-                    this.logService.error("observableQuestionsEvaluations length mismatch [" + this.teamsEvaluations.length + "][" + data["evaluations"].length + "]");
-                    console.log(data);
-                }
                 //valid data
 
                 console.log("observableQuestionsEvaluations in");
-                for(let u = 0 ; u < data["evaluations"].length ; ++u) {
+                for(let u = 0 ; (u < this.teamsEvaluations.length) && (u < data["evaluations"].length) ; ++u) { //respect length of both input and output arrays
                     this.teamsEvaluations[u] = data["evaluations"][u];
                 }
 
-                //spread the news
+                //spread the news to the parent element (@Output)
                 this.teamEvaluationsEvt.next(this.teamsEvaluations);
                 console.log("observableQuestionsEvaluations out");
             }
         );
 
+        //handle "questions-image-on-beamer"
+        //this message contains information about the current question and the accompanying
+        //image that has to be shown in answering mode
+        //this handler should NOT change array sizes
         this.observableQuestionsImageOnBeamer = this._websocketUserService
                                              .register("questions-image-on-beamer")
         this.observableQuestionsImageOnBeamerSubscription = this.observableQuestionsImageOnBeamer.subscribe(
@@ -183,6 +217,11 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
             }
         );
 
+        //handle "questions-images-on-client"
+        //this message is expected in answering mode, it contains a list of images
+        //coupled to questions
+        //this list is shown in evaluating mode
+        //this handler should NOT change array sizes
         this.observableQuestionsImagesOnClient = this._websocketUserService
                                              .register("questions-images-on-client")
         this.observableQuestionsImagesOnClientSubscription = this.observableQuestionsImagesOnClient.subscribe(
@@ -196,7 +235,9 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
                 //valid data
 
                 console.log("observableQuestionsImagesOnClient in");
-                this.questionsImages = data["images"];
+                for(let u = 0 ; (u < this.questionsImages.length) && (u < data["images"].length) ; ++u) { //respect length of both input and output arrays
+                    this.questionsImages[u] = data["images"][u];
+                }
                 console.log(this.questionsImages);
                 console.log("observableQuestionsImagesOnClient out");
             }
@@ -204,6 +245,8 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     }
 
     public ngOnDestroy() : void {
+        this.observableQuestionsActionSubscription.unsubscribe();
+        this.observableQuestionsConfigureSubscription.unsubscribe();
         this.observableQuestionsActionSubscription.unsubscribe();
         this.observableQuestionsTeamsAnswersAllSubscription.unsubscribe();
         this.observableQuestionsEvaluationsSubscription.unsubscribe();
@@ -216,11 +259,14 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
 
     /* Private functions
      */
+    //in master mode: one answer (one team) on one question is evaluated
     private onClickCheckboxEvaluate(teamIdx : number, answerIdx : number, checked: boolean) : void {
         this.logService.log("onClickCheckboxEvaluate [" + teamIdx + "][" + answerIdx + "][" + checked + "]");
         this.teamsEvaluations[teamIdx].evaluations[answerIdx] = checked;
     }
 
+    //in master mode: one question has been evaluated for all teams,
+    //                the results can now be taken into accound
     private onClickAnswerEvaluated(answerIdx : number) : void {
         this.logService.log("onClickAnswerEvaluated [" + answerIdx + "]");
         //set this question to evaluated
@@ -244,10 +290,11 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
             }
         }
 
-        //spread the news
+        //spread the news: send to the server
         this._websocketUserService.sendMsg("questions-evaluations", {
             evaluations: this.teamsEvaluations
         });    
+        //spread the news: send to the parent element
         this.teamEvaluationsEvt.next(this.teamsEvaluations);
     }
 

@@ -7,6 +7,7 @@
   <div class="row">
     <div class="col-md-12">
       <div id="elements" class="text-center">
+        <image-local *ngIf="0 == questions.length" source="question-mark.png" [height]="200"></image-local>
         <div *ngFor="let question of questions; let idx = index" class="row">
           <div class="col-md-2 col-sm-2 col-xs-2">
               Vraag {{idx + 1}}:
@@ -110,6 +111,19 @@
           <br />
         </div>
       </div>
+    </div>
+  </div>
+  <!-- ensure the view is scrollable, so that the
+       keyboard on a mobile device does not cover
+       the bottom question inputs
+       -->
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <image-local class="display-none" source="question-mark.png" [height]="200"></image-local>
+      <br />
+      <image-local class="display-none" source="question-mark.png" [height]="200"></image-local>
+      <br />
+      <image-local class="display-none" source="question-mark.png" [height]="200"></image-local>
     </div>
   </div>
 </div>
