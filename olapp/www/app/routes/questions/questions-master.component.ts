@@ -1,4 +1,5 @@
 import {Component}            from '@angular/core';
+import {IntervalObservable}   from 'rxjs/observable/IntervalObservable';
 import {Observable}           from 'rxjs/Observable';
 import {OnInit}               from '@angular/core';
 import {OnDestroy}            from '@angular/core';
@@ -168,10 +169,26 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
 
     private onClickRadioAction(answering : boolean) : void {
         console.log("onClickRadioAction: [" + answering + "]");
-        this.modeAnswering = answering;
+        this.modeAnswering             = answering;
+
+        //send a first time
         this._websocketUserService.sendMsg("questions-action", {
             answering: answering
         });        
+
+        //send a second time to get late-answers
+        if(!this.modeAnswering) {
+            let timer : Observable<number> = IntervalObservable.create(2000);
+            let timerSubscription = timer.subscribe(t => {
+                timerSubscription.unsubscribe();
+                if(!this.modeAnswering) { //double check
+                    console.log("onClickRadioAction: request answers a 2nd time");
+                    this._websocketUserService.sendMsg("questions-action", {
+                        answering: answering
+                    });        
+                }
+            });
+        }
     }
 
     private onPointsPerQuestionChange(pointsPerQuestion : number) : void {
