@@ -2,7 +2,7 @@ var express = require("express");
 var fs = require('fs');
 
 /* configuration */
-var dir           = 'C:\\Users\\u0049648\\olapp\\olapp\\www\\';
+var dir           = 'C:\\Users\\u0049648\\olapp\\olapp\\www-local\\';
 var homeClient    = dir + 'src\\index-jit.html';
 var homeBeamer    = dir + 'src\\beamer.html';
 var homeMaster    = dir + 'src\\quizmaster.html';
@@ -95,8 +95,11 @@ var portClientAot = 6001;
 		if(fs.existsSync(fileBeamer)) {
 			console.log('beamer static file request : ' + req.params[0]);
 			res.sendFile(fileBeamer);
+		} else if(fs.existsSync(fileBeamer + ".js")) {
+			console.log('beamer static file request : ' + req.params[0]);
+			res.sendFile(fileBeamer + ".js");
 		} else {
-			console.log('beamer static unknown request : ' + homeBeamer);
+			console.log('beamer static unknown request : ' + req.params[0]);
 			res.sendFile(homeBeamer);
 		}	  
 	});
@@ -124,6 +127,9 @@ var portClientAot = 6001;
 		if(fs.existsSync(fileMaster)) {
 			console.log('master static file request : ' + req.params[0]);
 			res.sendFile(fileMaster);
+		} else if(fs.existsSync(fileMaster + ".js")) {
+			console.log('master static file request : ' + req.params[0]);
+			res.sendFile(fileMaster + ".js");
 		} else {
 			console.log('master static unknown request : ' + homeMaster);
 			res.sendFile(homeMaster);

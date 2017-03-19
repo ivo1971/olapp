@@ -26,26 +26,28 @@ var app = {
             document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         } else {
             //immediately start Angular
-            this.bootstrapAngular2();
+            //file has to be as the lite server can find it
+            this.bootstrapAngular2('/src/build.js');
         }
     },
 
     // deviceready Event Handler
     onDeviceReady: function() {
         console.log("device ready");
-        this.bootstrapAngular2();
+        //file has to be as the Cordova server can find it
+        this.bootstrapAngular2('/android_asset/www/src/build.js');
     },
 
     // start Angular
-    bootstrapAngular2: function() {
+    bootstrapAngular2: function(src) {
         //start Angular 2
-        console.log("start Angular 2");
+        console.log("start Angular 2 [" + src + "]");
 
         // Adding the script tag to the head as suggested before
         var head = document.getElementsByTagName('head')[0];
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = '/src/build.js';
+        script.src = src;
 
         // Fire the loading
         head.appendChild(script);
