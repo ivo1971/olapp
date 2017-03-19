@@ -2,13 +2,15 @@ var express = require("express");
 var fs = require('fs');
 
 /* configuration */
-var dir = 'C:\\Users\\u0049648\\olapp\\olapp\\www\\';
-var homeClient = dir + 'index.html';
-var homeBeamer = dir + 'beamer.html';
-var homeMaster = dir + 'quizmaster.html';
-var portClient = 5001;
-var portBeamer = 5002;
-var portMaster = 5003;
+var dir           = 'C:\\Users\\u0049648\\olapp\\olapp\\www\\';
+var homeClient    = dir + 'src\\index-jit.html';
+var homeBeamer    = dir + 'src\\beamer.html';
+var homeMaster    = dir + 'src\\quizmaster.html';
+var portClient    = 5001;
+var portBeamer    = 5002;
+var portMaster    = 5003;
+var homeClientAot = dir + 'src\\index.html';
+var portClientAot = 6001;
 
 /* the client */
 {
@@ -28,14 +30,51 @@ var portMaster = 5003;
 			console.log('client static file request : ' + req.params[0]);
 			res.sendFile(fileClient);
 		} else {
-			console.log('client static unknown request : ' + homeClient);
-			res.sendFile(homeClient);
+			if("/cordova.js" === req.params[0]) {
+				console.log('client static file request --> 404 : ' + req.params[0]);
+				res.sendFile(req.params[0]);
+			} else if(fs.existsSync(fileClient + ".js")) {
+				console.log('client static file request : ' + req.params[0]);
+				res.sendFile(fileClient + ".js");
+			} else {
+				console.log('client static unknown request : ' + req.params[0]);
+				res.sendFile(homeClient);
+			}
 		}	  
 	});
 
 	/* run the client */
 	appClient.listen(portClient, function() {
 		console.log("Client listening on " + portClient);
+	});
+}
+
+/* the client AOT */
+{
+	/* the client app */
+	var appClientAot = express();
+
+	/* serves main page */
+	appClientAot.get("/", function(req, res) {
+		console.log('client AOT static home request : ' + homeClientAot);
+		res.sendFile(homeClientAot);
+	});
+
+	/* serves all the static files */
+	appClientAot.get(/^(.+)$/, function(req, res){ 
+		var fileClientAot = dir + req.params[0];
+		if(fs.existsSync(fileClientAot)) {
+			console.log('client Aot static file request : ' + req.params[0]);
+			res.sendFile(fileClientAot);
+		} else {
+			console.log('client Aot static unknown request : ' + req.params[0]);
+			res.sendFile(homeClientAot);
+		}	  
+	});
+
+	/* run the client */
+	appClientAot.listen(portClientAot, function() {
+		console.log("Client Aot listening on " + portClientAot);
 	});
 }
 
