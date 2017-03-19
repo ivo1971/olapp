@@ -36,22 +36,22 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
      * (hence at the top)
      */
     //set from the users-service observable
-    private   userInfo             : User                     = new User();
+    public   userInfo             : User                     = new User();
     //members configured via the "questions-configure" message
     //(these array lengths should not be changed outside the
     // "questions-configure" handler)
-    private   answeringType        : string                   = "";
-    private   modeAnswering        : boolean                  = true; //can be changed via the "questions-action" message
-                                                                      //true: answering mode; false: evaluation mode
-    private   questions            : Array<Question>          = [];
-    private   questionsImages      : Array<string>            = [];
+    public   answeringType        : string                   = "";
+    public   modeAnswering        : boolean                  = true; //can be changed via the "questions-action" message
+                                                                     //true: answering mode; false: evaluation mode
+    public   questions            : Array<Question>          = [];
+    public   questionsImages      : Array<string>            = [];
     //members configured via the "questions-evaluations" message
     //(should only be used in the view when "modeAnswering" is false)
     //(reset via the "questions-configure" message)
-    private   teamsEvaluations     : Array<any>               = []; //the team-evaluation info for all teams for all questions
-    private   teamsEvaluationsIdx  : number                   = -1; //the index of this users team in teamsEvaluations
-                                                                    //the view has to take into account that '-1' is a valid value,
-                                                                    //in which case it should not access they array.
+    public   teamsEvaluations     : Array<any>               = []; //the team-evaluation info for all teams for all questions
+    public   teamsEvaluationsIdx  : number                   = -1; //the index of this users team in teamsEvaluations
+                                                                   //the view has to take into account that '-1' is a valid value,
+                                                                   //in which case it should not access they array.
   
     /* Construction
      */
@@ -242,13 +242,13 @@ export class QuestionsComponent extends ComponentBase implements OnInit, OnDestr
      */
     //handler coupled to the good/wrong buttons,
     //converted into a value for the answer
-    private onClickButtonAnswer(idx : number, answer: boolean) : void {
+    public onClickButtonAnswer(idx : number, answer: boolean) : void {
         console.log("onClickButtonAnswer [" + idx + "][" + answer + "]")
         this.valueChanged(idx, answer ? "good" : "bad");
     }
 
     //handler coupled to the input boxes
-    private valueChanged(idx : number, answer: string) : void {
+    public valueChanged(idx : number, answer: string) : void {
         console.log("valueChanged [" + idx + "][" + answer + "]")
         this.questions[idx].answer = answer; 
         this._websocketUserService.sendMsg("questions-answer", {

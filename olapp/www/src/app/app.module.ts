@@ -27,19 +27,24 @@ import {AppComponent}                  from "./app.component";
 import {AboutComponent}                from "./routes/about/about.component";
 import {ConfigurationComponent}        from "./routes/configuration/configuration.component";
 import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/configure-teams-master.component";
+import {ConfigureTeamsWrapperComponent}from "./routes/configure-teams-master/configure-teams-wrapper.component";
 import {LoginComponent}                from "./routes/login/login.component";
 import {QuestionsComponent}            from "./routes/questions/questions.component";
 import {QuestionsBeamerComponent}      from "./routes/questions/questions-beamer.component";
 import {QuestionsImagesComponent}      from "./routes/questions/questions-images.component"
 import {QuestionsMasterComponent}      from "./routes/questions/questions-master.component";
+import {QuestionsWrapperComponent}     from "./routes/questions/questions-wrapper.component";
 import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.component";
 import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboard-master.component";
+import {ScoreboardWrapperComponent}    from "./routes/scoreboard-master/scoreboard-wrapper.component";
 import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
 import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
 import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
+import {SimpleButtonWrapperComponent}  from "./routes/simple-button/simple-button-wrapper.component";
 import {SortImagesComponent}           from "./routes/sort-images/sort-images.component";
 import {SortImagesBeamerComponent}     from "./routes/sort-images/sort-images-beamer.component";
 import {SortImagesMasterComponent}     from "./routes/sort-images/sort-images-master.component";
+import {SortImagesWrapperComponent}    from "./routes/sort-images/sort-images-wrapper.component";
 import {TeamfieComponent}              from "./routes/teamfie/teamfie.component";
 import {TestComponent}                 from "./routes/test/test.component";
 import {WelcomeComponent}              from "./routes/welcome/welcome.component";
@@ -88,23 +93,23 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
         children : [
           {
             path: 'configure-teams',
-            component: ModeService.SIsMaster() ? ConfigureTeamsMasterComponent : WelcomeComponent
+            component: ConfigureTeamsWrapperComponent,
           },
           {
             path: 'questions',
-            component: ModeService.SIsBeamer() ? QuestionsBeamerComponent : ModeService.SIsMaster() ? QuestionsMasterComponent : QuestionsComponent,
+            component: QuestionsWrapperComponent,
           },
           {
             path: 'scoreboard',
-            component: ModeService.SIsMaster() ? ScoreboardMasterComponent : ScoreboardComponent
+            component: ScoreboardWrapperComponent
           },
           {
             path: 'simple-button',
-            component: ModeService.SIsMaster() ? SimpleButtonMasterComponent : SimpleButtonComponent
+            component: SimpleButtonWrapperComponent
           },
           {
             path: 'sort-images',
-            component: ModeService.SIsBeamer() ? SortImagesBeamerComponent : ModeService.SIsMaster() ? SortImagesMasterComponent : SortImagesComponent,
+            component: SortImagesWrapperComponent,
           },
           {
             path: 'teamfie',
@@ -170,18 +175,23 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     AboutComponent,
     ConfigurationComponent,
     ConfigureTeamsMasterComponent,
+    ConfigureTeamsWrapperComponent,
     LoginComponent,
     QuestionsComponent,
     QuestionsBeamerComponent,
     QuestionsMasterComponent,
+    QuestionsWrapperComponent,
     ScoreboardComponent,
     ScoreboardMasterComponent,
+    ScoreboardWrapperComponent,
     SimpleButtonComponent,
     SimpleButtonComponentData,
     SimpleButtonMasterComponent,
+    SimpleButtonWrapperComponent,
     SortImagesComponent,
     SortImagesBeamerComponent,
     SortImagesMasterComponent,
+    SortImagesWrapperComponent,
     TeamfieComponent,
     TestComponent,
     WelcomeComponent,

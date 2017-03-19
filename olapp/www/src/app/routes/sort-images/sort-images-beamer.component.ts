@@ -29,10 +29,10 @@ export class SortImagesBeamerComponent extends ComponentBase {
      * (hence at the top)
      */
     @Input()  showTitle         : boolean                        = true;
-    private   sortImages        : boolean                        = true;
-    private   images            : string[]                       = [];
-    private   imagesSolution    : string[]                       = [];
-    private   teams             : any[]                          = [];
+    public    sortImages        : boolean                        = true;
+    public    images            : string[]                       = [];
+    public    imagesSolution    : string[]                       = [];
+    public    teams             : any[]                          = [];
     @Output() teamImagesInfoEvt : EventEmitter<TeamImagesInfo[]> = new EventEmitter<TeamImagesInfo[]>();
 
     /* Construction

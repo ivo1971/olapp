@@ -33,20 +33,20 @@ export class QuestionsBeamerComponent extends ComponentBase implements OnInit, O
     //in master-mode: send evaluation info to the parent element
     @Output() teamEvaluationsEvt   : EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
     //members configured via the "questions-configure" message
-    private   answeringType        : string                   = "";
-    private   modeAnswering        : boolean                  = true; //can be changed via the "questions-action" message
+    public    answeringType        : string                   = "";
+    public    modeAnswering        : boolean                  = true; //can be changed via the "questions-action" message
                                                                       //true: answering mode; false: evaluation mode
     //members configured via the "questions-teams-answers-all" message
     //(should only be used in the view when "modeAnswering" is false)
     //(reset via the "questions-configure" message)
-    private   arraysInitDone       : boolean                  = false;
-    private   teamsAnswers         : Array<any>               = [];   //length: number of teams
-    private   teamsEvaluations     : Array<any>               = [];   //length: number of teams
-    private   dummies              : Array<string>            = [];   //length: number of answers
-    private   questionsImages      : Array<string>            = [];   //length: number of answers
+    public    arraysInitDone       : boolean                  = false;
+    public    teamsAnswers         : Array<any>               = [];   //length: number of teams
+    public    teamsEvaluations     : Array<any>               = [];   //length: number of teams
+    public    dummies              : Array<string>            = [];   //length: number of answers
+    public    questionsImages      : Array<string>            = [];   //length: number of answers
     //members updated via the "questions-image-on-beamer" message
     //(reset via the "questions-configure" message)
-    private   questionsSelectImage : QuestionsSelectImage     = new QuestionsSelectImage();
+    public    questionsSelectImage : QuestionsSelectImage     = new QuestionsSelectImage();
 
     /* Construction
      */

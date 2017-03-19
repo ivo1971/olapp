@@ -54,17 +54,17 @@ export class ScoreboardMasterComponent extends TeamfieBaseComponent {
 
     /* Event handlers called from the template
      */
-    private onClickRadioTotal(total : boolean) : void {
+    public onClickRadioTotal(total : boolean) : void {
         this.__websocketUserService.sendMsg("scoreboard-total", {
             total: total
         });        
     }
 
-    private onClickClear() : void {
+    public onClickClear() : void {
         this.clearTmpRoundPoints();
     }
 
-    private onClickSetPointsRound() : void {
+    public onClickSetPointsRound() : void {
         class TeamMap {
             [teamId: string]: number;
         }
@@ -84,7 +84,7 @@ export class ScoreboardMasterComponent extends TeamfieBaseComponent {
         });    
     }
 
-    private onClickPointsRound2Total() : void {
+    public onClickPointsRound2Total() : void {
         //send
         this.__websocketUserService.sendMsg("scoreboard-points-round-2-total", {
         });    

@@ -17,6 +17,10 @@ import {WebsocketUserService}  from './../../services/websocket.user.service'
     templateUrl: 'configure-teams-master.component.html'
 })
 export class ConfigureTeamsMasterComponent extends ComponentBase { 
+    public observableTeamInfo             : Observable<Array<TeamInfo>>;
+    public observableTeamInfoNone         : Observable<Array<TeamInfo>>;
+    public observableUserInfo             : Observable<Array<UserInfo>>;
+
     /* Construction
      */
     public constructor(
@@ -38,8 +42,5 @@ export class ConfigureTeamsMasterComponent extends ComponentBase {
 
     /* Private members
      */
-    private observableTeamInfo             : Observable<Array<TeamInfo>>;
-    private observableTeamInfoNone         : Observable<Array<TeamInfo>>;
-    private observableUserInfo             : Observable<Array<UserInfo>>;
 }
  

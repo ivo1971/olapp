@@ -19,9 +19,9 @@ export class ImageTeamfieComponent implements OnInit {
     @Input()  imageHeight    : number = -1;
     @Input()  viewWidth      : number = -1;
     @Input()  viewHeight     : number = -1;
-    private   calcImage      : string = "";
-    private   calcWidth      : number = -1;
-    private   calcHeight     : number = -1;
+    public    calcImage      : string = "";
+    public    calcWidth      : number = -1;
+    public    calcHeight     : number = -1;
 
     /* Construction
      */

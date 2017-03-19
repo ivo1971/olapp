@@ -20,8 +20,8 @@ export class ConfigurationComponent extends ComponentBase implements OnInit {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private wsServer      : string  = "";
-    private wsServerValid : boolean = false;
+    public wsServer      : string  = "";
+    public wsServerValid : boolean = false;
 
     /* Construction
      */

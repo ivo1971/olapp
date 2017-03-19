@@ -17,8 +17,9 @@ export class TeamfieBaseComponent extends ComponentBase {
     /* Protected variables intended for the template
      * (hence at the top)
      */
-    protected teamInfos                    : Array<TeamInfo> = new Array<TeamInfo>();    
-    protected teamfies                     : Array<Teamfie>  = new Array<Teamfie> ();    
+    public teamInfos                    : Array<TeamInfo> = new Array<TeamInfo>();    
+    public teamfies                     : Array<Teamfie>  = new Array<Teamfie> ();    
+    public observableTeamInfo           : Observable<Array<TeamInfo>>;
 
     /* Construction
      */
@@ -84,7 +85,6 @@ export class TeamfieBaseComponent extends ComponentBase {
 
     /* Private members
      */
-    protected observableTeamInfo             : Observable<Array<TeamInfo>>;
     private   subscriptionTeamInfo           : Subscription;
     protected observableTeamfie              : Observable<Array<Teamfie>>;
     private   subscriptionTeamfie            : Subscription;

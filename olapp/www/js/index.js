@@ -40,10 +40,15 @@ var app = {
     bootstrapAngular2: function() {
         //start Angular 2
         console.log("start Angular 2");
-        System.import('app')
-            .catch(function(err){ 
-                console.error(err); 
-            });
+
+        // Adding the script tag to the head as suggested before
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = '/src/build.js';
+
+        // Fire the loading
+        head.appendChild(script);
     }
 };
 

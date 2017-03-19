@@ -38,19 +38,19 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private numberOfQuestions       : number                         = 10;
-    private pointsPerQuestion       : number                         = 1;
-    private answeringTypeOptions    : Array<AnsweringType>           = [
+    public numberOfQuestions       : number                         = 10;
+    public pointsPerQuestion       : number                         = 1;
+    public answeringTypeOptions    : Array<AnsweringType>           = [
         new AnsweringType("Input"),
         new AnsweringType("Good-Wrong")
     ];
-    private answeringType           : string                         = this.answeringTypeOptions[0].name; 
-    private resetConfirm            : boolean                        = false;
-    private modeAnswering           : boolean                        = true;
-    private teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
-    private imagesAvailable         : Object                         = new Object();
-    private imagesAvailableSet      : boolean                        = false;
-    private imagesDisplay           : Array<string>                  = [];
+    public answeringType           : string                         = this.answeringTypeOptions[0].name; 
+    public resetConfirm            : boolean                        = false;
+    public modeAnswering           : boolean                        = true;
+    public teamQuestionsEvaluation : Array<TeamQuestionsEvaluation> = [];
+    public imagesAvailable         : Object                         = new Object();
+    public imagesAvailableSet      : boolean                        = false;
+    public imagesDisplay           : Array<string>                  = [];
 
     /* Construction
      */
@@ -138,17 +138,17 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
 
     /* Event handlers called from the template
      */
-    private onClickSetNumberOfQuestionsOne() : void {
+    public onClickSetNumberOfQuestionsOne() : void {
         console.log("onClickSetNumberOfQuestionsOne");
         this.resetConfirm = true;
     }
 
-    private onClickSetNumberOfQuestionsCancel() : void {
+    public onClickSetNumberOfQuestionsCancel() : void {
         console.log("onClickSetNumberOfQuestionsCancel");
         this.resetConfirm = false;
     }
 
-    private onClickSetNumberOfQuestionsTwo() : void {
+    public onClickSetNumberOfQuestionsTwo() : void {
         console.log("onClickSetNumberOfQuestionsTwo");
         this.resetConfirm = false;
         let data = {
@@ -167,7 +167,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         }
     }
 
-    private onClickRadioAction(answering : boolean) : void {
+    public onClickRadioAction(answering : boolean) : void {
         console.log("onClickRadioAction: [" + answering + "]");
         this.modeAnswering             = answering;
 
@@ -191,7 +191,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         }
     }
 
-    private onPointsPerQuestionChange(pointsPerQuestion : number) : void {
+    public onPointsPerQuestionChange(pointsPerQuestion : number) : void {
         console.log("onPointsPerQuestionChange in  [" + pointsPerQuestion + "]");
         for(let u = 0 ; u < this.teamQuestionsEvaluation.length ; ++u) {
             this.teamQuestionsEvaluation[u].pointsRound  = this.teamQuestionsEvaluation[u].nbrCorrect   * this.pointsPerQuestion;
@@ -200,7 +200,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         console.log("onPointsPerQuestionChange out");
     }
 
-    private onTeamEvaluationsEvt(teamQuestionsEvaluation : Array<any>) : void {
+    public onTeamEvaluationsEvt(teamQuestionsEvaluation : Array<any>) : void {
         console.log("onTeamEvaluationsEvt in  [" + teamQuestionsEvaluation.length + "]");
         this.teamQuestionsEvaluation.length = teamQuestionsEvaluation.length;
         for(let u = 0 ; u < teamQuestionsEvaluation.length ; ++u) {
@@ -217,7 +217,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         console.log("onTeamEvaluationsEvt out [" + teamQuestionsEvaluation.length + "]");
     }
 
-    private onClickSetPoints() : void {
+    public onClickSetPoints() : void {
         //send message to set points
         this._websocketUserService.sendMsg("questions-set-points", {
             teams : this.teamQuestionsEvaluation
@@ -229,7 +229,7 @@ export class QuestionsMasterComponent extends ComponentBase implements OnInit, O
         });
     }
 
-    private onImagesAvailableClick(image : QuestionsSelectImage) : void {
+    public onImagesAvailableClick(image : QuestionsSelectImage) : void {
         console.log("onImagesAvailableClick [" + image.question + "][" + image.url + "]");
         console.log(image);
         this._websocketUserService.sendMsg("questions-image-on-beamer", {

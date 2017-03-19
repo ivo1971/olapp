@@ -16,8 +16,8 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
 export class TeamInfoComponent  { 
     @Input() team    : TeamInfo;
     @Input() edit    : boolean = false;
-    private nameEdit : string  = "";
-    private editMode : boolean = false;
+    public  nameEdit : string  = "";
+    public  editMode : boolean = false;
 
     /* Construction
      */

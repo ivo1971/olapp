@@ -35,19 +35,19 @@ export class SimpleButtonComponent extends ComponentBase implements OnInit, OnDe
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private modeIsBeamer    : boolean                 = false;
-    private modeIsMaster    : boolean                 = false;
-    private modeIsQuiz      : boolean                 = true;
-    private prevSequenceNbr : number                  = 0;
-    private good            : boolean                 = false;
-    private wrong           : boolean                 = false;
-    private go              : boolean                 = false;
-    private wait            : boolean                 = false;
-    private imgGo           : string                  = "";
-    private imgGood         : string                  = "";
-    private imgPush         : string                  = "";
-    private imgWait         : string                  = "";
-    private imgWrong        : string                  = "";
+    public modeIsBeamer    : boolean                 = false;
+    public modeIsMaster    : boolean                 = false;
+    public modeIsQuiz      : boolean                 = true;
+    public prevSequenceNbr : number                  = 0;
+    public good            : boolean                 = false;
+    public wrong           : boolean                 = false;
+    public go              : boolean                 = false;
+    public wait            : boolean                 = false;
+    public imgGo           : string                  = "";
+    public imgGood         : string                  = "";
+    public imgPush         : string                  = "";
+    public imgWait         : string                  = "";
+    public imgWrong        : string                  = "";
 
     /* Construction
      */

@@ -13,21 +13,37 @@ import * as import4 from '@angular/core/src/metadata/view';
 import * as import5 from '@angular/core/src/linker/view_type';
 import * as import6 from '@angular/core/src/change_detection/constants';
 import * as import7 from '@angular/core/src/linker/component_factory';
-import * as import8 from '@angular/core/src/linker/view_container';
-import * as import9 from '@angular/core/src/change_detection/change_detection_util';
-import * as import10 from '../../node_modules/@angular/common/src/directives/ng_if.ngfactory';
-import * as import11 from '../../node_modules/@angular/common/src/directives/ng_for.ngfactory';
-import * as import12 from '@angular/core/src/linker/template_ref';
-import * as import13 from '@angular/core/src/change_detection/differs/iterable_differs';
-import * as import14 from '@angular/common/src/directives/ng_if';
-import * as import15 from '@angular/common/src/directives/ng_for';
+import * as import8 from '@angular/router/src/router';
+import * as import9 from '../../../src/app/services/log.service';
+import * as import10 from '../../../src/app/services/mode.service';
+import * as import11 from '../../../src/app/services/teamfie.service';
+import * as import12 from '../../../src/app/services/teams-users.service';
+import * as import13 from '../../../src/app/services/websocket.user.service';
+import * as import14 from './app.component.css.shim.ngstyle';
+import * as import15 from '../../node_modules/@angular/forms/src/directives/select_control_value_accessor.ngfactory';
+import * as import16 from '../../node_modules/@angular/forms/src/directives/select_multiple_control_value_accessor.ngfactory';
+import * as import17 from '@angular/core/src/linker/view_container';
+import * as import18 from '@angular/core/src/linker/element_ref';
+import * as import19 from '@angular/forms/src/directives/select_control_value_accessor';
+import * as import20 from '@angular/forms/src/directives/select_multiple_control_value_accessor';
+import * as import21 from '../../../src/app/components/status-bar/status-bar.component';
+import * as import22 from './components/status-bar/status-bar.component.ngfactory';
+import * as import23 from '../../node_modules/@angular/common/src/directives/ng_if.ngfactory';
+import * as import24 from '../../node_modules/@angular/router/src/directives/router_outlet.ngfactory';
+import * as import25 from '../../../src/app/services/cloud.service';
+import * as import26 from '../../../src/app/services/user.service';
+import * as import27 from '@angular/core/src/linker/template_ref';
+import * as import28 from '@angular/router/src/router_outlet_map';
+import * as import29 from '@angular/core/src/linker/component_factory_resolver';
+import * as import30 from '@angular/common/src/directives/ng_if';
+import * as import31 from '@angular/router/src/directives/router_outlet';
 export class Wrapper_AppComponent {
   /*private*/ _eventHandler:Function;
   context:import0.AppComponent;
   /*private*/ _changed:boolean;
-  constructor() {
+  constructor(p0:any,p1:any,p2:any,p3:any,p4:any,p5:any) {
     this._changed = false;
-    this.context = new import0.AppComponent();
+    this.context = new import0.AppComponent(p0,p1,p2,p3,p4,p5);
   }
   ngOnDetach(view:import1.AppView<any>,componentView:import1.AppView<any>,el:any):void {
   }
@@ -36,6 +52,7 @@ export class Wrapper_AppComponent {
   ngDoCheck(view:import1.AppView<any>,el:any,throwOnChange:boolean):boolean {
     var changed:any = this._changed;
     this._changed = false;
+    if (!throwOnChange) { if ((view.numberOfChecks === 0)) { this.context.ngOnInit(); } }
     return changed;
   }
   checkHost(view:import1.AppView<any>,componentView:import1.AppView<any>,el:any,throwOnChange:boolean):void {
@@ -57,9 +74,9 @@ class View_AppComponent_Host0 extends import1.AppView<any> {
     super(View_AppComponent_Host0,renderType_AppComponent_Host,import5.ViewType.HOST,viewUtils,parentView,parentIndex,parentElement,import6.ChangeDetectorStatus.CheckAlways);
   }
   createInternal(rootSelector:string):import7.ComponentRef<any> {
-    this._el_0 = import3.selectOrCreateRenderHostElement(this.renderer,'my-app',import3.EMPTY_INLINE_ARRAY,rootSelector,(null as any));
+    this._el_0 = import3.selectOrCreateRenderHostElement(this.renderer,'test-app',import3.EMPTY_INLINE_ARRAY,rootSelector,(null as any));
     this.compView_0 = new View_AppComponent0(this.viewUtils,this,0,this._el_0);
-    this._AppComponent_0_3 = new Wrapper_AppComponent();
+    this._AppComponent_0_3 = new Wrapper_AppComponent(this.injectorGet(import8.Router,this.parentIndex),this.injectorGet(import9.LogService,this.parentIndex),this.injectorGet(import10.ModeService,this.parentIndex),this.injectorGet(import11.TeamfieService,this.parentIndex),this.injectorGet(import12.TeamsUsersService,this.parentIndex),this.injectorGet(import13.WebsocketUserService,this.parentIndex));
     this.compView_0.create(this._AppComponent_0_3.context);
     this.init(this._el_0,((<any>this.renderer).directRenderer? (null as any): [this._el_0]),(null as any));
     return new import7.ComponentRef_<any>(0,this,this._el_0,this._AppComponent_0_3.context);
@@ -79,145 +96,384 @@ class View_AppComponent_Host0 extends import1.AppView<any> {
     cb(this._el_0,ctx);
   }
 }
-export const AppComponentNgFactory:import7.ComponentFactory<import0.AppComponent> = new import7.ComponentFactory<import0.AppComponent>('my-app',View_AppComponent_Host0,import0.AppComponent);
-const styles_AppComponent:any[] = ([] as any[]);
+export const AppComponentNgFactory:import7.ComponentFactory<import0.AppComponent> = new import7.ComponentFactory<import0.AppComponent>('test-app',View_AppComponent_Host0,import0.AppComponent);
+const styles_AppComponent:any[] = [import14.styles];
 class View_AppComponent1 extends import1.AppView<any> {
   _el_0:any;
   _text_1:any;
-  constructor(viewUtils:import3.ViewUtils,parentView:import1.AppView<any>,parentIndex:number,parentElement:any,declaredViewContainer:import8.ViewContainer) {
+  _el_2:any;
+  _text_3:any;
+  _el_4:any;
+  _NgSelectOption_4_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_4_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_5:any;
+  _text_6:any;
+  _el_7:any;
+  _NgSelectOption_7_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_7_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_8:any;
+  _text_9:any;
+  _el_10:any;
+  _NgSelectOption_10_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_10_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_11:any;
+  _text_12:any;
+  _el_13:any;
+  _NgSelectOption_13_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_13_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_14:any;
+  _text_15:any;
+  _el_16:any;
+  _NgSelectOption_16_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_16_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_17:any;
+  _text_18:any;
+  _el_19:any;
+  _NgSelectOption_19_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_19_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_20:any;
+  _text_21:any;
+  _el_22:any;
+  _NgSelectOption_22_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_22_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_23:any;
+  _text_24:any;
+  _el_25:any;
+  _NgSelectOption_25_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_25_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_26:any;
+  _text_27:any;
+  _el_28:any;
+  _NgSelectOption_28_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_28_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_29:any;
+  _text_30:any;
+  _el_31:any;
+  _NgSelectOption_31_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_31_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_32:any;
+  _text_33:any;
+  _el_34:any;
+  _NgSelectOption_34_3:import15.Wrapper_NgSelectOption;
+  _NgSelectMultipleOption_34_4:import16.Wrapper_NgSelectMultipleOption;
+  _text_35:any;
+  _text_36:any;
+  _text_37:any;
+  _el_38:any;
+  _text_39:any;
+  constructor(viewUtils:import3.ViewUtils,parentView:import1.AppView<any>,parentIndex:number,parentElement:any,declaredViewContainer:import17.ViewContainer) {
     super(View_AppComponent1,renderType_AppComponent,import5.ViewType.EMBEDDED,viewUtils,parentView,parentIndex,parentElement,import6.ChangeDetectorStatus.CheckAlways,declaredViewContainer);
   }
   createInternal(rootSelector:string):import7.ComponentRef<any> {
-    this._el_0 = import3.createRenderElement(this.renderer,(null as any),'h1',import3.EMPTY_INLINE_ARRAY,(null as any));
-    this._text_1 = this.renderer.createText(this._el_0,'Hello Angular...',(null as any));
-    this.init(this._el_0,((<any>this.renderer).directRenderer? (null as any): [
-      this._el_0,
-      this._text_1
-    ]
-    ),(null as any));
-    return (null as any);
-  }
-  visitRootNodesInternal(cb:any,ctx:any):void {
-    cb(this._el_0,ctx);
-  }
-}
-class View_AppComponent2 extends import1.AppView<any> {
-  _el_0:any;
-  _text_1:any;
-  /*private*/ _expr_2:any;
-  constructor(viewUtils:import3.ViewUtils,parentView:import1.AppView<any>,parentIndex:number,parentElement:any,declaredViewContainer:import8.ViewContainer) {
-    super(View_AppComponent2,renderType_AppComponent,import5.ViewType.EMBEDDED,viewUtils,parentView,parentIndex,parentElement,import6.ChangeDetectorStatus.CheckAlways,declaredViewContainer);
-    this._expr_2 = import9.UNINITIALIZED;
-  }
-  createInternal(rootSelector:string):import7.ComponentRef<any> {
     this._el_0 = import3.createRenderElement(this.renderer,(null as any),'div',import3.EMPTY_INLINE_ARRAY,(null as any));
-    this._text_1 = this.renderer.createText(this._el_0,'',(null as any));
+    this._text_1 = this.renderer.createText(this._el_0,'\n    ',(null as any));
+    this._el_2 = import3.createRenderElement(this.renderer,this._el_0,'select',import3.EMPTY_INLINE_ARRAY,(null as any));
+    this._text_3 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_4 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','none'),(null as any));
+    this._NgSelectOption_4_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_4),this.renderer,(null as any));
+    this._NgSelectMultipleOption_4_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_4),this.renderer,(null as any));
+    this._text_5 = this.renderer.createText(this._el_4,'--- please select ---',(null as any));
+    this._text_6 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_7 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','welcome'),(null as any));
+    this._NgSelectOption_7_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_7),this.renderer,(null as any));
+    this._NgSelectMultipleOption_7_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_7),this.renderer,(null as any));
+    this._text_8 = this.renderer.createText(this._el_7,'Welcome',(null as any));
+    this._text_9 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_10 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','test'),(null as any));
+    this._NgSelectOption_10_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_10),this.renderer,(null as any));
+    this._NgSelectMultipleOption_10_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_10),this.renderer,(null as any));
+    this._text_11 = this.renderer.createText(this._el_10,'Test',(null as any));
+    this._text_12 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_13 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','simple-button'),(null as any));
+    this._NgSelectOption_13_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_13),this.renderer,(null as any));
+    this._NgSelectMultipleOption_13_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_13),this.renderer,(null as any));
+    this._text_14 = this.renderer.createText(this._el_13,'Simble button',(null as any));
+    this._text_15 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_16 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','sort-images'),(null as any));
+    this._NgSelectOption_16_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_16),this.renderer,(null as any));
+    this._NgSelectMultipleOption_16_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_16),this.renderer,(null as any));
+    this._text_17 = this.renderer.createText(this._el_16,'Sort images',(null as any));
+    this._text_18 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_19 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','questions'),(null as any));
+    this._NgSelectOption_19_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_19),this.renderer,(null as any));
+    this._NgSelectMultipleOption_19_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_19),this.renderer,(null as any));
+    this._text_20 = this.renderer.createText(this._el_19,'Questions',(null as any));
+    this._text_21 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_22 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','scoreboard'),(null as any));
+    this._NgSelectOption_22_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_22),this.renderer,(null as any));
+    this._NgSelectMultipleOption_22_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_22),this.renderer,(null as any));
+    this._text_23 = this.renderer.createText(this._el_22,'Scoreboard',(null as any));
+    this._text_24 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_25 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','teamfie'),(null as any));
+    this._NgSelectOption_25_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_25),this.renderer,(null as any));
+    this._NgSelectMultipleOption_25_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_25),this.renderer,(null as any));
+    this._text_26 = this.renderer.createText(this._el_25,'Teamfie',(null as any));
+    this._text_27 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_28 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','configure-teams'),(null as any));
+    this._NgSelectOption_28_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_28),this.renderer,(null as any));
+    this._NgSelectMultipleOption_28_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_28),this.renderer,(null as any));
+    this._text_29 = this.renderer.createText(this._el_28,'Configure teams',(null as any));
+    this._text_30 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_31 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','none'),(null as any));
+    this._NgSelectOption_31_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_31),this.renderer,(null as any));
+    this._NgSelectMultipleOption_31_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_31),this.renderer,(null as any));
+    this._text_32 = this.renderer.createText(this._el_31,'---------------',(null as any));
+    this._text_33 = this.renderer.createText(this._el_2,'\n        ',(null as any));
+    this._el_34 = import3.createRenderElement(this.renderer,this._el_2,'option',new import3.InlineArray2(2,'value','simple-button-demo'),(null as any));
+    this._NgSelectOption_34_3 = new import15.Wrapper_NgSelectOption(new import18.ElementRef(this._el_34),this.renderer,(null as any));
+    this._NgSelectMultipleOption_34_4 = new import16.Wrapper_NgSelectMultipleOption(new import18.ElementRef(this._el_34),this.renderer,(null as any));
+    this._text_35 = this.renderer.createText(this._el_34,'Simble button demo',(null as any));
+    this._text_36 = this.renderer.createText(this._el_2,'\n    ',(null as any));
+    this._text_37 = this.renderer.createText(this._el_0,' \n    ',(null as any));
+    this._el_38 = import3.createRenderElement(this.renderer,this._el_0,'hr',import3.EMPTY_INLINE_ARRAY,(null as any));
+    this._text_39 = this.renderer.createText(this._el_0,'\n',(null as any));
+    var disposable_0:Function = import3.subscribeToRenderElement(this,this._el_2,new import3.InlineArray2(2,'change',(null as any)),this.eventHandler(this.handleEvent_2));
     this.init(this._el_0,((<any>this.renderer).directRenderer? (null as any): [
-      this._el_0,
-      this._text_1
-    ]
-    ),(null as any));
-    return (null as any);
-  }
-  detectChangesInternal(throwOnChange:boolean):void {
-    const currVal_2:any = import3.inlineInterpolate(1,'',this.context.$implicit,'');
-    if (import3.checkBinding(throwOnChange,this._expr_2,currVal_2)) {
-      this.renderer.setText(this._text_1,currVal_2);
-      this._expr_2 = currVal_2;
-    }
-  }
-  visitRootNodesInternal(cb:any,ctx:any):void {
-    cb(this._el_0,ctx);
-  }
-}
-var renderType_AppComponent:import2.RenderComponentType = import3.createRenderComponentType('',0,import4.ViewEncapsulation.None,styles_AppComponent,{});
-export class View_AppComponent0 extends import1.AppView<import0.AppComponent> {
-  _el_0:any;
-  _text_1:any;
-  _text_2:any;
-  _anchor_3:any;
-  /*private*/ _vc_3:import8.ViewContainer;
-  _TemplateRef_3_5:any;
-  _NgIf_3_6:import10.Wrapper_NgIf;
-  _text_4:any;
-  _el_5:any;
-  _text_6:any;
-  _text_7:any;
-  _anchor_8:any;
-  /*private*/ _vc_8:import8.ViewContainer;
-  _TemplateRef_8_5:any;
-  _NgFor_8_6:import11.Wrapper_NgFor;
-  _text_9:any;
-  constructor(viewUtils:import3.ViewUtils,parentView:import1.AppView<any>,parentIndex:number,parentElement:any) {
-    super(View_AppComponent0,renderType_AppComponent,import5.ViewType.COMPONENT,viewUtils,parentView,parentIndex,parentElement,import6.ChangeDetectorStatus.CheckAlways);
-  }
-  createInternal(rootSelector:string):import7.ComponentRef<any> {
-    const parentRenderNode:any = this.renderer.createViewRoot(this.parentElement);
-    this._el_0 = import3.createRenderElement(this.renderer,parentRenderNode,'button',import3.EMPTY_INLINE_ARRAY,(null as any));
-    this._text_1 = this.renderer.createText(this._el_0,'Toggle Heading',(null as any));
-    this._text_2 = this.renderer.createText(parentRenderNode,'\n',(null as any));
-    this._anchor_3 = this.renderer.createTemplateAnchor(parentRenderNode,(null as any));
-    this._vc_3 = new import8.ViewContainer(3,(null as any),this,this._anchor_3);
-    this._TemplateRef_3_5 = new import12.TemplateRef_(this,3,this._anchor_3);
-    this._NgIf_3_6 = new import10.Wrapper_NgIf(this._vc_3.vcRef,this._TemplateRef_3_5);
-    this._text_4 = this.renderer.createText(parentRenderNode,'\n\n',(null as any));
-    this._el_5 = import3.createRenderElement(this.renderer,parentRenderNode,'h3',import3.EMPTY_INLINE_ARRAY,(null as any));
-    this._text_6 = this.renderer.createText(this._el_5,'List of Heroes',(null as any));
-    this._text_7 = this.renderer.createText(parentRenderNode,'\n',(null as any));
-    this._anchor_8 = this.renderer.createTemplateAnchor(parentRenderNode,(null as any));
-    this._vc_8 = new import8.ViewContainer(8,(null as any),this,this._anchor_8);
-    this._TemplateRef_8_5 = new import12.TemplateRef_(this,8,this._anchor_8);
-    this._NgFor_8_6 = new import11.Wrapper_NgFor(this._vc_8.vcRef,this._TemplateRef_8_5,this.parentView.injectorGet(import13.IterableDiffers,this.parentIndex),this.ref);
-    this._text_9 = this.renderer.createText(parentRenderNode,'\n',(null as any));
-    var disposable_0:Function = import3.subscribeToRenderElement(this,this._el_0,new import3.InlineArray2(2,'click',(null as any)),this.eventHandler(this.handleEvent_0));
-    this.init((null as any),((<any>this.renderer).directRenderer? (null as any): [
       this._el_0,
       this._text_1,
-      this._text_2,
-      this._anchor_3,
-      this._text_4,
-      this._el_5,
+      this._el_2,
+      this._text_3,
+      this._el_4,
+      this._text_5,
       this._text_6,
-      this._text_7,
-      this._anchor_8,
-      this._text_9
+      this._el_7,
+      this._text_8,
+      this._text_9,
+      this._el_10,
+      this._text_11,
+      this._text_12,
+      this._el_13,
+      this._text_14,
+      this._text_15,
+      this._el_16,
+      this._text_17,
+      this._text_18,
+      this._el_19,
+      this._text_20,
+      this._text_21,
+      this._el_22,
+      this._text_23,
+      this._text_24,
+      this._el_25,
+      this._text_26,
+      this._text_27,
+      this._el_28,
+      this._text_29,
+      this._text_30,
+      this._el_31,
+      this._text_32,
+      this._text_33,
+      this._el_34,
+      this._text_35,
+      this._text_36,
+      this._text_37,
+      this._el_38,
+      this._text_39
     ]
     ),[disposable_0]);
     return (null as any);
   }
   injectorGetInternal(token:any,requestNodeIndex:number,notFoundResult:any):any {
-    if (((token === import12.TemplateRef) && (3 === requestNodeIndex))) { return this._TemplateRef_3_5; }
-    if (((token === import14.NgIf) && (3 === requestNodeIndex))) { return this._NgIf_3_6.context; }
-    if (((token === import12.TemplateRef) && (8 === requestNodeIndex))) { return this._TemplateRef_8_5; }
-    if (((token === import15.NgFor) && (8 === requestNodeIndex))) { return this._NgFor_8_6.context; }
+    if (((token === import19.NgSelectOption) && ((4 <= requestNodeIndex) && (requestNodeIndex <= 5)))) { return this._NgSelectOption_4_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((4 <= requestNodeIndex) && (requestNodeIndex <= 5)))) { return this._NgSelectMultipleOption_4_4.context; }
+    if (((token === import19.NgSelectOption) && ((7 <= requestNodeIndex) && (requestNodeIndex <= 8)))) { return this._NgSelectOption_7_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((7 <= requestNodeIndex) && (requestNodeIndex <= 8)))) { return this._NgSelectMultipleOption_7_4.context; }
+    if (((token === import19.NgSelectOption) && ((10 <= requestNodeIndex) && (requestNodeIndex <= 11)))) { return this._NgSelectOption_10_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((10 <= requestNodeIndex) && (requestNodeIndex <= 11)))) { return this._NgSelectMultipleOption_10_4.context; }
+    if (((token === import19.NgSelectOption) && ((13 <= requestNodeIndex) && (requestNodeIndex <= 14)))) { return this._NgSelectOption_13_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((13 <= requestNodeIndex) && (requestNodeIndex <= 14)))) { return this._NgSelectMultipleOption_13_4.context; }
+    if (((token === import19.NgSelectOption) && ((16 <= requestNodeIndex) && (requestNodeIndex <= 17)))) { return this._NgSelectOption_16_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((16 <= requestNodeIndex) && (requestNodeIndex <= 17)))) { return this._NgSelectMultipleOption_16_4.context; }
+    if (((token === import19.NgSelectOption) && ((19 <= requestNodeIndex) && (requestNodeIndex <= 20)))) { return this._NgSelectOption_19_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((19 <= requestNodeIndex) && (requestNodeIndex <= 20)))) { return this._NgSelectMultipleOption_19_4.context; }
+    if (((token === import19.NgSelectOption) && ((22 <= requestNodeIndex) && (requestNodeIndex <= 23)))) { return this._NgSelectOption_22_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((22 <= requestNodeIndex) && (requestNodeIndex <= 23)))) { return this._NgSelectMultipleOption_22_4.context; }
+    if (((token === import19.NgSelectOption) && ((25 <= requestNodeIndex) && (requestNodeIndex <= 26)))) { return this._NgSelectOption_25_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((25 <= requestNodeIndex) && (requestNodeIndex <= 26)))) { return this._NgSelectMultipleOption_25_4.context; }
+    if (((token === import19.NgSelectOption) && ((28 <= requestNodeIndex) && (requestNodeIndex <= 29)))) { return this._NgSelectOption_28_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((28 <= requestNodeIndex) && (requestNodeIndex <= 29)))) { return this._NgSelectMultipleOption_28_4.context; }
+    if (((token === import19.NgSelectOption) && ((31 <= requestNodeIndex) && (requestNodeIndex <= 32)))) { return this._NgSelectOption_31_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((31 <= requestNodeIndex) && (requestNodeIndex <= 32)))) { return this._NgSelectMultipleOption_31_4.context; }
+    if (((token === import19.NgSelectOption) && ((34 <= requestNodeIndex) && (requestNodeIndex <= 35)))) { return this._NgSelectOption_34_3.context; }
+    if (((token === import20.NgSelectMultipleOption) && ((34 <= requestNodeIndex) && (requestNodeIndex <= 35)))) { return this._NgSelectMultipleOption_34_4.context; }
     return notFoundResult;
   }
   detectChangesInternal(throwOnChange:boolean):void {
-    const currVal_3_0_0:any = this.context.showHeading;
-    this._NgIf_3_6.check_ngIf(currVal_3_0_0,throwOnChange,false);
-    this._NgIf_3_6.ngDoCheck(this,this._anchor_3,throwOnChange);
-    const currVal_8_0_0:any = this.context.heroes;
-    this._NgFor_8_6.check_ngForOf(currVal_8_0_0,throwOnChange,false);
-    this._NgFor_8_6.ngDoCheck(this,this._anchor_8,throwOnChange);
-    this._vc_3.detectChangesInNestedViews(throwOnChange);
-    this._vc_8.detectChangesInNestedViews(throwOnChange);
+    const currVal_4_0_0:any = 'none';
+    this._NgSelectOption_4_3.check_value(currVal_4_0_0,throwOnChange,false);
+    this._NgSelectOption_4_3.ngDoCheck(this,this._el_4,throwOnChange);
+    const currVal_4_1_0:any = 'none';
+    this._NgSelectMultipleOption_4_4.check_value(currVal_4_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_4_4.ngDoCheck(this,this._el_4,throwOnChange);
+    const currVal_7_0_0:any = 'welcome';
+    this._NgSelectOption_7_3.check_value(currVal_7_0_0,throwOnChange,false);
+    this._NgSelectOption_7_3.ngDoCheck(this,this._el_7,throwOnChange);
+    const currVal_7_1_0:any = 'welcome';
+    this._NgSelectMultipleOption_7_4.check_value(currVal_7_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_7_4.ngDoCheck(this,this._el_7,throwOnChange);
+    const currVal_10_0_0:any = 'test';
+    this._NgSelectOption_10_3.check_value(currVal_10_0_0,throwOnChange,false);
+    this._NgSelectOption_10_3.ngDoCheck(this,this._el_10,throwOnChange);
+    const currVal_10_1_0:any = 'test';
+    this._NgSelectMultipleOption_10_4.check_value(currVal_10_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_10_4.ngDoCheck(this,this._el_10,throwOnChange);
+    const currVal_13_0_0:any = 'simple-button';
+    this._NgSelectOption_13_3.check_value(currVal_13_0_0,throwOnChange,false);
+    this._NgSelectOption_13_3.ngDoCheck(this,this._el_13,throwOnChange);
+    const currVal_13_1_0:any = 'simple-button';
+    this._NgSelectMultipleOption_13_4.check_value(currVal_13_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_13_4.ngDoCheck(this,this._el_13,throwOnChange);
+    const currVal_16_0_0:any = 'sort-images';
+    this._NgSelectOption_16_3.check_value(currVal_16_0_0,throwOnChange,false);
+    this._NgSelectOption_16_3.ngDoCheck(this,this._el_16,throwOnChange);
+    const currVal_16_1_0:any = 'sort-images';
+    this._NgSelectMultipleOption_16_4.check_value(currVal_16_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_16_4.ngDoCheck(this,this._el_16,throwOnChange);
+    const currVal_19_0_0:any = 'questions';
+    this._NgSelectOption_19_3.check_value(currVal_19_0_0,throwOnChange,false);
+    this._NgSelectOption_19_3.ngDoCheck(this,this._el_19,throwOnChange);
+    const currVal_19_1_0:any = 'questions';
+    this._NgSelectMultipleOption_19_4.check_value(currVal_19_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_19_4.ngDoCheck(this,this._el_19,throwOnChange);
+    const currVal_22_0_0:any = 'scoreboard';
+    this._NgSelectOption_22_3.check_value(currVal_22_0_0,throwOnChange,false);
+    this._NgSelectOption_22_3.ngDoCheck(this,this._el_22,throwOnChange);
+    const currVal_22_1_0:any = 'scoreboard';
+    this._NgSelectMultipleOption_22_4.check_value(currVal_22_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_22_4.ngDoCheck(this,this._el_22,throwOnChange);
+    const currVal_25_0_0:any = 'teamfie';
+    this._NgSelectOption_25_3.check_value(currVal_25_0_0,throwOnChange,false);
+    this._NgSelectOption_25_3.ngDoCheck(this,this._el_25,throwOnChange);
+    const currVal_25_1_0:any = 'teamfie';
+    this._NgSelectMultipleOption_25_4.check_value(currVal_25_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_25_4.ngDoCheck(this,this._el_25,throwOnChange);
+    const currVal_28_0_0:any = 'configure-teams';
+    this._NgSelectOption_28_3.check_value(currVal_28_0_0,throwOnChange,false);
+    this._NgSelectOption_28_3.ngDoCheck(this,this._el_28,throwOnChange);
+    const currVal_28_1_0:any = 'configure-teams';
+    this._NgSelectMultipleOption_28_4.check_value(currVal_28_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_28_4.ngDoCheck(this,this._el_28,throwOnChange);
+    const currVal_31_0_0:any = 'none';
+    this._NgSelectOption_31_3.check_value(currVal_31_0_0,throwOnChange,false);
+    this._NgSelectOption_31_3.ngDoCheck(this,this._el_31,throwOnChange);
+    const currVal_31_1_0:any = 'none';
+    this._NgSelectMultipleOption_31_4.check_value(currVal_31_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_31_4.ngDoCheck(this,this._el_31,throwOnChange);
+    const currVal_34_0_0:any = 'simple-button-demo';
+    this._NgSelectOption_34_3.check_value(currVal_34_0_0,throwOnChange,false);
+    this._NgSelectOption_34_3.ngDoCheck(this,this._el_34,throwOnChange);
+    const currVal_34_1_0:any = 'simple-button-demo';
+    this._NgSelectMultipleOption_34_4.check_value(currVal_34_1_0,throwOnChange,false);
+    this._NgSelectMultipleOption_34_4.ngDoCheck(this,this._el_34,throwOnChange);
   }
   destroyInternal():void {
-    this._vc_3.destroyNestedViews();
-    this._vc_8.destroyNestedViews();
+    this._NgSelectOption_4_3.ngOnDestroy();
+    this._NgSelectMultipleOption_4_4.ngOnDestroy();
+    this._NgSelectOption_7_3.ngOnDestroy();
+    this._NgSelectMultipleOption_7_4.ngOnDestroy();
+    this._NgSelectOption_10_3.ngOnDestroy();
+    this._NgSelectMultipleOption_10_4.ngOnDestroy();
+    this._NgSelectOption_13_3.ngOnDestroy();
+    this._NgSelectMultipleOption_13_4.ngOnDestroy();
+    this._NgSelectOption_16_3.ngOnDestroy();
+    this._NgSelectMultipleOption_16_4.ngOnDestroy();
+    this._NgSelectOption_19_3.ngOnDestroy();
+    this._NgSelectMultipleOption_19_4.ngOnDestroy();
+    this._NgSelectOption_22_3.ngOnDestroy();
+    this._NgSelectMultipleOption_22_4.ngOnDestroy();
+    this._NgSelectOption_25_3.ngOnDestroy();
+    this._NgSelectMultipleOption_25_4.ngOnDestroy();
+    this._NgSelectOption_28_3.ngOnDestroy();
+    this._NgSelectMultipleOption_28_4.ngOnDestroy();
+    this._NgSelectOption_31_3.ngOnDestroy();
+    this._NgSelectMultipleOption_31_4.ngOnDestroy();
+    this._NgSelectOption_34_3.ngOnDestroy();
+    this._NgSelectMultipleOption_34_4.ngOnDestroy();
   }
-  createEmbeddedViewInternal(nodeIndex:number):import1.AppView<any> {
-    if ((nodeIndex == 3)) { return new View_AppComponent1(this.viewUtils,this,3,this._anchor_3,this._vc_3); }
-    if ((nodeIndex == 8)) { return new View_AppComponent2(this.viewUtils,this,8,this._anchor_8,this._vc_8); }
-    return (null as any);
+  visitRootNodesInternal(cb:any,ctx:any):void {
+    cb(this._el_0,ctx);
   }
-  handleEvent_0(eventName:string,$event:any):boolean {
+  handleEvent_2(eventName:string,$event:any):boolean {
     this.markPathToRootAsCheckOnce();
     var result:boolean = true;
-    if ((eventName == 'click')) {
-      const pd_sub_0:any = ((<any>this.context.toggleHeading()) !== false);
+    if ((eventName == 'change')) {
+      const pd_sub_0:any = ((<any>this.parentView.context.onChangeMode($event.target.value)) !== false);
       result = (pd_sub_0 && result);
     }
     return result;
+  }
+}
+var renderType_AppComponent:import2.RenderComponentType = import3.createRenderComponentType('',0,import4.ViewEncapsulation.Emulated,styles_AppComponent,{});
+export class View_AppComponent0 extends import1.AppView<import0.AppComponent> {
+  _el_0:any;
+  compView_0:import1.AppView<import21.StatusBarComponent>;
+  _StatusBarComponent_0_3:import22.Wrapper_StatusBarComponent;
+  _text_1:any;
+  _anchor_2:any;
+  /*private*/ _vc_2:import17.ViewContainer;
+  _TemplateRef_2_5:any;
+  _NgIf_2_6:import23.Wrapper_NgIf;
+  _text_3:any;
+  _el_4:any;
+  /*private*/ _vc_4:import17.ViewContainer;
+  _RouterOutlet_4_5:import24.Wrapper_RouterOutlet;
+  _text_5:any;
+  constructor(viewUtils:import3.ViewUtils,parentView:import1.AppView<any>,parentIndex:number,parentElement:any) {
+    super(View_AppComponent0,renderType_AppComponent,import5.ViewType.COMPONENT,viewUtils,parentView,parentIndex,parentElement,import6.ChangeDetectorStatus.CheckAlways);
+  }
+  createInternal(rootSelector:string):import7.ComponentRef<any> {
+    const parentRenderNode:any = this.renderer.createViewRoot(this.parentElement);
+    this._el_0 = import3.createRenderElement(this.renderer,parentRenderNode,'status-bar',import3.EMPTY_INLINE_ARRAY,(null as any));
+    this.compView_0 = new import22.View_StatusBarComponent0(this.viewUtils,this,0,this._el_0);
+    this._StatusBarComponent_0_3 = new import22.Wrapper_StatusBarComponent(this.parentView.injectorGet(import25.CloudService,this.parentIndex),this.parentView.injectorGet(import10.ModeService,this.parentIndex),this.parentView.injectorGet(import26.UserService,this.parentIndex),this.parentView.injectorGet(import13.WebsocketUserService,this.parentIndex));
+    this.compView_0.create(this._StatusBarComponent_0_3.context);
+    this._text_1 = this.renderer.createText(parentRenderNode,'\n',(null as any));
+    this._anchor_2 = this.renderer.createTemplateAnchor(parentRenderNode,(null as any));
+    this._vc_2 = new import17.ViewContainer(2,(null as any),this,this._anchor_2);
+    this._TemplateRef_2_5 = new import27.TemplateRef_(this,2,this._anchor_2);
+    this._NgIf_2_6 = new import23.Wrapper_NgIf(this._vc_2.vcRef,this._TemplateRef_2_5);
+    this._text_3 = this.renderer.createText(parentRenderNode,'\n',(null as any));
+    this._el_4 = import3.createRenderElement(this.renderer,parentRenderNode,'router-outlet',new import3.InlineArray2(2,'class',''),(null as any));
+    this._vc_4 = new import17.ViewContainer(4,(null as any),this,this._el_4);
+    this._RouterOutlet_4_5 = new import24.Wrapper_RouterOutlet(this.parentView.injectorGet(import28.RouterOutletMap,this.parentIndex),this._vc_4.vcRef,this.parentView.injectorGet(import29.ComponentFactoryResolver,this.parentIndex),(null as any));
+    this._text_5 = this.renderer.createText(parentRenderNode,'\n',(null as any));
+    this.init((null as any),((<any>this.renderer).directRenderer? (null as any): [
+      this._el_0,
+      this._text_1,
+      this._anchor_2,
+      this._text_3,
+      this._el_4,
+      this._text_5
+    ]
+    ),(null as any));
+    return (null as any);
+  }
+  injectorGetInternal(token:any,requestNodeIndex:number,notFoundResult:any):any {
+    if (((token === import21.StatusBarComponent) && (0 === requestNodeIndex))) { return this._StatusBarComponent_0_3.context; }
+    if (((token === import27.TemplateRef) && (2 === requestNodeIndex))) { return this._TemplateRef_2_5; }
+    if (((token === import30.NgIf) && (2 === requestNodeIndex))) { return this._NgIf_2_6.context; }
+    if (((token === import31.RouterOutlet) && (4 === requestNodeIndex))) { return this._RouterOutlet_4_5.context; }
+    return notFoundResult;
+  }
+  detectChangesInternal(throwOnChange:boolean):void {
+    this._StatusBarComponent_0_3.ngDoCheck(this,this._el_0,throwOnChange);
+    const currVal_2_0_0:any = this.context.isQuizMaster;
+    this._NgIf_2_6.check_ngIf(currVal_2_0_0,throwOnChange,false);
+    this._NgIf_2_6.ngDoCheck(this,this._anchor_2,throwOnChange);
+    this._RouterOutlet_4_5.ngDoCheck(this,this._el_4,throwOnChange);
+    this._vc_2.detectChangesInNestedViews(throwOnChange);
+    this._vc_4.detectChangesInNestedViews(throwOnChange);
+    this.compView_0.internalDetectChanges(throwOnChange);
+  }
+  destroyInternal():void {
+    this._vc_2.destroyNestedViews();
+    this._vc_4.destroyNestedViews();
+    this.compView_0.destroy();
+    this._StatusBarComponent_0_3.ngOnDestroy();
+    this._RouterOutlet_4_5.ngOnDestroy();
+  }
+  createEmbeddedViewInternal(nodeIndex:number):import1.AppView<any> {
+    if ((nodeIndex == 2)) { return new View_AppComponent1(this.viewUtils,this,2,this._anchor_2,this._vc_2); }
+    return (null as any);
   }
 }

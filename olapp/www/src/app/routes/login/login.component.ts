@@ -13,6 +13,8 @@ import {UserService}           from './../../services/user.service';
   templateUrl: 'login.component.html'
 })
 export class LoginComponent {
+  public userName   : string;
+  
   public constructor(
     private router      : Router,
     private location    : Location,
@@ -31,6 +33,5 @@ export class LoginComponent {
       this.location.back();
   }
 
-  private userName   : string;
   private showCancel : boolean = false;
 }

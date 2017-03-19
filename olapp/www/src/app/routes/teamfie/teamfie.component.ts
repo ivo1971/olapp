@@ -33,16 +33,16 @@ export class TeamfieComponent extends TeamfieBaseComponent {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private modeIsBeamer      : boolean = false;
-    private modeIsMaster      : boolean = false;
-    private modeIsQuiz        : boolean = true;
-    private imageContent      : string = "";
-    private imageContentValid : boolean = false;
-    private teamName          : string  = "";
-    private carouselActive    : boolean = false;
-    private sending           : boolean = false;
-    private sendingFailed     : boolean = false;
-    private sendingOk         : boolean = false;
+    public modeIsBeamer      : boolean = false;
+    public modeIsMaster      : boolean = false;
+    public modeIsQuiz        : boolean = true;
+    public imageContent      : string = "";
+    public imageContentValid : boolean = false;
+    public teamName          : string  = "";
+    public carouselActive    : boolean = false;
+    public sending           : boolean = false;
+    public sendingFailed     : boolean = false;
+    public sendingOk         : boolean = false;
 
     /* Construction
      */

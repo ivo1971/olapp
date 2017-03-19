@@ -26,14 +26,14 @@ export class SortImagesComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private draggingIdxNone : number = -1;
-    private draggingIdx     : number = this.draggingIdxNone; 
-    private imagesSort      : string[]  = [];
-    private imagesResultOk  : boolean[] = [];
-    private imagesResultErr : boolean[] = [];
-    private imagesNbrOk     : number    = 0;
-    private imagesNbrTotal  : number    = 0;
-    private imagesNbrShow   : boolean   = false;
+    public draggingIdxNone : number = -1;
+    public draggingIdx     : number = this.draggingIdxNone; 
+    public imagesSort      : string[]  = [];
+    public imagesResultOk  : boolean[] = [];
+    public imagesResultErr : boolean[] = [];
+    public imagesNbrOk     : number    = 0;
+    public imagesNbrTotal  : number    = 0;
+    public imagesNbrShow   : boolean   = false;
 
     /* Construction
      */
@@ -139,7 +139,7 @@ export class SortImagesComponent extends ComponentBase {
 
     /* Event handlers called from the template
      */
-    private onClickImage(imageIdx : number): void {
+    public onClickImage(imageIdx : number): void {
         if(this.imagesNbrShow) {
             //not in sorting mode,
             //no drag & drop
@@ -160,7 +160,7 @@ export class SortImagesComponent extends ComponentBase {
         }
     }
 
-    private onClickDrop(dropIdx : number): void {
+    public onClickDrop(dropIdx : number): void {
         //handle drop
         let changed : boolean = false;
         if(this.draggingIdx == this.draggingIdxNone) {
@@ -199,3 +199,4 @@ export class SortImagesComponent extends ComponentBase {
     private observableImagesListResult               : Observable<any>;
     private observableImagesListResultSubscription   : Subscription;
 }
+    

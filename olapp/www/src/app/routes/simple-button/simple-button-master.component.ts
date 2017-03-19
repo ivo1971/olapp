@@ -30,14 +30,17 @@ import {WebsocketUserService}  from './../../services/websocket.user.service';
     templateUrl: 'simple-button-master.component.html'
 })
 export class SimpleButtonMasterComponent extends ComponentBase implements OnInit, OnDestroy { 
-    private teamNameEvaluate      : string   = "";
-    private configDelay           : number   = 5;
-    private configPointsGoodThis  : number   = 5;
-    private configPointsGoodOther : number   = 0;
-    private configPointsBadThis   : number   = 0;
-    private configPointsBadOther  : number   = 3;
-    private dummyPrev             : string   = ""
-    private dummies               : string[] = []
+    public teamNameEvaluate      : string                     = "";
+    public configDelay           : number                     = 5;
+    public configPointsGoodThis  : number                     = 5;
+    public configPointsGoodOther : number                     = 0;
+    public configPointsBadThis   : number                     = 0;
+    public configPointsBadOther  : number                     = 3;
+    public dummyPrev             : string                     = ""
+    public dummies               : string[]                   = []
+    public observableTeamInfo    : Observable<Array<TeamInfo>>;
+    public observableTeamInfoNone: Observable<Array<TeamInfo>>;
+    public observableUserInfo    : Observable<Array<UserInfo>>;
 
     /* Construction
      */
@@ -144,9 +147,6 @@ export class SimpleButtonMasterComponent extends ComponentBase implements OnInit
 
     /* Private members
      */
-    private observableTeamInfo             : Observable<Array<TeamInfo>>;
-    private observableTeamInfoNone         : Observable<Array<TeamInfo>>;
-    private observableUserInfo             : Observable<Array<UserInfo>>;
     private observableEvaluate             : Observable<any>;
     private observableEvaluateSubscription : Subscription;
     private observableConfig               : Observable<any>;

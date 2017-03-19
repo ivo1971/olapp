@@ -19,7 +19,7 @@ import {WebsocketUserService}  from './services/websocket.user.service';
     templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-    private isQuizMaster : boolean = false;
+    public isQuizMaster : boolean = false;
     public constructor(
       private router           : Router,
       private logService       : LogService,

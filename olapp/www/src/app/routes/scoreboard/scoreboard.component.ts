@@ -27,8 +27,9 @@ export class ScoreboardComponent extends TeamfieBaseComponent implements OnInit,
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private showDummy : boolean = false;
-    private total     : boolean = true;
+    public showDummy                 : boolean        = false;
+    public total                     : boolean        = true;
+    public observableScoreboardTotal : Observable<any>;
 
     /* Construction
      */
@@ -74,6 +75,5 @@ export class ScoreboardComponent extends TeamfieBaseComponent implements OnInit,
 
     /* Private members
      */
-    private observableScoreboardTotal               : Observable<any>;
     private observableScoreboardTotalSubscription   : Subscription;
 }

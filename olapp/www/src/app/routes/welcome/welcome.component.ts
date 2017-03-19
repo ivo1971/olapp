@@ -16,9 +16,7 @@ import {WebsocketUserService} from './../../services/websocket.user.service';
     templateUrl: 'welcome.component.html'
 })
 export class WelcomeComponent extends ComponentBase implements OnInit, OnDestroy { 
-    private userName         : string = "";
-    private userObservable   : Observable<User>;
-    private userSubscription : Subscription;
+    public userName         : string = "";
     
     public constructor(
         private _websocketUserService : WebsocketUserService,
@@ -39,4 +37,7 @@ export class WelcomeComponent extends ComponentBase implements OnInit, OnDestroy
     public ngOnDestroy() : void {
         this.userSubscription.unsubscribe();
     }
+
+    private userObservable   : Observable<User>;
+    private userSubscription : Subscription;
 }

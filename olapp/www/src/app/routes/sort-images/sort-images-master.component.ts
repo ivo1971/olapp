@@ -25,10 +25,10 @@ export class SortImagesMasterComponent extends ComponentBase {
     /* Private variables intended for the template
      * (hence at the top)
      */
-    private images           : string[]         = [];
-    private teams            : string[]         = [];
-    private pointsPerImageOk : number           = 1;
-    private teamImagesInfo   : TeamImagesInfo[] = [];
+    public images           : string[]         = [];
+    public teams            : string[]         = [];
+    public pointsPerImageOk : number           = 1;
+    public teamImagesInfo   : TeamImagesInfo[] = [];
 
     /* Construction
      */
@@ -68,21 +68,21 @@ export class SortImagesMasterComponent extends ComponentBase {
 
     /* Event handlers called from the template
      */
-    private onClickRadioAction(sort : boolean) : void {
+    public onClickRadioAction(sort : boolean) : void {
         console.log("onClickRadioAction: [" + sort + "]");
         this._websocketUserService.sendMsg("sort-images-action", {
             sort: sort
         });        
     }
 
-    private handleTeamImagesInfoEvt(teamImagesInfo : TeamImagesInfo[]) : void {
+    public handleTeamImagesInfoEvt(teamImagesInfo : TeamImagesInfo[]) : void {
         this.teamImagesInfo = teamImagesInfo;
         for(let u = 0 ; u < teamImagesInfo.length ; ++u) {
             this.teamImagesInfo[u].pointsRound = this.teamImagesInfo[u].imagesOk * this.pointsPerImageOk;
         }
     }
 
-    private onClickSetPoints() : void {
+    public onClickSetPoints() : void {
         //send message to set points
         this._websocketUserService.sendMsg("sort-images-set-points", {
             teams : this.teamImagesInfo
@@ -94,7 +94,7 @@ export class SortImagesMasterComponent extends ComponentBase {
         });
     }
 
-    private onPointsPerImageChange(pointsPerImage : number) : void {
+    public onPointsPerImageChange(pointsPerImage : number) : void {
         for(let u = 0 ; u < this.teamImagesInfo.length ; ++u) {
             this.teamImagesInfo[u].pointsRound = this.teamImagesInfo[u].imagesOk * this.pointsPerImageOk;
         }
