@@ -1,94 +1,94 @@
-//Built-in modules
-import {BrowserModule}                 from '@angular/platform-browser';
-import {CanActivate}                   from '@angular/router';
-import {CanDeactivate}                 from '@angular/router';
-import {FormsModule}                   from '@angular/forms';
-import {HttpModule}                    from "@angular/http";
-import {NgModule}                      from '@angular/core';
-import {RouterModule}                  from '@angular/router';
+// built-in modules
+import {BrowserModule} from '@angular/platform-browser';
+import {CanActivate} from '@angular/router';
+import {CanDeactivate} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+import {HttpModule} from '@angular/http';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
-//Own services
-import {CloudService}                  from './services/cloud.service';
-import {ImgBase64Service}              from './services/img-base64.service';
-import {LogService}                    from './services/log.service';
-import {ModeService}                   from './services/mode.service';
-import {TeamfieService}                from './services/teamfie.service';
-import {TeamsUsersService}             from './services/teams-users.service';
-import {UserService}                   from './services/user.service';
-import {WebsocketUserService}          from './services/websocket.user.service';
+// own services
+import {CloudService} from './services/cloud.service';
+import {ImgBase64Service} from './services/img-base64.service';
+import {LogService} from './services/log.service';
+import {ModeService} from './services/mode.service';
+import {TeamfieService} from './services/teamfie.service';
+import {TeamsUsersService} from './services/teams-users.service';
+import {UserService} from './services/user.service';
+import {WebsocketUserService} from './services/websocket.user.service';
 
-//Own providers: guards
-import {UsernameSetGuard}              from './providers/guards/username-set.guard';
+// own providers: guards
+import {UsernameSetGuard} from './providers/guards/username-set.guard';
 
-//Own components: application
-import {AppComponent}                  from "./app.component";
+// own components: application
+import {AppComponent} from './app.component';
 
-//Own components: routes
-import {AboutComponent}                from "./routes/about/about.component";
-import {ConfigurationComponent}        from "./routes/configuration/configuration.component";
-import {ConfigureTeamsMasterComponent} from "./routes/configure-teams-master/configure-teams-master.component";
-import {ConfigureTeamsWrapperComponent}from "./routes/configure-teams-master/configure-teams-wrapper.component";
-import {LoginComponent}                from "./routes/login/login.component";
-import {QuestionsComponent}            from "./routes/questions/questions.component";
-import {QuestionsBeamerComponent}      from "./routes/questions/questions-beamer.component";
-import {QuestionsImagesComponent}      from "./routes/questions/questions-images.component"
-import {QuestionsMasterComponent}      from "./routes/questions/questions-master.component";
-import {QuestionsWrapperComponent}     from "./routes/questions/questions-wrapper.component";
-import {ScoreboardComponent}           from "./routes/scoreboard/scoreboard.component";
-import {ScoreboardMasterComponent}     from "./routes/scoreboard-master/scoreboard-master.component";
-import {ScoreboardWrapperComponent}    from "./routes/scoreboard-master/scoreboard-wrapper.component";
-import {SimpleButtonComponent}         from "./routes/simple-button/simple-button.component";
-import {SimpleButtonComponentData}     from "./routes/simple-button/simple-button-data.component";
-import {SimpleButtonMasterComponent}   from "./routes/simple-button/simple-button-master.component";
-import {SimpleButtonWrapperComponent}  from "./routes/simple-button/simple-button-wrapper.component";
-import {SortImagesComponent}           from "./routes/sort-images/sort-images.component";
-import {SortImagesBeamerComponent}     from "./routes/sort-images/sort-images-beamer.component";
-import {SortImagesMasterComponent}     from "./routes/sort-images/sort-images-master.component";
-import {SortImagesWrapperComponent}    from "./routes/sort-images/sort-images-wrapper.component";
-import {TeamfieComponent}              from "./routes/teamfie/teamfie.component";
-import {TestComponent}                 from "./routes/test/test.component";
-import {WelcomeComponent}              from "./routes/welcome/welcome.component";
+// own components: routes
+import {AboutComponent} from './routes/about/about.component';
+import {ConfigurationComponent} from './routes/configuration/configuration.component';
+import {ConfigureTeamsMasterComponent} from './routes/configure-teams-master/configure-teams-master.component';
+import {ConfigureTeamsWrapperComponent} from './routes/configure-teams-master/configure-teams-wrapper.component';
+import {LoginComponent} from './routes/login/login.component';
+import {QuestionsComponent} from './routes/questions/questions.component';
+import {QuestionsBeamerComponent} from './routes/questions/questions-beamer.component';
+import {QuestionsImagesComponent} from './routes/questions/questions-images.component'
+import {QuestionsMasterComponent} from './routes/questions/questions-master.component';
+import {QuestionsWrapperComponent} from './routes/questions/questions-wrapper.component';
+import {ScoreboardComponent} from './routes/scoreboard/scoreboard.component';
+import {ScoreboardMasterComponent} from './routes/scoreboard-master/scoreboard-master.component';
+import {ScoreboardWrapperComponent} from './routes/scoreboard-master/scoreboard-wrapper.component';
+import {SimpleButtonComponent} from './routes/simple-button/simple-button.component';
+import {SimpleButtonComponentData} from './routes/simple-button/simple-button-data.component';
+import {SimpleButtonMasterComponent} from './routes/simple-button/simple-button-master.component';
+import {SimpleButtonWrapperComponent} from './routes/simple-button/simple-button-wrapper.component';
+import {SortImagesComponent} from './routes/sort-images/sort-images.component';
+import {SortImagesBeamerComponent} from './routes/sort-images/sort-images-beamer.component';
+import {SortImagesMasterComponent} from './routes/sort-images/sort-images-master.component';
+import {SortImagesWrapperComponent} from './routes/sort-images/sort-images-wrapper.component';
+import {TeamfieComponent} from './routes/teamfie/teamfie.component';
+import {TestComponent} from './routes/test/test.component';
+import {WelcomeComponent} from './routes/welcome/welcome.component';
 
-//Own components: components
-import {ImageLocalComponent}           from "./components/image-local/image-local.component";
-import {ImageNativeComponent}          from "./components/image-native/image-native.component";
-import {ImageTeamfieComponent}         from "./components/image-teamfie/image-teamfie.component";
-import {InputDebounceComponent}        from "./components/input-debounce/input-debounce.component";
-import {MenuComponent}                 from "./components/menu/menu.component";
-import {ScoreboardListComponent}       from "./components/scoreboard-list/scoreboard-list.component";
-import {StatusBarComponent}            from "./components/status-bar/status-bar.component";
-import {TeamInfoComponent}             from "./components/team-info/team-info.component";
-import {TeamInfoListComponent}         from "./components/team-info-list/team-info-list.component";
-import {UserInfoComponent}             from "./components/user-info/user-info.component";
-import {UserInfoListComponent}         from "./components/user-info-list/user-info-list.component";
+// own components: components
+import {ImageLocalComponent} from './components/image-local/image-local.component';
+import {ImageNativeComponent} from './components/image-native/image-native.component';
+import {ImageTeamfieComponent} from './components/image-teamfie/image-teamfie.component';
+import {InputDebounceComponent} from './components/input-debounce/input-debounce.component';
+import {MenuComponent} from './components/menu/menu.component';
+import {ScoreboardListComponent} from './components/scoreboard-list/scoreboard-list.component';
+import {StatusBarComponent} from './components/status-bar/status-bar.component';
+import {TeamInfoComponent} from './components/team-info/team-info.component';
+import {TeamInfoListComponent} from './components/team-info-list/team-info-list.component';
+import {UserInfoComponent} from './components/user-info/user-info.component';
+import {UserInfoListComponent} from './components/user-info-list/user-info-list.component';
 
-//Own components: pipes
-import {SimpleButtonActiveFilter}      from "./routes/simple-button/simple-button.pipe";
-import {SimpleButtonTeamPointsSort}    from "./routes/simple-button/simple-button.pipe";
-import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-button.pipe";
+// own components: pipes
+import {SimpleButtonActiveFilter} from './routes/simple-button/simple-button.pipe';
+import {SimpleButtonTeamPointsSort} from './routes/simple-button/simple-button.pipe';
+import {SimpleButtonTeamAlphabeticSort} from './routes/simple-button/simple-button.pipe';
 
-//Module definition
+// module definition
 @NgModule({
-  //Inject built-in modules
+  // inject built-in modules
   imports: [
-    BrowserModule, 
+    BrowserModule,
     FormsModule,
     HttpModule,
     RouterModule.forRoot([
-      //no need to be logged in before
+      // no need to be logged in before
       {
         path: 'login',
         component: LoginComponent,
         canDeactivate: [
-            UsernameSetGuard  
+            UsernameSetGuard
         ]
       },
-      //these routes require post-login
-      //(hence the canActivate-guard)
+      //  these routes require post-login
+      //  (hence the canActivate-guard)
       {
         path: 'quiz',
         canActivate: [
-            UsernameSetGuard  
+            UsernameSetGuard
         ],
         children : [
           {
@@ -128,7 +128,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
       {
         path: 'configuration',
         canActivate: [
-            UsernameSetGuard  
+            UsernameSetGuard
         ],
         children : [
           {
@@ -153,9 +153,9 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
       },
     ])
   ],
-  //Inject your own services
+  // inject your own services
   providers: [
-    //services
+    // services
     CloudService,
     ImgBase64Service,
     LogService,
@@ -164,14 +164,14 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     TeamsUsersService,
     UserService,
     WebsocketUserService,
-    //guards
+    // guards
     UsernameSetGuard,
   ],
-  //Inject your own components
-  declarations: [ 
-    //application
+  // inject your own components
+  declarations: [
+    // application
     AppComponent,
-    //routes
+    // routes
     AboutComponent,
     ConfigurationComponent,
     ConfigureTeamsMasterComponent,
@@ -195,7 +195,7 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     TeamfieComponent,
     TestComponent,
     WelcomeComponent,
-    //components
+    // components
     ImageLocalComponent,
     ImageNativeComponent,
     ImageTeamfieComponent,
@@ -208,15 +208,15 @@ import {SimpleButtonTeamAlphabeticSort}from "./routes/simple-button/simple-butto
     TeamInfoListComponent,
     UserInfoComponent,
     UserInfoListComponent,
-    //filters
+    // filters
     SimpleButtonActiveFilter,
     SimpleButtonTeamPointsSort,
     SimpleButtonTeamAlphabeticSort,
   ],
-  //Module you need to bootstrap
-  bootstrap:    [ 
-    AppComponent 
+  // module you need to bootstrap
+  bootstrap:    [
+    AppComponent
   ]
 })
-export class AppModule { 
+export class AppModule {
 }
