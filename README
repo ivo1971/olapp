@@ -1,5 +1,1 @@
-git clone https://github.com/ivo1971/olapp
-git add .
-git status
-git commit
-git push origin master
+Project has been movode to https://gitlab.com/Ivo1971/olapp
